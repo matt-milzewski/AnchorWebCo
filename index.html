@@ -70,11 +70,14 @@
     </nav>
 
     <div class="mobile-menu md:hidden fixed inset-0 bg-white z-40 flex flex-col items-center justify-center space-y-8 text-2xl font-poppins font-bold transition-transform duration-300 translate-x-full">
-        <a href="#home" class="nav-link">Home</a>
-        <a href="#services" class="nav-link">Services</a>
-        <a href="#process" class="nav-link">Process</a>
-        <a href="#about" class="nav-link">About</a>
-        <a href="#contact" class="nav-link">Contact</a>
+        <button id="mobile-menu-close" class="absolute top-6 right-6 text-4xl text-anchor-navy" aria-label="Close menu">&times;</button>
+        <div class="mobile-nav-links flex flex-col items-center space-y-8">
+            <a href="#home" class="nav-link">Home</a>
+            <a href="#services" class="nav-link">Services</a>
+            <a href="#process" class="nav-link">Process</a>
+            <a href="#about" class="nav-link">About</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </div>
     </div>
 
     <!-- Hero Section -->

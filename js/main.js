@@ -2,19 +2,28 @@
 const mobileMenuButton = document.getElementById('mobile-menu-button');
 const mobileMenu = document.querySelector('.mobile-menu');
 const navLinks = document.querySelectorAll('.nav-link');
+const mobileMenuClose = document.getElementById('mobile-menu-close');
+const mobileNavLinks = document.querySelectorAll('.mobile-nav-links .nav-link');
 
-mobileMenuButton.addEventListener('click', () => {
-    mobileMenu.classList.toggle('active');
-    mobileMenuButton.setAttribute('aria-expanded', 
-        mobileMenu.classList.contains('active'));
-});
+function openMobileMenu() {
+    mobileMenu.classList.add('active');
+    mobileMenuButton.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+}
 
-// Close mobile menu when clicking a link
-navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        mobileMenu.classList.remove('active');
-        mobileMenuButton.setAttribute('aria-expanded', 'false');
-    });
+function closeMobileMenu() {
+    mobileMenu.classList.remove('active');
+    mobileMenuButton.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+}
+
+mobileMenuButton.addEventListener('click', openMobileMenu);
+if (mobileMenuClose) {
+    mobileMenuClose.addEventListener('click', closeMobileMenu);
+}
+
+mobileNavLinks.forEach(link => {
+    link.addEventListener('click', closeMobileMenu);
 });
 
 // Scroll to Top Button
