@@ -40,8 +40,9 @@
     }
 
     .btn-primary {
-        @apply inline-block bg-[#1f2937] text-white px-6 py-3 rounded-lg font-medium
-               hover:bg-[#38bdf8] transition-colors duration-200;
+        @apply inline-block bg-coast-sky text-white px-8 py-4 rounded-lg font-medium text-lg
+               hover:bg-anchor-navy hover:scale-105 transition-all duration-200 shadow-lg
+               hover:shadow-xl transform hover:-translate-y-1;
     }
 
     .service-card {
