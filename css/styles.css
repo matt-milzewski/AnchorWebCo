@@ -89,11 +89,11 @@
 
 /* Mobile Menu */
 .mobile-menu {
-    @apply fixed inset-0 bg-white z-40 transform translate-x-full transition-transform duration-300;
+    @apply hidden fixed inset-0 bg-white z-40 flex-col items-center justify-center space-y-8 text-2xl font-poppins font-bold transition-transform duration-300 translate-x-full;
 }
 
 .mobile-menu.active {
-    @apply translate-x-0;
+    @apply flex translate-x-0;
 }
 
 /* Form Styles */
