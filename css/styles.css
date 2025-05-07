@@ -40,9 +40,9 @@
     }
 
     .btn-primary {
-        @apply inline-block bg-coast-sky text-white px-8 py-4 rounded-lg font-medium text-lg
-               hover:bg-anchor-navy hover:scale-105 transition-all duration-200 shadow-lg
-               hover:shadow-xl transform hover:-translate-y-1;
+        @apply inline-block bg-anchor-navy text-white px-8 py-4 rounded-lg font-bold text-lg uppercase tracking-wide
+               hover:bg-coast-sky hover:text-anchor-navy hover:scale-105 transition-all duration-200 shadow-xl
+               hover:shadow-2xl transform hover:-translate-y-1 border-2 border-anchor-navy;
     }
 
     .cta-container {
