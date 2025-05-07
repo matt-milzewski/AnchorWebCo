@@ -45,6 +45,12 @@
                hover:shadow-xl transform hover:-translate-y-1;
     }
 
+    .cta-container {
+        @apply bg-gradient-to-r from-anchor-navy/10 to-coast-sky/10 p-8 rounded-2xl
+               border border-coast-sky/20 backdrop-blur-sm shadow-xl
+               hover:shadow-2xl transition-all duration-300;
+    }
+
     .service-card {
         @apply bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200;
     }
