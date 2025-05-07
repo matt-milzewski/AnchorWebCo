@@ -1,0 +1,147 @@
+/* Custom Properties */
+:root {
+    --anchor-navy: #1f2937;
+    --coast-sky: #38bdf8;
+    --sand-beige: #f2f2f0;
+    --dark-text: #111827;
+}
+
+/* Tailwind Configuration */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base Styles */
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: 'Roboto', sans-serif;
+        color: var(--dark-text);
+        background-color: var(--sand-beige);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+    }
+}
+
+/* Custom Components */
+@layer components {
+    .container {
+        @apply max-w-7xl mx-auto px-4;
+    }
+
+    .nav-link {
+        @apply text-[#1f2937] hover:text-[#38bdf8] transition-colors duration-200;
+    }
+
+    .btn-primary {
+        @apply inline-block bg-[#1f2937] text-white px-6 py-3 rounded-lg font-medium
+               hover:bg-[#38bdf8] transition-colors duration-200;
+    }
+
+    .service-card {
+        @apply bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200;
+    }
+
+    .process-step {
+        @apply bg-white p-6 rounded-lg shadow-md text-center;
+    }
+
+    .portfolio-item {
+        @apply block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200;
+    }
+
+    .testimonial {
+        @apply bg-white p-6 rounded-lg shadow-md mb-4;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+}
+
+/* Mobile Menu */
+.mobile-menu {
+    @apply fixed inset-0 bg-white z-40 transform translate-x-full transition-transform duration-300;
+}
+
+.mobile-menu.active {
+    @apply translate-x-0;
+}
+
+/* Form Styles */
+input, textarea {
+    @apply w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#38bdf8];
+}
+
+/* Scroll to Top Button */
+#scroll-top {
+    @apply fixed bottom-4 right-4 bg-[#1f2937] text-white p-3 rounded-full opacity-0 transition-opacity duration-300;
+}
+
+#scroll-top.visible {
+    @apply opacity-100;
+}
+
+/* Testimonial Carousel */
+.testimonial-carousel {
+    @apply relative overflow-hidden;
+}
+
+.testimonial {
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+}
+
+.testimonial.active {
+    @apply opacity-100;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+    h1 {
+        @apply text-3xl;
+    }
+    
+    h2 {
+        @apply text-2xl;
+    }
+    
+    p {
+        @apply text-base;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .no-print {
+        display: none;
+    }
+    
+    body {
+        background: white;
+    }
+    
+    .container {
+        max-width: none;
+    }
+} 
