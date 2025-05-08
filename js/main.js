@@ -1,30 +1,22 @@
-// Mobile Menu Toggle
+// Mobile Menu Toggle (Rebuilt)
+const mobileMenu = document.getElementById('mobile-menu');
 const mobileMenuButton = document.getElementById('mobile-menu-button');
-const mobileMenu = document.querySelector('.mobile-menu');
-const navLinks = document.querySelectorAll('.nav-link');
 const mobileMenuClose = document.getElementById('mobile-menu-close');
-const mobileNavLinks = document.querySelectorAll('.mobile-nav-links .nav-link');
+const mobileMenuLinks = mobileMenu.querySelectorAll('a');
 
 function openMobileMenu() {
-    mobileMenu.classList.add('active');
-    mobileMenuButton.setAttribute('aria-expanded', 'true');
+    mobileMenu.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
 
 function closeMobileMenu() {
-    mobileMenu.classList.remove('active');
-    mobileMenuButton.setAttribute('aria-expanded', 'false');
+    mobileMenu.classList.add('hidden');
     document.body.style.overflow = '';
 }
 
 mobileMenuButton.addEventListener('click', openMobileMenu);
-if (mobileMenuClose) {
-    mobileMenuClose.addEventListener('click', closeMobileMenu);
-}
-
-mobileNavLinks.forEach(link => {
-    link.addEventListener('click', closeMobileMenu);
-});
+mobileMenuClose.addEventListener('click', closeMobileMenu);
+mobileMenuLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
 
 // Scroll to Top Button
 const scrollTopButton = document.getElementById('scroll-top');
