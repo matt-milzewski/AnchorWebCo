@@ -60,6 +60,14 @@ const contactForm = document.getElementById('contact-form');
 contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // Honeypot validation - if company field is filled, it's likely spam
+    const companyField = document.querySelector('input[name="company"]');
+    if (companyField && companyField.value.trim()) {
+        // Silently reject spam submissions
+        console.log('Spam submission detected and rejected');
+        return;
+    }
+
     // Basic form validation
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
