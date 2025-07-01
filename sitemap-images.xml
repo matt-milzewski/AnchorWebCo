@@ -7,12 +7,10 @@
     <image:image>
       <image:loc>https://anchorwebco.com.au/img/og-image.webp</image:loc>
       <image:title>Anchor Web Co. - Website Development & SEO Services</image:title>
-      <image:caption>Professional website development and SEO services for Hervey Bay, Sunshine Coast, and Brisbane businesses</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://anchorwebco.com.au/img/fraser-coast.webp</image:loc>
-      <image:title>Fraser Coast Region</image:title>
-      <image:caption>Beautiful Fraser Coast region where we provide local SEO services</image:caption>
+      <image:loc>https://anchorwebco.com.au/img/bh-lock.webp</image:loc>
+      <image:title>BH Lock and Security - Featured Work</image:title>
     </image:image>
   </url>
 
@@ -21,7 +19,6 @@
     <image:image>
       <image:loc>https://anchorwebco.com.au/img/og-image.webp</image:loc>
       <image:title>About Anchor Web Co.</image:title>
-      <image:caption>Learn about our website development and SEO expertise</image:caption>
     </image:image>
   </url>
 
@@ -30,16 +27,6 @@
     <image:image>
       <image:loc>https://anchorwebco.com.au/img/og-image.webp</image:loc>
       <image:title>Website Design & SEO Blog</image:title>
-      <image:caption>Expert tips for local businesses in Queensland</image:caption>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://anchorwebco.com.au/index.html</loc>
-    <image:image>
-      <image:loc>https://anchorwebco.com.au/img/bh-lock.webp</image:loc>
-      <image:title>BH Lock and Security - Featured Work</image:title>
-      <image:caption>Complete website development and SEO services for this trusted local security business</image:caption>
     </image:image>
   </url>
 
