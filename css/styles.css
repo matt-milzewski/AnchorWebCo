@@ -40,9 +40,20 @@
     }
 
     .btn-primary {
-        @apply inline-block bg-anchor-navy text-white px-8 py-4 rounded-lg font-bold text-lg uppercase tracking-wide
-               hover:bg-coast-sky hover:text-anchor-navy hover:scale-105 transition-all duration-200 shadow-xl
-               hover:shadow-2xl transform hover:-translate-y-1 border-2 border-anchor-navy;
+        background-color: #f59e42;
+        color: #fff;
+        font-weight: 600;
+        padding: 0.75rem 2rem;
+        border-radius: 0.5rem;
+        transition: background 0.2s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        display: inline-block;
+    }
+
+    .btn-primary:hover, .btn-primary:focus {
+        background-color: #d97706;
+        color: #fff;
+        outline: none;
     }
 
     .cta-container {
