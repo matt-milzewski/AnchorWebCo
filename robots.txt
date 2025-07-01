@@ -1,4 +1,37 @@
+# Robots.txt for Anchor Web Co.
+# Website: https://anchorwebco.com.au
+
 User-agent: *
 Allow: /
 
-Sitemap: https://anchorwebco.com.au/sitemap.xml 
+# Allow crawling of all important pages
+Allow: /about
+Allow: /blog
+Allow: /contact
+Allow: /blog-local-seo-hervey-bay
+Allow: /blog-website-design-sunshine-coast
+Allow: /blog-brisbane-business-seo
+Allow: /blog-mobile-first-design
+Allow: /blog-google-my-business-optimization
+Allow: /blog-website-speed-optimization
+
+# Allow crawling of assets
+Allow: /css/
+Allow: /js/
+Allow: /img/
+Allow: /icons/
+
+# Disallow crawling of unnecessary files
+Disallow: /css/*.map
+Disallow: /js/*.map
+Disallow: /*.json$
+Disallow: /*.txt$
+Disallow: /_headers
+
+# Crawl delay (optional - helps with server load)
+Crawl-delay: 1
+
+# Sitemap locations
+Sitemap: https://anchorwebco.com.au/sitemap.xml
+Sitemap: https://anchorwebco.com.au/sitemap-blog.xml
+Sitemap: https://anchorwebco.com.au/sitemap-images.xml 

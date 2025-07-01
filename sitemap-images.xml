@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <url>
+    <loc>https://anchorwebco.com.au/</loc>
+    <image:image>
+      <image:loc>https://anchorwebco.com.au/img/og-image.webp</image:loc>
+      <image:title>Anchor Web Co. - Website Development & SEO Services</image:title>
+      <image:caption>Professional website development and SEO services for Hervey Bay, Sunshine Coast, and Brisbane businesses</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://anchorwebco.com.au/img/fraser-coast.webp</image:loc>
+      <image:title>Fraser Coast Region</image:title>
+      <image:caption>Beautiful Fraser Coast region where we provide local SEO services</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://anchorwebco.com.au/about</loc>
+    <image:image>
+      <image:loc>https://anchorwebco.com.au/img/og-image.webp</image:loc>
+      <image:title>About Anchor Web Co.</image:title>
+      <image:caption>Learn about our website development and SEO expertise</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://anchorwebco.com.au/blog</loc>
+    <image:image>
+      <image:loc>https://anchorwebco.com.au/img/og-image.webp</image:loc>
+      <image:title>Website Design & SEO Blog</image:title>
+      <image:caption>Expert tips for local businesses in Queensland</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://anchorwebco.com.au/index.html</loc>
+    <image:image>
+      <image:loc>https://anchorwebco.com.au/img/bh-lock.webp</image:loc>
+      <image:title>BH Lock and Security - Featured Work</image:title>
+      <image:caption>Complete website development and SEO services for this trusted local security business</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://anchorwebco.com.au/icons/favicon-180.png</loc>
+    <image:image>
+      <image:loc>https://anchorwebco.com.au/icons/favicon-180.png</image:loc>
+      <image:title>Anchor Web Co. Favicon</image:title>
+      <image:caption>Anchor Web Co. brand icon</image:caption>
+    </image:image>
+  </url>
+
+</urlset> 

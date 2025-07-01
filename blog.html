@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Website design and SEO blog - Expert tips for Hervey Bay, Sunshine Coast & Brisbane businesses. Learn about local SEO, web design trends, and digital marketing strategies.">
+    <link rel="canonical" href="https://anchorwebco.com.au/blog" />
+    <link rel="icon" type="image/png" sizes="180x180" href="icons/favicon-180.png">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://anchorwebco.com.au/blog">
+    <meta property="og:title" content="Website Design & SEO Blog | Anchor Web Co.">
+    <meta property="og:description" content="Website design and SEO blog - Expert tips for Hervey Bay, Sunshine Coast & Brisbane businesses. Learn about local SEO, web design trends, and digital marketing strategies.">
+    <meta property="og:image" content="https://anchorwebco.com.au/img/og-image.webp">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://anchorwebco.com.au/blog">
+    <meta property="twitter:title" content="Website Design & SEO Blog | Anchor Web Co.">
+    <meta property="twitter:description" content="Website design and SEO blog - Expert tips for Hervey Bay, Sunshine Coast & Brisbane businesses. Learn about local SEO, web design trends, and digital marketing strategies.">
+    <meta property="twitter:image" content="https://anchorwebco.com.au/img/og-image.webp">
+
+    <title>Website Design & SEO Blog | Anchor Web Co.</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'anchor-navy': '#1f2937',
+                        'coast-sky': '#38bdf8',
+                        'sand-beige': '#f2f2f0',
+                        'dark-text': '#111827'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Smooth Scroll Polyfill -->
+    <script src="https://unpkg.com/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js"></script>
+</head>
+<body class="bg-sand-beige text-dark-text font-roboto">
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-white shadow-md z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-poppins font-bold text-anchor-navy">Anchor Web Co.</a>
+            <button id="mobile-menu-button" class="md:hidden" aria-label="Toggle menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="blog.html" class="nav-link active">Blog</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="contact.html" class="nav-button">Get a Quote Now</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 z-50 bg-white bg-opacity-95 flex-col items-center justify-center space-y-8 text-2xl font-poppins font-bold hidden transition-all duration-300">
+        <button id="mobile-menu-close" class="absolute top-6 right-6 text-4xl text-anchor-navy" aria-label="Close menu">&times;</button>
+        <nav class="flex flex-col items-center space-y-8 mt-12">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="blog.html" class="nav-link active">Blog</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </nav>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 md:pt-32 md:pb-24">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl">
+                <h1 class="text-4xl md:text-6xl font-poppins font-bold text-anchor-navy mb-4">
+                    Website Design & SEO Blog
+                </h1>
+                <p class="text-xl md:text-2xl text-coast-sky mb-6">Expert Tips for Local Businesses</p>
+                <p class="text-lg mb-8">Discover the latest trends in website design and SEO strategies tailored for Hervey Bay, Sunshine Coast, and Brisbane businesses.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Posts Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Blog Post 1 -->
+                <article class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="text-sm text-coast-sky mb-2">January 27, 2025</div>
+                        <h2 class="text-xl font-poppins font-bold mb-3">
+                            <a href="blog-local-seo-hervey-bay.html" class="text-anchor-navy hover:text-coast-sky">Local SEO Strategies for Hervey Bay Businesses</a>
+                        </h2>
+                        <p class="text-gray-600 mb-4">Discover proven local SEO techniques that can help your Hervey Bay business rank higher in local search results and attract more customers from the Fraser Coast region.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">5 min read</span>
+                            <a href="blog-local-seo-hervey-bay.html" class="text-coast-sky hover:text-anchor-navy font-medium">Read More →</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Blog Post 2 -->
+                <article class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="text-sm text-coast-sky mb-2">January 25, 2025</div>
+                        <h2 class="text-xl font-poppins font-bold mb-3">
+                            <a href="blog-website-design-sunshine-coast.html" class="text-anchor-navy hover:text-coast-sky">Website Design Trends for Sunshine Coast Tourism</a>
+                        </h2>
+                        <p class="text-gray-600 mb-4">Explore the latest website design trends that are helping Sunshine Coast tourism businesses attract more visitors and increase bookings in 2025.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">7 min read</span>
+                            <a href="blog-website-design-sunshine-coast.html" class="text-coast-sky hover:text-anchor-navy font-medium">Read More →</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Blog Post 3 -->
+                <article class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="text-sm text-coast-sky mb-2">January 23, 2025</div>
+                        <h2 class="text-xl font-poppins font-bold mb-3">
+                            <a href="blog-brisbane-business-seo.html" class="text-anchor-navy hover:text-coast-sky">Brisbane Business SEO: Getting Found Online</a>
+                        </h2>
+                        <p class="text-gray-600 mb-4">Learn how Brisbane businesses can improve their online visibility with effective SEO strategies that work in the competitive Queensland capital market.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">6 min read</span>
+                            <a href="blog-brisbane-business-seo.html" class="text-coast-sky hover:text-anchor-navy font-medium">Read More →</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Blog Post 4 -->
+                <article class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="text-sm text-coast-sky mb-2">January 21, 2025</div>
+                        <h2 class="text-xl font-poppins font-bold mb-3">
+                            <a href="blog-mobile-first-design.html" class="text-anchor-navy hover:text-coast-sky">Mobile-First Website Design: Why It Matters</a>
+                        </h2>
+                        <p class="text-gray-600 mb-4">Understand why mobile-first website design is crucial for Queensland businesses and how it impacts your SEO rankings and user experience.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">8 min read</span>
+                            <a href="blog-mobile-first-design.html" class="text-coast-sky hover:text-anchor-navy font-medium">Read More →</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Blog Post 5 -->
+                <article class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="text-sm text-coast-sky mb-2">January 19, 2025</div>
+                        <h2 class="text-xl font-poppins font-bold mb-3">
+                            <a href="blog-google-my-business-optimization.html" class="text-anchor-navy hover:text-coast-sky">Google My Business Optimization for Local SEO</a>
+                        </h2>
+                        <p class="text-gray-600 mb-4">Master Google My Business optimization to improve your local search rankings in Hervey Bay, Sunshine Coast, and Brisbane markets.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">4 min read</span>
+                            <a href="blog-google-my-business-optimization.html" class="text-coast-sky hover:text-anchor-navy font-medium">Read More →</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Blog Post 6 -->
+                <article class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="text-sm text-coast-sky mb-2">January 17, 2025</div>
+                        <h2 class="text-xl font-poppins font-bold mb-3">
+                            <a href="blog-website-speed-optimization.html" class="text-anchor-navy hover:text-coast-sky">Website Speed Optimization for Better Rankings</a>
+                        </h2>
+                        <p class="text-gray-600 mb-4">Learn how website speed affects your SEO rankings and discover practical tips to improve your site's loading times for better user experience.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">6 min read</span>
+                            <a href="blog-website-speed-optimization.html" class="text-coast-sky hover:text-anchor-navy font-medium">Read More →</a>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Post Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-poppins font-bold text-center mb-12">Featured Article</h2>
+            <div class="max-w-4xl mx-auto">
+                <article class="bg-sand-beige rounded-lg p-8">
+                    <div class="text-sm text-coast-sky mb-2">January 15, 2025</div>
+                    <h3 class="text-2xl font-poppins font-bold mb-4">
+                        <a href="#" class="text-anchor-navy hover:text-coast-sky">Complete Guide to Website Design for Queensland Small Businesses</a>
+                    </h3>
+                    <p class="text-lg text-gray-700 mb-6">A comprehensive guide covering everything Queensland small businesses need to know about website design, from choosing the right platform to optimizing for local search results. Learn how to create a website that not only looks great but also helps you attract customers in Hervey Bay, Sunshine Coast, and Brisbane.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">12 min read</span>
+                        <a href="#" class="btn-primary">Read Full Article</a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-poppins font-bold mb-6">Ready to Improve Your Website?</h2>
+            <p class="text-lg mb-8">Get expert website design and SEO services tailored for your local business.</p>
+            <a href="contact.html" class="btn-primary">Get Your Free Site Audit</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-anchor-navy text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-poppins font-bold mb-4">Anchor Web Co.</h3>
+                    <p class="text-white">Websites that keep your business grounded.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-poppins font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="text-white hover:text-coast-sky">Home</a></li>
+                        <li><a href="about.html" class="text-white hover:text-coast-sky">About</a></li>
+                        <li><a href="blog.html" class="text-white hover:text-coast-sky">Blog</a></li>
+                        <li><a href="contact.html" class="text-white hover:text-coast-sky">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-poppins font-bold mb-4">Connect</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white hover:text-coast-sky" aria-label="Facebook">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center text-sm">
+                <p class="text-white">&copy; 2025 Anchor Web Co. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js" defer></script>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WZ5NKEMPNH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WZ5NKEMPNH');
+    </script>
+</body>
+</html> 
