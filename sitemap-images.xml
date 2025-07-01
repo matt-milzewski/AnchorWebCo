@@ -8,6 +8,10 @@
       <image:loc>https://anchorwebco.com.au/img/og-image.webp</image:loc>
       <image:title>Anchor Web Co. - Website Development & SEO Services</image:title>
     </image:image>
+  </url>
+
+  <url>
+    <loc>https://anchorwebco.com.au/portfolio</loc>
     <image:image>
       <image:loc>https://anchorwebco.com.au/img/bh-lock.webp</image:loc>
       <image:title>BH Lock and Security - Featured Work</image:title>
@@ -27,15 +31,6 @@
     <image:image>
       <image:loc>https://anchorwebco.com.au/img/og-image.webp</image:loc>
       <image:title>Website Design & SEO Blog</image:title>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://anchorwebco.com.au/icons/favicon-180.png</loc>
-    <image:image>
-      <image:loc>https://anchorwebco.com.au/icons/favicon-180.png</image:loc>
-      <image:title>Anchor Web Co. Favicon</image:title>
-      <image:caption>Anchor Web Co. brand icon</image:caption>
     </image:image>
   </url>
 
