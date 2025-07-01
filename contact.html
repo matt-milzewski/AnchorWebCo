@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact Anchor Web Co. for website development and SEO services in Hervey Bay, Sunshine Coast & Brisbane. Call 0439 499 944 or email info@anchorwebco.com.au">
+    <link rel="canonical" href="https://anchorwebco.com.au/contact" />
+    <link rel="icon" type="image/png" sizes="180x180" href="icons/favicon-180.png">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://anchorwebco.com.au/contact">
+    <meta property="og:title" content="Contact Us | Anchor Web Co.">
+    <meta property="og:description" content="Contact Anchor Web Co. for website development and SEO services in Hervey Bay, Sunshine Coast & Brisbane. Call 0439 499 944 or email info@anchorwebco.com.au">
+    <meta property="og:image" content="https://anchorwebco.com.au/img/og-image.webp">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://anchorwebco.com.au/contact">
+    <meta property="twitter:title" content="Contact Us | Anchor Web Co.">
+    <meta property="twitter:description" content="Contact Anchor Web Co. for website development and SEO services in Hervey Bay, Sunshine Coast & Brisbane. Call 0439 499 944 or email info@anchorwebco.com.au">
+    <meta property="twitter:image" content="https://anchorwebco.com.au/img/og-image.webp">
+
+    <title>Contact Us | Anchor Web Co.</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'anchor-navy': '#1f2937',
+                        'coast-sky': '#38bdf8',
+                        'sand-beige': '#f2f2f0',
+                        'dark-text': '#111827'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Smooth Scroll Polyfill -->
+    <script src="https://unpkg.com/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js"></script>
+</head>
+<body class="bg-sand-beige text-dark-text font-roboto">
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-white shadow-md z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-poppins font-bold text-anchor-navy">Anchor Web Co.</a>
+            <button id="mobile-menu-button" class="md:hidden" aria-label="Toggle menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link active">Contact</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 z-50 bg-white bg-opacity-95 flex-col items-center justify-center space-y-8 text-2xl font-poppins font-bold hidden transition-all duration-300">
+        <button id="mobile-menu-close" class="absolute top-6 right-6 text-4xl text-anchor-navy" aria-label="Close menu">&times;</button>
+        <nav class="flex flex-col items-center space-y-8 mt-12">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="contact.html" class="nav-link active">Contact</a>
+        </nav>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 md:pt-32 md:pb-24">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl">
+                <h1 class="text-4xl md:text-6xl font-poppins font-bold text-anchor-navy mb-4">
+                    Get in Touch
+                </h1>
+                <p class="text-xl md:text-2xl text-coast-sky mb-6">Ready to Start Your Project?</p>
+                <p class="text-lg mb-8">Let's discuss how we can help your business grow online with a professional website and expert SEO services.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-8">
+                <form id="contact-form" class="space-y-4">
+                    <div>
+                        <label for="name" class="block mb-2">Name</label>
+                        <input type="text" id="name" name="name" required class="w-full p-2 border rounded" autocomplete="name">
+                    </div>
+                    <div>
+                        <label for="email" class="block mb-2">Email</label>
+                        <input type="email" id="email" name="email" required class="w-full p-2 border rounded" autocomplete="email">
+                    </div>
+                    <div>
+                        <label for="phone" class="block mb-2">Phone</label>
+                        <input type="tel" id="phone" name="phone" class="w-full p-2 border rounded" autocomplete="tel">
+                    </div>
+                    <div>
+                        <label for="message" class="block mb-2">Message</label>
+                        <textarea id="message" name="message" required class="w-full p-2 border rounded h-32" autocomplete="off"></textarea>
+                    </div>
+                    <!-- Honeypot field for spam protection -->
+                    <div class="hidden">
+                        <input type="text" name="company" tabindex="-1" autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn-primary">Send Message</button>
+                </form>
+                <div>
+                    <div class="mb-8">
+                        <h3 class="text-xl font-poppins font-bold mb-4">Contact Details</h3>
+                        <p class="mb-2">📞 0439 499 944</p>
+                        <p class="mb-2">📧 info@anchorwebco.com.au</p>
+                        <p class="mb-4">📍 Maryborough, QLD</p>
+                    </div>
+                    <div class="map-container">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3539.992675715926!2d152.7053153150566!3d-25.5399999837895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b9c5b5b5b5b5b5b%3A0x5b5b5b5b5b5b5b5b!2sMaryborough%20QLD!5e0!3m2!1sen!2sau!4v1620000000000!5m2!1sen!2sau"
+                            width="100%"
+                            height="300"
+                            style="border:0;"
+                            allowfullscreen=""
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-anchor-navy text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-poppins font-bold mb-4">Anchor Web Co.</h3>
+                    <p class="text-white">Websites that keep your business grounded.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-poppins font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="text-white hover:text-coast-sky">Home</a></li>
+                        <li><a href="about.html" class="text-white hover:text-coast-sky">About</a></li>
+                        <li><a href="contact.html" class="text-white hover:text-coast-sky">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-poppins font-bold mb-4">Connect</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white hover:text-coast-sky" aria-label="Facebook">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center text-sm">
+                <p class="text-white">&copy; 2025 Anchor Web Co. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js" defer></script>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WZ5NKEMPNH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WZ5NKEMPNH');
+    </script>
+</body>
+</html> 
