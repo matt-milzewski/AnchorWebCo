@@ -36,7 +36,11 @@
     }
 
     .nav-link {
-        @apply text-[#1f2937] hover:text-[#38bdf8] transition-colors duration-200;
+        @apply text-anchor-navy hover:text-coast-sky transition-colors duration-200 font-medium;
+    }
+
+    .nav-link.active {
+        @apply text-coast-sky font-semibold;
     }
 
     .btn-primary {
@@ -76,6 +80,25 @@
 
     .testimonial {
         @apply bg-white p-6 rounded-lg shadow-md mb-4;
+    }
+
+    .nav-button {
+        background-color: #f59e42;
+        color: #fff;
+        font-weight: 600;
+        padding: 0.5rem 1.5rem;
+        border-radius: 0.5rem;
+        transition: background 0.2s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        display: inline-block;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+
+    .nav-button:hover, .nav-button:focus {
+        background-color: #d97706;
+        color: #fff;
+        outline: none;
     }
 }
 
