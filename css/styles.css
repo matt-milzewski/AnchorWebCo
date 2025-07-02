@@ -102,8 +102,8 @@
     }
 
     .contact-submit-btn {
-        background-color: #f59e42;
-        color: #fff;
+        background-color: #f59e42 !important;
+        color: #fff !important;
         font-size: 1.25rem;
         font-weight: 700;
         padding: 1rem 2.5rem;
@@ -114,8 +114,8 @@
     }
 
     .contact-submit-btn:hover, .contact-submit-btn:focus {
-        background-color: #d97706;
-        color: #fff;
+        background-color: #d97706 !important;
+        color: #fff !important;
         outline: none;
         transform: scale(1.05);
         box-shadow: 0 6px 24px rgba(217, 119, 6, 0.25), 0 4px 16px rgba(0,0,0,0.12);
