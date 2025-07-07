@@ -21,38 +21,43 @@ mobileMenuLinks.forEach(link => link.addEventListener('click', closeMobileMenu))
 // Scroll to Top Button
 const scrollTopButton = document.getElementById('scroll-top');
 
-window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 400) {
-        scrollTopButton.classList.add('visible');
-    } else {
-        scrollTopButton.classList.remove('visible');
-    }
-});
-
-scrollTopButton.addEventListener('click', () => {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
+if (scrollTopButton) {
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 400) {
+            scrollTopButton.classList.add('visible');
+        } else {
+            scrollTopButton.classList.remove('visible');
+        }
     });
-});
+
+    scrollTopButton.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
 
 // Testimonial Carousel
 const testimonials = document.querySelectorAll('.testimonial');
-let currentTestimonial = 0;
 
-function showTestimonial(index) {
-    testimonials.forEach((testimonial, i) => {
-        testimonial.classList.toggle('active', i === index);
-    });
+if (testimonials.length > 0) {
+    let currentTestimonial = 0;
+
+    function showTestimonial(index) {
+        testimonials.forEach((testimonial, i) => {
+            testimonial.classList.toggle('active', i === index);
+        });
+    }
+
+    function nextTestimonial() {
+        currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+        showTestimonial(currentTestimonial);
+    }
+
+    // Auto-rotate testimonials every 5 seconds
+    setInterval(nextTestimonial, 5000);
 }
-
-function nextTestimonial() {
-    currentTestimonial = (currentTestimonial + 1) % testimonials.length;
-    showTestimonial(currentTestimonial);
-}
-
-// Auto-rotate testimonials every 5 seconds
-setInterval(nextTestimonial, 5000);
 
 // Form Validation and Submission
 const contactForm = document.getElementById('contact-form');
@@ -203,24 +208,29 @@ const observer = new IntersectionObserver((entries) => {
 }, observerOptions);
 
 // Observe elements for animation
-document.querySelectorAll('.service-card, .process-step').forEach(element => {
-    observer.observe(element);
-});
+const animatedElements = document.querySelectorAll('.service-card, .process-step');
+if (animatedElements.length > 0) {
+    animatedElements.forEach(element => {
+        observer.observe(element);
+    });
+}
 
 // Lazy Loading Images
 document.addEventListener('DOMContentLoaded', () => {
     const lazyImages = document.querySelectorAll('img[data-src]');
     
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                img.src = img.dataset.src;
-                img.removeAttribute('data-src');
-                observer.unobserve(img);
-            }
+    if (lazyImages.length > 0) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.removeAttribute('data-src');
+                    observer.unobserve(img);
+                }
+            });
         });
-    });
 
-    lazyImages.forEach(img => imageObserver.observe(img));
+        lazyImages.forEach(img => imageObserver.observe(img));
+    }
 }); 
