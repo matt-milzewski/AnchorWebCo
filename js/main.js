@@ -124,16 +124,34 @@ if (contactForm) {
 
         async function submitFormToFormspree() {
             try {
+                // Create form data object
                 const formData = new FormData(contactForm);
+                const formDataObj = {};
+                formData.forEach((value, key) => {
+                    formDataObj[key] = value;
+                });
+                
+                console.log('Sending form data to Formspree:', formDataObj);
                 const response = await fetch('https://formspree.io/f/xdkgalak', {
                     method: 'POST',
-                    body: formData,
-                    headers: { 'Accept': 'application/json' }
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formDataObj)
                 });
 
                 if (response.ok) {
-                    // Redirect to thank you page
-                    window.location.href = 'thank-you.html';
+                    console.log('Form submitted successfully, redirecting to thank you page...');
+                    // Redirect to thank you page immediately
+                    window.location.replace('thank-you.html');
+                    
+                    // Fallback redirect in case the above doesn't work
+                    setTimeout(() => {
+                        if (window.location.pathname !== '/thank-you.html') {
+                            window.location.href = 'thank-you.html';
+                        }
+                    }, 1000);
                 } else {
                     const data = await response.json();
                     throw new Error(data.error || 'Failed to send message');
