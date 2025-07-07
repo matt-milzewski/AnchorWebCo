@@ -57,70 +57,100 @@ setInterval(nextTestimonial, 5000);
 // Form Validation and Submission
 const contactForm = document.getElementById('contact-form');
 
-contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    // Honeypot validation - if company field is filled, it's likely spam
-    const companyField = document.querySelector('input[name="company"]');
-    if (companyField && companyField.value.trim()) {
-        // Silently reject spam submissions
-        console.log('Spam submission detected and rejected');
-        return;
-    }
-
-    // Basic form validation
-    const name = document.getElementById('name').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const message = document.getElementById('message').value.trim();
-
-    // Email validation regex
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
-    // Phone validation regex (Australian format)
-    const phoneRegex = /^(\+61|0)[2-478]\d{8}$/;
-
-    if (!name || !email || !message) {
-        showToast('Please fill in all required fields', 'error');
-        return;
-    }
-
-    if (!emailRegex.test(email)) {
-        showToast('Please enter a valid email address', 'error');
-        return;
-    }
-
-    if (phone && !phoneRegex.test(phone)) {
-        showToast('Please enter a valid Australian phone number', 'error');
-        return;
-    }
-
-    try {
-        // Replace with your Formspree endpoint
-        const response = await fetch('https://formspree.io/f/xdkgalak', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name,
-                email,
-                phone,
-                message
-            })
-        });
-
-        if (response.ok) {
-            showToast('Message sent successfully!', 'success');
-            contactForm.reset();
-        } else {
-            throw new Error('Failed to send message');
+        // Honeypot validation - if company field is filled, it's likely spam
+        const companyField = document.querySelector('input[name="company"]');
+        if (companyField && companyField.value.trim()) {
+            // Silently reject spam submissions
+            console.log('Spam submission detected and rejected');
+            return;
         }
-    } catch (error) {
-        showToast('Error sending message. Please try again later.', 'error');
-        console.error('Form submission error:', error);
-    }
-});
+
+        // Basic form validation
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const message = document.getElementById('message').value.trim();
+
+        // Email validation regex
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        // Phone validation regex (Australian format)
+        const phoneRegex = /^(\+61|0)[2-478]\d{8}$/;
+
+        if (!name || !email || !message) {
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+
+        if (!emailRegex.test(email)) {
+            showToast('Please enter a valid email address', 'error');
+            return;
+        }
+
+        if (phone && !phoneRegex.test(phone)) {
+            showToast('Please enter a valid Australian phone number', 'error');
+            return;
+        }
+
+        // Show loading state
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.textContent = 'Sending...';
+        submitButton.disabled = true;
+
+        try {
+            // Send Google Analytics event
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'conversion_event_submit_lead_form', {
+                    'event_callback': function() {
+                        // Continue with form submission after GA event
+                        submitFormToFormspree();
+                    },
+                    'event_timeout': 2000
+                });
+            } else {
+                // If GA is not available, submit directly
+                submitFormToFormspree();
+            }
+        } catch (error) {
+            showToast('Error sending message. Please try again later.', 'error');
+            console.error('Form submission error:', error);
+            resetSubmitButton();
+        }
+
+        async function submitFormToFormspree() {
+            try {
+                const formData = new FormData(contactForm);
+                const response = await fetch('https://formspree.io/f/xdkgalak', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (response.ok) {
+                    // Redirect to thank you page
+                    window.location.href = 'thank-you.html';
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to send message');
+                }
+            } catch (error) {
+                showToast('Error sending message. Please try again later.', 'error');
+                console.error('Form submission error:', error);
+                resetSubmitButton();
+            }
+        }
+
+        function resetSubmitButton() {
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+        }
+    });
+}
 
 // Toast Notification
 function showToast(message, type = 'info') {

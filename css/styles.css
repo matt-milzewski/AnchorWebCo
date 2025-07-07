@@ -120,6 +120,24 @@
         transform: scale(1.05);
         box-shadow: 0 6px 24px rgba(217, 119, 6, 0.25), 0 4px 16px rgba(0,0,0,0.12);
     }
+
+    .btn-secondary {
+        background-color: transparent;
+        color: #1f2937;
+        font-weight: 600;
+        padding: 0.75rem 2rem;
+        border-radius: 0.5rem;
+        border: 2px solid #1f2937;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        display: inline-block;
+    }
+
+    .btn-secondary:hover, .btn-secondary:focus {
+        background-color: #1f2937;
+        color: #fff;
+        outline: none;
+    }
 }
 
 /* Animations */
