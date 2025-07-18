@@ -27,7 +27,6 @@ jobs:
             --exclude ".github/*" \
             --exclude "README.md" \
             --exclude "bucket-policy.json" \
-            --acl public-read \
             --delete
 
       - name: Invalidate CloudFront cache
