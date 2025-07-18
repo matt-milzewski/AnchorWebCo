@@ -39,28 +39,31 @@ A modern, mobile-friendly marketing website for Anchor Web Co., a boutique web-d
 
 1. Create an S3 bucket:
    ```bash
-   aws s3 mb s3://anchorweb.co
+   aws s3 mb s3://anchorwebco.com.au
    ```
 
-2. Configure the bucket for static website hosting:
+2. Set bucket policy for public access:
    ```bash
-   aws s3 website s3://anchorweb.co --index-document index.html --error-document index.html
+   aws s3api put-bucket-policy --bucket anchorwebco.com.au --policy file://bucket-policy.json
    ```
 
-3. Set bucket policy for public access:
+3. Manual deployment (sync local files to S3):
    ```bash
-   aws s3api put-bucket-policy --bucket anchorweb.co --policy file://bucket-policy.json
+   aws s3 sync . s3://anchorwebco.com.au \
+     --exclude ".git/*" \
+     --exclude ".github/*" \
+     --exclude "README.md" \
+     --exclude "bucket-policy.json" \
+     --acl public-read \
+     --delete
    ```
 
-4. Sync local files to S3:
-   ```bash
-   aws s3 sync . s3://anchorweb.co --exclude "*.git/*" --exclude "README.md" --exclude "bucket-policy.json"
-   ```
+4. Automated deployment happens via GitHub Actions on push to main branch.
 
-5. Configure CloudFront (optional, for better performance):
-   ```bash
-   aws cloudfront create-distribution --origin-domain-name anchorweb.co.s3-website-ap-southeast-2.amazonaws.com
-   ```
+5. CloudFront distribution is already configured with:
+   - Custom domain: `www.anchorwebco.com.au`
+   - SSL certificate for HTTPS
+   - Viewer request function for redirects
 
 ## Development
 
@@ -95,7 +98,50 @@ A modern, mobile-friendly marketing website for Anchor Web Co., a boutique web-d
 
 ## Analytics
 
-Google Analytics 4 is ready to be configured. Uncomment the GA script in `index.html` and replace `G-XXXXXXXXXX` with your tracking ID.
+Google Analytics 4 is configured with tracking ID `G-WZ5NKEMPNH`.
+
+## Deployment › SEO Checks
+
+### URL Accessibility Testing
+
+Run the automated smoke test to verify all URLs return proper status codes:
+
+```bash
+npm run test:crawl
+```
+
+This script tests:
+- All main pages (home, about, contact, blog, etc.)
+- HTTP→HTTPS redirects  
+- Non-www→www redirects
+- Proper 200/301 status codes
+
+### Google Search Console Validation
+
+After deployment, request re-indexing in Google Search Console:
+
+1. Go to [Google Search Console](https://search.google.com/search-console)
+2. Select your property: `https://www.anchorwebco.com.au`
+3. Use the URL Inspection tool for each affected URL
+4. Click "REQUEST INDEXING" for pages that need validation
+
+### CloudFront Configuration
+
+For HTTP→HTTPS and non-www→www redirects, deploy the CloudFront function:
+
+1. Copy the code from `cloudfront-function.js`
+2. Create a new CloudFront Function in AWS Console
+3. Associate it with the viewer-request event on your distribution
+4. Test and publish the function
+
+### Affected URLs
+
+These URLs were previously returning 403 errors and are now fixed:
+- `/blog-hervey-bay-seo-company`
+- `/about`
+- `/contact` 
+- `/thank-you`
+- All blog posts
 
 ## License
 

@@ -1,0 +1,11 @@
+{
+  "name": "anchor-web-co-website",
+  "version": "1.0.0",
+  "description": "Anchor Web Co. website - static SPA",
+  "scripts": {
+    "test:crawl": "node test-crawl.js"
+  },
+  "keywords": ["website", "seo", "static"],
+  "author": "Anchor Web Co.",
+  "license": "MIT"
+}

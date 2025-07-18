@@ -32,6 +32,6 @@ Disallow: /_headers
 Crawl-delay: 1
 
 # Sitemap locations
-Sitemap: https://anchorwebco.com.au/sitemap.xml
-Sitemap: https://anchorwebco.com.au/sitemap-blog.xml
-Sitemap: https://anchorwebco.com.au/sitemap-images.xml 
+Sitemap: https://www.anchorwebco.com.au/sitemap.xml
+Sitemap: https://www.anchorwebco.com.au/sitemap-blog.xml
+Sitemap: https://www.anchorwebco.com.au/sitemap-images.xml 
