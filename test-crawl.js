@@ -22,6 +22,7 @@ const urls = [
   'https://www.anchorwebco.com.au/blog-mobile-first-design',
   'https://www.anchorwebco.com.au/blog-google-my-business-optimization',
   'https://www.anchorwebco.com.au/blog-website-speed-optimization',
+  'https://www.anchorwebco.com.au/blog-seo-hervey-bay-fraser-coast',
   'http://anchorwebco.com.au/', // Test HTTP redirect
   'https://anchorwebco.com.au/', // Test non-www redirect
 ];

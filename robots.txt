@@ -14,6 +14,7 @@ Allow: /blog-brisbane-business-seo
 Allow: /blog-mobile-first-design
 Allow: /blog-google-my-business-optimization
 Allow: /blog-website-speed-optimization
+Allow: /blog-seo-hervey-bay-fraser-coast
 
 # Allow crawling of assets
 Allow: /css/
