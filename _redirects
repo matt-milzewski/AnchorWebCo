@@ -1,0 +1,33 @@
+# Force HTTPS and www redirect - highest priority
+http://anchorwebco.com.au/* https://www.anchorwebco.com.au/:splat 301!
+http://www.anchorwebco.com.au/* https://www.anchorwebco.com.au/:splat 301!
+https://anchorwebco.com.au/* https://www.anchorwebco.com.au/:splat 301!
+
+# Handle index.html redirects to root
+https://www.anchorwebco.com.au/index.html https://www.anchorwebco.com.au/ 301!
+/index.html / 301!
+
+# Redirect extensionless URLs to .html files
+/about /about.html 200
+/contact /contact.html 200
+/thank-you /thank-you.html 200
+
+# Blog posts - redirect extensionless URLs to .html files
+/blog-website-design-guide /blog-website-design-guide.html 200
+/blog-hervey-bay-seo-company /blog-hervey-bay-seo-company.html 200
+/blog-brisbane-business-seo /blog-brisbane-business-seo.html 200
+/blog-google-my-business-optimization /blog-google-my-business-optimization.html 200
+/blog-local-seo-hervey-bay /blog-local-seo-hervey-bay.html 200
+/blog-mobile-first-design /blog-mobile-first-design.html 200
+/blog-website-design-sunshine-coast /blog-website-design-sunshine-coast.html 200
+/blog-website-speed-optimization /blog-website-speed-optimization.html 200
+/blog-seo-hervey-bay-fraser-coast /blog-seo-hervey-bay-fraser-coast.html 200
+/blog-tradies-websites-more-jobs /blog-tradies-websites-more-jobs.html 200
+
+# Handle some common variations that might be indexed
+/blog-google-my-business /blog-google-my-business-optimization.html 200
+/blog-website-speed /blog-website-speed-optimization.html 200
+/blog-brisbane-seo /blog-brisbane-business-seo.html 301
+
+# Catch-all for any other extensionless URLs - try adding .html
+/* /:splat.html 200
