@@ -33,6 +33,17 @@ function handler(event) {
         };
     }
     
+    // Collapse duplicate URLs so crawlers index the canonical variants
+    if (uri === '/index.html') {
+        return {
+            statusCode: 301,
+            statusDescription: 'Moved Permanently',
+            headers: {
+                'location': { value: 'https://www.anchorwebco.com.au/' }
+            }
+        };
+    }
+    
     // Handle legacy blog slugs so S3 never receives missing keys
     redirects = {
         '/blog-brisbane-seo': '/blog-brisbane-business-seo',
@@ -50,11 +61,26 @@ function handler(event) {
         };
     }
     
-    // Default root object handling
-    if (uri.endsWith('/')) {
-        request.uri = uri + 'index.html';
-    } else if (!uri.includes('.')) {
-        request.uri = uri + '.html';
+    // Default root object handling / canonical redirects
+    if (uri === '/') {
+        request.uri = '/index.html';
+    } else if (uri.endsWith('/')) {
+        var trimmed = uri.slice(0, -1);
+        return {
+            statusCode: 301,
+            statusDescription: 'Moved Permanently',
+            headers: {
+                'location': { value: 'https://www.anchorwebco.com.au' + trimmed + '.html' }
+            }
+        };
+    } else if (uri !== '/' && !uri.includes('.')) {
+        return {
+            statusCode: 301,
+            statusDescription: 'Moved Permanently',
+            headers: {
+                'location': { value: 'https://www.anchorwebco.com.au' + uri + '.html' }
+            }
+        };
     }
     
     return request;
