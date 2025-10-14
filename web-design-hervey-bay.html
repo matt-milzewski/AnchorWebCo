@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Web Design Hervey Bay. Local website designer delivering fast, SEO-ready sites for Fraser Coast businesses with fixed pricing and ongoing care.">
+    <link rel="canonical" href="https://www.anchorwebco.com.au/web-design-hervey-bay.html" />
+    <link rel="icon" type="image/png" sizes="180x180" href="icons/favicon-180.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.anchorwebco.com.au/web-design-hervey-bay.html">
+    <meta property="og:title" content="Web Design Hervey Bay | Anchor Web Co.">
+    <meta property="og:description" content="Fraser Coast web design studio delivering modern, SEO-ready websites. Fixed pricing, local support, and care plans.">
+    <meta property="og:image" content="https://www.anchorwebco.com.au/img/og-image.webp">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.anchorwebco.com.au/web-design-hervey-bay.html">
+    <meta property="twitter:title" content="Web Design Hervey Bay | Anchor Web Co.">
+    <meta property="twitter:description" content="Fraser Coast web design studio delivering modern, SEO-ready websites. Fixed pricing, local support, and care plans.">
+    <meta property="twitter:image" content="https://www.anchorwebco.com.au/img/og-image.webp">
+
+    <title>Web Design Hervey Bay | Local Website Designer for Fraser Coast</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'anchor-navy': '#1f2937',
+                        'coast-sky': '#38bdf8',
+                        'sand-beige': '#f2f2f0',
+                        'dark-text': '#111827'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Smooth Scroll Polyfill -->
+    <script src="https://unpkg.com/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js"></script>
+</head>
+<body class="bg-sand-beige text-dark-text font-roboto">
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-white shadow-md z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-poppins font-bold text-anchor-navy">Anchor Web Co.</a>
+            <button id="mobile-menu-button" class="md:hidden" aria-label="Toggle menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="web-design-hervey-bay.html" class="nav-link active">Web Design</a>
+                <a href="seo-hervey-bay.html" class="nav-link">SEO</a>
+                <a href="blog.html" class="nav-link">Blog</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="contact.html" class="nav-button">Get a Quote Now</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 z-50 bg-white bg-opacity-95 flex-col items-center justify-center space-y-8 text-2xl font-poppins font-bold hidden transition-all duration-300">
+        <button id="mobile-menu-close" class="absolute top-6 right-6 text-4xl text-anchor-navy" aria-label="Close menu">&times;</button>
+        <nav class="flex flex-col items-center space-y-8 mt-12">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="web-design-hervey-bay.html" class="nav-link active">Web Design</a>
+            <a href="seo-hervey-bay.html" class="nav-link">SEO</a>
+            <a href="blog.html" class="nav-link">Blog</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </nav>
+    </div>
+
+    <main>
+        <!-- Hero -->
+        <section class="pt-24 pb-16 md:pt-32 md:pb-24 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-3xl">
+                    <p class="text-sm uppercase tracking-wide text-coast-sky mb-2">Fraser Coast Web Studio</p>
+                    <h1 class="text-4xl md:text-6xl font-poppins font-bold text-anchor-navy mb-4">Web Design Hervey Bay</h1>
+                    <p class="text-xl md:text-2xl text-coast-sky mb-6">Local websites that launch fast and rank locally.</p>
+                    <p class="text-lg mb-8">Anchor Web Co. builds conversion-focused websites for Hervey Bay businesses. Every design is mobile-ready, SEO-friendly, and supported by a team that understands Fraser Coast customers.</p>
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <a href="contact.html" class="btn-primary">Book Your Free Discovery Call</a>
+                        <p class="text-sm text-gray-600">Get a tailored plan in 48 hours.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Problem -->
+        <section class="py-16 bg-sand-beige">
+            <div class="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl font-poppins font-bold mb-6">Your Hervey Bay Website Should Be Working Harder</h2>
+                    <p class="mb-4">Template sites and offshore builds rarely convert local customers. Slow load times, unclear offers, and missing SEO basics cost Hervey Bay businesses leads every week.</p>
+                    <p class="mb-4">You deserve a partner who understands Fraser Coast search trends, tourism seasonality, and tradie requirements. We map every build to competitive keywords like <strong>web design Hervey Bay</strong> and <strong>web designer Hervey Bay</strong> so your site shows up for local intent searches.</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <h3 class="text-xl font-poppins font-bold mb-4">What we see most often</h3>
+                    <ul class="space-y-3 list-disc list-inside text-gray-700">
+                        <li>No clear call-to-action or pricing guidance for Fraser Coast customers.</li>
+                        <li>Missing Google Business Profile connection and location signals.</li>
+                        <li>Slow hosting and oversized images killing mobile performance.</li>
+                        <li>Zero maintenance plan, so the site breaks right before peak season.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Offer -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-5xl mx-auto text-center mb-12">
+                    <h2 class="text-3xl font-poppins font-bold mb-4">Websites Built For Fraser Coast Growth</h2>
+                    <p>We combine modern design, conversion copy, and technical SEO to give Hervey Bay businesses a website that drives enquiries from day one.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="service-card">
+                        <div class="text-4xl mb-4">🚀</div>
+                        <h3 class="text-xl font-poppins font-bold mb-2">Fixed-Price Builds</h3>
+                        <p>Transparent packages scoped around your services. No hidden costs, no template clones.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="text-4xl mb-4">📈</div>
+                        <h3 class="text-xl font-poppins font-bold mb-2">SEO-Ready Content</h3>
+                        <p>Page copy structured for <strong>website design Hervey Bay</strong>, Fraser Coast searches, and Google Business Profile integration.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="text-4xl mb-4">🤝</div>
+                        <h3 class="text-xl font-poppins font-bold mb-2">Local Support</h3>
+                        <p>Work directly with a Hervey Bay web designer who provides training, updates, and care plans.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Process -->
+        <section class="py-16 bg-sand-beige">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto text-center mb-12">
+                    <h2 class="text-3xl font-poppins font-bold mb-4">Our 4-Step Launch Plan</h2>
+                    <p>Designed for busy Fraser Coast business owners who want a modern website without the guesswork.</p>
+                </div>
+                <div class="grid md:grid-cols-4 gap-8">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <p class="text-coast-sky font-poppins font-bold text-sm uppercase mb-2">01</p>
+                        <h3 class="text-xl font-poppins font-bold mb-3">Strategy Call</h3>
+                        <p>We map your services, target suburbs like Pialba and Scarness, and define outcomes.</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <p class="text-coast-sky font-poppins font-bold text-sm uppercase mb-2">02</p>
+                        <h3 class="text-xl font-poppins font-bold mb-3">UX & Copy</h3>
+                        <p>Wireframes and copywriting built around local SEO keywords and conversion prompts.</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <p class="text-coast-sky font-poppins font-bold text-sm uppercase mb-2">03</p>
+                        <h3 class="text-xl font-poppins font-bold mb-3">Development</h3>
+                        <p>Lightweight, fast builds on WordPress or static stacks with schema, tracking, and integrations.</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <p class="text-coast-sky font-poppins font-bold text-sm uppercase mb-2">04</p>
+                        <h3 class="text-xl font-poppins font-bold mb-3">Launch & Care</h3>
+                        <p>Local citations, Google Business Profile updates, and optional maintenance for peace of mind.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto text-center mb-12">
+                    <h2 class="text-3xl font-poppins font-bold mb-4">Recent Fraser Coast Projects</h2>
+                    <p>Real results for local businesses across Hervey Bay and the broader Fraser Coast region.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-sand-beige rounded-lg shadow-lg p-6">
+                        <h3 class="text-xl font-poppins font-bold mb-2">BH Lock & Security</h3>
+                        <p class="text-sm text-gray-600 mb-3">Maryborough, QLD</p>
+                        <p class="mb-4">Website redesign, SEO, and conversion tracking to capture locksmith enquiries from Pialba to Urangan.</p>
+                        <a href="https://www.bhlockandsecurity.com/" target="_blank" rel="noopener noreferrer" class="text-coast-sky font-medium hover:underline">View project</a>
+                    </div>
+                    <div class="bg-sand-beige rounded-lg shadow-lg p-6">
+                        <h3 class="text-xl font-poppins font-bold mb-2">Maryborough Mowerman</h3>
+                        <p class="text-sm text-gray-600 mb-3">Maryborough & Hervey Bay, QLD</p>
+                        <p class="mb-4">Service pages and booking funnels built to rank for lawn and garden maintenance searches.</p>
+                        <a href="https://maryboroughmowerman.com.au/" target="_blank" rel="noopener noreferrer" class="text-coast-sky font-medium hover:underline">View project</a>
+                    </div>
+                    <div class="bg-sand-beige rounded-lg shadow-lg p-6">
+                        <h3 class="text-xl font-poppins font-bold mb-2">Bannister Communications</h3>
+                        <p class="text-sm text-gray-600 mb-3">Fraser Coast & Wide Bay, QLD</p>
+                        <p class="mb-4">Fast static build with SEO targeting security camera installation keywords across the Fraser Coast.</p>
+                        <a href="contact.html" class="text-coast-sky font-medium hover:underline">Request case study</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQs -->
+        <section class="py-16 bg-sand-beige">
+            <div class="container mx-auto px-4">
+                <div class="max-w-3xl mx-auto text-center mb-12">
+                    <h2 class="text-3xl font-poppins font-bold mb-4">Hervey Bay Web Design FAQs</h2>
+                    <p>Answers to what local business owners ask before we begin.</p>
+                </div>
+                <div class="space-y-6 max-w-3xl mx-auto">
+                    <div class="bg-white rounded-lg shadow-md p-6 text-left">
+                        <h3 class="text-xl font-poppins font-bold mb-2">How much does a Hervey Bay website cost?</h3>
+                        <p class="text-gray-700">Most projects land between $2,400 and $4,800 depending on integrations and content volume. You get a fixed proposal up front so you know exactly what is included.</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-left">
+                        <h3 class="text-xl font-poppins font-bold mb-2">Do you include SEO in the build?</h3>
+                        <p class="text-gray-700">Yes. Every site includes on-page SEO for keywords like <strong>web design Hervey Bay</strong>, metadata, schema, and Google Business Profile integration to support local rankings.</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-left">
+                        <h3 class="text-xl font-poppins font-bold mb-2">Can you migrate my existing WordPress site?</h3>
+                        <p class="text-gray-700">We can redesign and migrate your current WordPress build or move you to a streamlined stack that loads faster and is easier to maintain.</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-left">
+                        <h3 class="text-xl font-poppins font-bold mb-2">Do you offer maintenance plans?</h3>
+                        <p class="text-gray-700">Absolutely. Choose from monthly or quarterly care plans that handle updates, backups, uptime monitoring, and SEO tune-ups.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto text-center bg-anchor-navy text-white rounded-2xl p-12 shadow-xl">
+                    <h2 class="text-3xl font-poppins font-bold mb-4">Ready to launch your Hervey Bay website?</h2>
+                    <p class="mb-8">Book a free 15-minute call and we will map out your design, SEO, and timeline this week.</p>
+                    <div class="flex flex-col sm:flex-row sm:justify-center gap-4">
+                        <a href="contact.html" class="btn-secondary">Claim Your Free Site Audit</a>
+                        <a href="blog-hervey-bay-seo-company.html" class="btn-outline">See how local SEO boosts results</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-anchor-navy text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-poppins font-bold mb-4">Anchor Web Co.</h3>
+                    <p class="text-white">Websites that keep your business grounded.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-poppins font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="text-white hover:text-coast-sky">Home</a></li>
+                        <li><a href="about.html" class="text-white hover:text-coast-sky">About</a></li>
+                        <li><a href="web-design-hervey-bay.html" class="text-white hover:text-coast-sky">Web Design Hervey Bay</a></li>
+                        <li><a href="seo-hervey-bay.html" class="text-white hover:text-coast-sky">SEO Hervey Bay</a></li>
+                        <li><a href="blog.html" class="text-white hover:text-coast-sky">Blog</a></li>
+                        <li><a href="contact.html" class="text-white hover:text-coast-sky">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-poppins font-bold mb-4">Connect</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white hover:text-coast-sky" aria-label="Facebook">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    <p class="mt-4">📞 <a href="tel:+61439499944" class="text-white hover:text-coast-sky">0439 499 944</a></p>
+                    <p>📧 <a href="mailto:info@anchorwebco.com.au" class="text-white hover:text-coast-sky">info@anchorwebco.com.au</a></p>
+                    <p>📍 Maryborough, QLD 4650</p>
+                </div>
+            </div>
+            <div class="mt-8 text-center text-sm">
+                <p class="text-white">&copy; 2025 Anchor Web Co. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js" defer></script>
+
+    <!-- Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Anchor Web Co.",
+      "image": "https://www.anchorwebco.com.au/img/og-image.webp",
+      "url": "https://www.anchorwebco.com.au/web-design-hervey-bay.html",
+      "telephone": "+61-439-499-944",
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Maryborough QLD",
+        "addressLocality": "Maryborough",
+        "addressRegion": "QLD",
+        "postalCode": "4650",
+        "addressCountry": "AU"
+      },
+      "areaServed": ["Hervey Bay", "Fraser Coast", "Maryborough"],
+      "sameAs": [
+        "https://www.anchorwebco.com.au/"
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How much does a Hervey Bay website cost?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most web design projects land between $2,400 and $4,800 depending on integrations and content volume. You receive a fixed proposal before work begins so you know exactly what is included."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do you include SEO in the build?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Every site includes on-page SEO for keywords like web design Hervey Bay, metadata, schema, and Google Business Profile integration to support local rankings."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can you migrate my existing WordPress site?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We can redesign and migrate your current WordPress build or move you to a streamlined stack that loads faster and is easier to maintain."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do you offer maintenance plans?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, you can choose from monthly or quarterly care plans that handle updates, backups, uptime monitoring, and SEO tune-ups."
+          }
+        }
+      ]
+    }
+    </script>
+</body>
+</html>
