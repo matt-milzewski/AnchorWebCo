@@ -98,7 +98,7 @@ A modern, mobile-friendly marketing website for Anchor Web Co., a boutique web-d
 
 ## Analytics
 
-Google Analytics 4 is configured with tracking ID `G-WZ5NKEMPNH`.
+Google Ads conversion tracking is configured with tag ID `AW-16766129889`.
 
 ## Deployment › SEO Checks
 

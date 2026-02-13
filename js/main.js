@@ -1,22 +1,30 @@
-// Mobile Menu Toggle (Rebuilt)
+// Initialize smooth scroll polyfill when loaded.
+if (window.smoothscroll && typeof window.smoothscroll.polyfill === 'function') {
+    window.smoothscroll.polyfill();
+}
+
+// Mobile Menu Toggle
 const mobileMenu = document.getElementById('mobile-menu');
 const mobileMenuButton = document.getElementById('mobile-menu-button');
 const mobileMenuClose = document.getElementById('mobile-menu-close');
-const mobileMenuLinks = mobileMenu.querySelectorAll('a');
 
-function openMobileMenu() {
-    mobileMenu.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+if (mobileMenu && mobileMenuButton && mobileMenuClose) {
+    const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+
+    function openMobileMenu() {
+        mobileMenu.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+        mobileMenu.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    mobileMenuButton.addEventListener('click', openMobileMenu);
+    mobileMenuClose.addEventListener('click', closeMobileMenu);
+    mobileMenuLinks.forEach((link) => link.addEventListener('click', closeMobileMenu));
 }
-
-function closeMobileMenu() {
-    mobileMenu.classList.add('hidden');
-    document.body.style.overflow = '';
-}
-
-mobileMenuButton.addEventListener('click', openMobileMenu);
-mobileMenuClose.addEventListener('click', closeMobileMenu);
-mobileMenuLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
 
 // Scroll to Top Button
 const scrollTopButton = document.getElementById('scroll-top');
@@ -24,9 +32,11 @@ const scrollTopButton = document.getElementById('scroll-top');
 if (scrollTopButton) {
     window.addEventListener('scroll', () => {
         if (window.pageYOffset > 400) {
+            scrollTopButton.classList.remove('hidden');
             scrollTopButton.classList.add('visible');
         } else {
             scrollTopButton.classList.remove('visible');
+            scrollTopButton.classList.add('hidden');
         }
     });
 
@@ -39,9 +49,12 @@ if (scrollTopButton) {
 }
 
 // Testimonial Carousel
+const testimonialCarousel = document.querySelector('.testimonial-carousel');
 const testimonials = document.querySelectorAll('.testimonial');
 
-if (testimonials.length > 0) {
+if (testimonialCarousel && testimonials.length > 0) {
+    document.documentElement.classList.add('js-enabled');
+
     let currentTestimonial = 0;
 
     function showTestimonial(index) {
@@ -55,8 +68,12 @@ if (testimonials.length > 0) {
         showTestimonial(currentTestimonial);
     }
 
-    // Auto-rotate testimonials every 5 seconds
-    setInterval(nextTestimonial, 5000);
+    // Ensure a testimonial is visible immediately on page load.
+    showTestimonial(currentTestimonial);
+
+    if (testimonials.length > 1) {
+        setInterval(nextTestimonial, 5000);
+    }
 }
 
 // Form Validation and Submission
@@ -69,8 +86,6 @@ if (contactForm) {
         // Honeypot validation - if company field is filled, it's likely spam
         const companyField = document.querySelector('input[name="company"]');
         if (companyField && companyField.value.trim()) {
-            // Silently reject spam submissions
-            console.log('Spam submission detected and rejected');
             return;
         }
 
@@ -82,7 +97,7 @@ if (contactForm) {
 
         // Email validation regex
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        
+
         // Phone validation regex (Australian format)
         const phoneRegex = /^(\+61|0)[2-478]\d{8}$/;
 
@@ -108,17 +123,15 @@ if (contactForm) {
         submitButton.disabled = true;
 
         try {
-            // Send Google Analytics event
+            // Send Google Ads conversion event first, then submit.
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'conversion_event_submit_lead_form', {
-                    'event_callback': function() {
-                        // Continue with form submission after GA event
+                    event_callback: function () {
                         submitFormToFormspree();
                     },
-                    'event_timeout': 2000
+                    event_timeout: 2000
                 });
             } else {
-                // If GA is not available, submit directly
                 submitFormToFormspree();
             }
         } catch (error) {
@@ -129,29 +142,24 @@ if (contactForm) {
 
         async function submitFormToFormspree() {
             try {
-                // Create form data object
                 const formData = new FormData(contactForm);
                 const formDataObj = {};
                 formData.forEach((value, key) => {
                     formDataObj[key] = value;
                 });
-                
-                console.log('Sending form data to Formspree:', formDataObj);
+
                 const response = await fetch('https://formspree.io/f/xdkgalak', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        Accept: 'application/json'
                     },
                     body: JSON.stringify(formDataObj)
                 });
 
                 if (response.ok) {
-                    console.log('Form submitted successfully, redirecting to thank you page...');
-                    // Redirect to thank you page immediately
                     window.location.replace('thank-you.html');
-                    
-                    // Fallback redirect in case the above doesn't work
+
                     setTimeout(() => {
                         if (window.location.pathname !== '/thank-you.html') {
                             window.location.href = 'thank-you.html';
@@ -179,8 +187,8 @@ if (contactForm) {
 function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg text-white ${
-        type === 'success' ? 'bg-green-500' : 
-        type === 'error' ? 'bg-red-500' : 
+        type === 'success' ? 'bg-green-500' :
+        type === 'error' ? 'bg-red-500' :
         'bg-anchor-navy'
     } animate-fade-in`;
     toast.textContent = message;
@@ -191,46 +199,48 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-// Intersection Observer for Animations
-const observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.1
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('animate-slide-up');
-            observer.unobserve(entry.target);
-        }
-    });
-}, observerOptions);
-
-// Observe elements for animation
+// Intersection Observer for animations
 const animatedElements = document.querySelectorAll('.service-card, .process-step');
-if (animatedElements.length > 0) {
-    animatedElements.forEach(element => {
+
+if (animatedElements.length > 0 && 'IntersectionObserver' in window) {
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-slide-up');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    animatedElements.forEach((element) => {
         observer.observe(element);
     });
 }
 
-// Lazy Loading Images
+// Lazy loading images with data-src
 document.addEventListener('DOMContentLoaded', () => {
     const lazyImages = document.querySelectorAll('img[data-src]');
-    
-    if (lazyImages.length > 0) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.removeAttribute('data-src');
-                    observer.unobserve(img);
-                }
-            });
-        });
 
-        lazyImages.forEach(img => imageObserver.observe(img));
+    if (lazyImages.length === 0 || !('IntersectionObserver' in window)) {
+        return;
     }
-}); 
+
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+                observer.unobserve(img);
+            }
+        });
+    });
+
+    lazyImages.forEach((img) => imageObserver.observe(img));
+});
