@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.anchorwebco.com.au/schemas/health-check-response.schema.json",
+  "title": "Website Health Check Response",
+  "type": "object",
+  "required": [
+    "run_id",
+    "created_at",
+    "website_url",
+    "overall_score",
+    "category_scores",
+    "strategy_scores",
+    "mobile_score",
+    "desktop_score",
+    "core_web_vitals",
+    "top_fixes",
+    "extra_checks",
+    "email_sent",
+    "saved",
+    "warnings"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "website_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "overall_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "category_scores": {
+      "$ref": "#/$defs/scoreBreakdown"
+    },
+    "strategy_scores": {
+      "type": "object",
+      "required": ["mobile", "desktop"],
+      "properties": {
+        "mobile": {
+          "$ref": "#/$defs/scoreBreakdown"
+        },
+        "desktop": {
+          "$ref": "#/$defs/scoreBreakdown"
+        }
+      }
+    },
+    "mobile_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "desktop_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "core_web_vitals": {
+      "type": "object",
+      "required": ["source", "lcp", "cls", "inp"],
+      "properties": {
+        "source": {
+          "type": ["string", "null"]
+        },
+        "lcp": {
+          "$ref": "#/$defs/vitalMetric"
+        },
+        "cls": {
+          "$ref": "#/$defs/vitalMetric"
+        },
+        "inp": {
+          "$ref": "#/$defs/vitalMetric"
+        }
+      }
+    },
+    "top_fixes": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "string"
+      }
+    },
+    "extra_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "passed", "recommendation"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "recommendation": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "email_sent": {
+      "type": "boolean"
+    },
+    "saved": {
+      "type": "boolean"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "scoreBreakdown": {
+      "type": "object",
+      "required": ["performance", "seo", "best_practices", "accessibility"],
+      "properties": {
+        "performance": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "seo": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "best_practices": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "accessibility": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "vitalMetric": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": ["percentile", "category"],
+          "properties": {
+            "percentile": {
+              "type": "number"
+            },
+            "category": {
+              "type": ["string", "null"]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -60,6 +60,11 @@ function handler(event) {
             }
         };
     }
+
+    // Do not rewrite API routes. They should pass through to the API origin.
+    if (uri.indexOf('/api/') === 0) {
+        return request;
+    }
     
     // Default root object handling / canonical redirects
     if (uri === '/') {

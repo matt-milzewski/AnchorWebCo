@@ -1,0 +1,31 @@
+aws_region   = "ap-southeast-2"
+project_name = "anchor-health-check"
+environment  = "prod"
+
+allowed_origins = [
+  "https://www.anchorwebco.com.au",
+  "https://anchorwebco.com.au"
+]
+
+pagespeed_api_key_parameter_name = "/anchor-web-co/health-check/pagespeed-api-key"
+runs_table_name                  = "health_check_runs"
+rate_limit_table_name            = "health_check_rate_limits"
+
+lambda_memory_mb        = 1024
+lambda_timeout_seconds  = 45
+pagespeed_timeout_ms    = 18000
+
+api_rate_limit          = 5
+api_burst_limit         = 10
+per_ip_max_requests     = 10
+per_ip_window_seconds   = 3600
+
+enable_ses_email        = true
+ses_from_email          = "noreply@anchorwebco.com.au"
+
+log_retention_days      = 30
+
+# Optional tags
+# tags = {
+#   Owner = "AnchorWebCo"
+# }

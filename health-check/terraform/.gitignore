@@ -1,0 +1,5 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+health-check-lambda.zip

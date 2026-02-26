@@ -1,0 +1,18 @@
+{
+  "name": "anchor-health-check-lambda",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lambda for Anchor Web Co website health checks",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "commonjs",
+  "scripts": {
+    "lint": "node --check index.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.918.0",
+    "@aws-sdk/client-sesv2": "^3.918.0",
+    "@aws-sdk/client-ssm": "^3.918.0",
+    "@aws-sdk/lib-dynamodb": "^3.918.0"
+  }
+}

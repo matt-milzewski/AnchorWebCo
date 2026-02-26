@@ -27,13 +27,29 @@ A modern, mobile-friendly marketing website for Anchor Web Co., a boutique web-d
 ```
 /
 ├── index.html          # Main HTML file
+├── health-check.html   # Website Health Check page
 ├── css/
 │   └── styles.css      # Custom styles and Tailwind configuration
 ├── js/
-│   └── main.js         # JavaScript functionality
+│   ├── main.js         # Site-wide JavaScript functionality
+│   └── health-check.js # Health Check form and report rendering
+├── health-check/
+│   ├── lambda/         # Lambda source for /api/health-check
+│   ├── terraform/      # Terraform for API Gateway, Lambda, IAM, DynamoDB, SSM
+│   └── README.md       # Deployment and setup guide
 ├── img/                # Image assets
 └── icons/              # SVG icons
 ```
+
+## Website Health Check
+
+This repo now includes a complete Health Check MVP:
+- Frontend page: `/health-check.html`
+- Backend endpoint: `POST /api/health-check`
+- Infrastructure: Terraform under `health-check/terraform`
+
+Deployment and setup instructions are in:
+- `health-check/README.md`
 
 ## Deployment to AWS S3
 

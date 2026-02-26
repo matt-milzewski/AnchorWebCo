@@ -25,6 +25,7 @@ const urls = [
   'https://www.anchorwebco.com.au/blog-google-my-business-optimization',
   'https://www.anchorwebco.com.au/blog-website-speed-optimization',
   'https://www.anchorwebco.com.au/blog-seo-hervey-bay-fraser-coast',
+  'https://www.anchorwebco.com.au/health-check',
   'https://www.anchorwebco.com.au/web-design-hervey-bay',
   'https://www.anchorwebco.com.au/web-design-hervey-bay.html',
   'https://www.anchorwebco.com.au/seo-hervey-bay',
@@ -33,6 +34,7 @@ const urls = [
   'https://www.anchorwebco.com.au/contact.html',
   'https://www.anchorwebco.com.au/thank-you.html',
   'https://www.anchorwebco.com.au/blog.html',
+  'https://www.anchorwebco.com.au/health-check.html',
   'https://www.anchorwebco.com.au/blog-tradies-websites-more-jobs.html',
   'https://www.anchorwebco.com.au/blog-website-design-guide.html',
   'http://anchorwebco.com.au/', // Test HTTP redirect
