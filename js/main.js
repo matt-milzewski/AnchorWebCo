@@ -3,6 +3,11 @@ if (window.smoothscroll && typeof window.smoothscroll.polyfill === 'function') {
     window.smoothscroll.polyfill();
 }
 
+// Dynamic copyright year
+document.querySelectorAll('.copyright-year').forEach(function(el) {
+    el.textContent = new Date().getFullYear();
+});
+
 // Mobile Menu Toggle
 const mobileMenu = document.getElementById('mobile-menu');
 const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -75,6 +80,22 @@ if (testimonialCarousel && testimonials.length > 0) {
         setInterval(nextTestimonial, 5000);
     }
 }
+
+// Reading Progress Bar (auto-injects on blog/article pages)
+(function() {
+    if (!/blog-/.test(window.location.pathname)) return;
+
+    var progressBar = document.createElement('div');
+    progressBar.id = 'reading-progress';
+    progressBar.style.cssText = 'position:fixed;top:0;left:0;height:3px;width:0;background:#38bdf8;z-index:9999;transition:width 0.1s linear;pointer-events:none;';
+    document.body.prepend(progressBar);
+
+    window.addEventListener('scroll', function() {
+        var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        var scrolled = docHeight > 0 ? (window.pageYOffset / docHeight) * 100 : 0;
+        progressBar.style.width = Math.min(scrolled, 100) + '%';
+    });
+})();
 
 // Form Validation and Submission
 const contactForm = document.getElementById('contact-form');

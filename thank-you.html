@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Thank you for contacting Anchor Web Co. We'll be in touch soon about your website development and SEO needs.">
+    <meta name="robots" content="noindex, follow">
     <link rel="canonical" href="https://www.anchorwebco.com.au/thank-you.html" />
     <link rel="icon" type="image/png" sizes="180x180" href="icons/favicon-180.png">
     
@@ -52,6 +53,7 @@
     <script src="https://unpkg.com/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js"></script>
 </head>
 <body class="bg-sand-beige text-dark-text font-roboto">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-anchor-navy focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg">Skip to main content</a>
     <!-- Navigation -->
     <nav class="fixed w-full bg-white shadow-md z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -87,7 +89,7 @@
     </div>
 
     <!-- Thank You Hero Section -->
-    <section class="pt-24 pb-16 md:pt-32 md:pb-24">
+    <section id="main-content" class="pt-24 pb-16 md:pt-32 md:pb-24">
         <div class="container mx-auto px-4">
             <div class="max-w-3xl mx-auto text-center">
                 <div class="mb-8">
@@ -114,15 +116,15 @@
                         <div class="w-16 h-16 bg-coast-sky rounded-full flex items-center justify-center mx-auto mb-4">
                             <span class="text-white font-bold text-xl">1</span>
                         </div>
-                        <h3 class="text-xl font-poppins font-bold mb-2">We'll Review Your Project</h3>
-                        <p class="text-gray-600">Our team will carefully review your requirements and prepare a personalized proposal.</p>
+                        <h3 class="text-xl font-poppins font-bold mb-2">We'll Review Your Enquiry Within 2 Hours</h3>
+                        <p class="text-gray-600">Matt will review your details and reach out within 2 business hours (Mon–Fri, 9AM–5PM AEST).</p>
                     </div>
                     <div class="text-center">
                         <div class="w-16 h-16 bg-coast-sky rounded-full flex items-center justify-center mx-auto mb-4">
                             <span class="text-white font-bold text-xl">2</span>
                         </div>
-                        <h3 class="text-xl font-poppins font-bold mb-2">Schedule a Consultation</h3>
-                        <p class="text-gray-600">We'll reach out to schedule a free consultation to discuss your project in detail.</p>
+                        <h3 class="text-xl font-poppins font-bold mb-2">Skip the Wait — Book Directly</h3>
+                        <p class="text-gray-600">Prefer to lock in a time right now? <a href="contact.html" class="text-coast-sky hover:underline">Use our contact form</a> to request a specific day and time.</p>
                     </div>
                     <div class="text-center">
                         <div class="w-16 h-16 bg-coast-sky rounded-full flex items-center justify-center mx-auto mb-4">
@@ -131,6 +133,32 @@
                         <h3 class="text-xl font-poppins font-bold mb-2">Get Started</h3>
                         <p class="text-gray-600">Once we're aligned on your goals, we'll begin crafting your perfect website.</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources while you wait -->
+    <section class="py-12 bg-sand-beige">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-2xl font-poppins font-bold text-anchor-navy mb-6">While You Wait — Useful Resources</h2>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <a href="blog-local-seo-hervey-bay.html" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition text-left block">
+                        <h3 class="font-poppins font-bold mb-2 text-anchor-navy">Local SEO Guide</h3>
+                        <p class="text-gray-600 text-sm">How Fraser Coast businesses rank higher in Google searches.</p>
+                        <p class="text-coast-sky font-medium mt-3 text-sm">Read guide →</p>
+                    </a>
+                    <a href="blog-tradies-websites-more-jobs.html" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition text-left block">
+                        <h3 class="font-poppins font-bold mb-2 text-anchor-navy">Tradie Leads Playbook</h3>
+                        <p class="text-gray-600 text-sm">How tradies fill the pipeline with the right website and SEO.</p>
+                        <p class="text-coast-sky font-medium mt-3 text-sm">Read playbook →</p>
+                    </a>
+                    <a href="blog-google-my-business-optimization.html" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition text-left block">
+                        <h3 class="font-poppins font-bold mb-2 text-anchor-navy">Google Business Profile Tips</h3>
+                        <p class="text-gray-600 text-sm">Quick wins for your Google Business Profile this week.</p>
+                        <p class="text-coast-sky font-medium mt-3 text-sm">Read tips →</p>
+                    </a>
                 </div>
             </div>
         </div>
@@ -188,14 +216,14 @@
                 </div>
             </div>
             <div class="mt-8 text-center text-sm">
-                <p class="text-white">&copy; 2026 Anchor Web Co. All rights reserved.</p>
+                <p class="text-white">&copy; <span class="copyright-year">2026</span> Anchor Web Co. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <!-- JavaScript -->
     <script src="js/main.js" defer></script>
-    
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16766129889"></script>
     <script>
@@ -205,5 +233,15 @@
 
       gtag('config', 'AW-16766129889');
     </script>
+
+    <!-- WhatsApp Chat Button -->
+    <a href="https://wa.me/61439499944" target="_blank" rel="noopener noreferrer"
+       class="fixed bottom-4 left-4 z-50 bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-lg transition-all duration-200"
+       aria-label="Chat with us on WhatsApp"
+       title="Chat on WhatsApp">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+    </a>
 </body>
-</html> 
+</html>
