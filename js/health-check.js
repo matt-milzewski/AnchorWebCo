@@ -12,6 +12,9 @@
     var progressEl = document.getElementById('health-check-progress');
     var errorEl = document.getElementById('health-check-error');
     var successEl = document.getElementById('health-check-success');
+    var isSubmitting = false;
+    var lastSubmission = null;
+    var duplicateSubmitWindowMs = 60000;
 
     var progressTimer = null;
     var progressMessages = [
@@ -36,21 +39,33 @@
     }
 
     function showError(message) {
+        if (!errorEl) {
+            return;
+        }
         errorEl.textContent = message;
         errorEl.classList.remove('hidden');
     }
 
     function clearError() {
+        if (!errorEl) {
+            return;
+        }
         errorEl.textContent = '';
         errorEl.classList.add('hidden');
     }
 
     function showSuccess(message) {
+        if (!successEl) {
+            return;
+        }
         successEl.textContent = message;
         successEl.classList.remove('hidden');
     }
 
     function clearSuccess() {
+        if (!successEl) {
+            return;
+        }
         successEl.textContent = '';
         successEl.classList.add('hidden');
     }
@@ -103,10 +118,14 @@
         submitButton.disabled = true;
 
         var index = 0;
-        progressEl.textContent = progressMessages[index];
+        if (progressEl) {
+            progressEl.textContent = progressMessages[index];
+        }
         progressTimer = setInterval(function() {
             index = (index + 1) % progressMessages.length;
-            progressEl.textContent = progressMessages[index];
+            if (progressEl) {
+                progressEl.textContent = progressMessages[index];
+            }
         }, 2500);
     }
 
@@ -118,7 +137,9 @@
 
         submitButton.textContent = submitButton.getAttribute('data-default-label') || 'Run Health Check';
         submitButton.disabled = false;
-        progressEl.textContent = message || '';
+        if (progressEl) {
+            progressEl.textContent = message || '';
+        }
     }
 
     async function fetchWithTimeout(url, options, timeoutMs) {
@@ -144,6 +165,9 @@
 
     form.addEventListener('submit', async function(event) {
         event.preventDefault();
+        if (isSubmitting) {
+            return;
+        }
 
         clearError();
         clearSuccess();
@@ -173,6 +197,18 @@
             return;
         }
 
+        var submissionKey = normalizedUrl.toLowerCase() + '|' + email.toLowerCase();
+        var now = Date.now();
+        if (lastSubmission && lastSubmission.key === submissionKey && (now - lastSubmission.at) < duplicateSubmitWindowMs) {
+            showError('This report request was just submitted. Please check your inbox before submitting again.');
+            return;
+        }
+
+        lastSubmission = {
+            key: submissionKey,
+            at: now
+        };
+        isSubmitting = true;
         startLoadingState();
 
         try {
@@ -221,12 +257,15 @@
             form.reset();
             updateConsentVisibility();
         } catch (err) {
+            lastSubmission = null;
             if (err.name === 'AbortError') {
                 showError('The health check timed out. Please retry in a moment.');
             } else {
                 showError(err.message || 'Health check failed. Please try again.');
             }
             stopLoadingState('');
+        } finally {
+            isSubmitting = false;
         }
     });
 })();
