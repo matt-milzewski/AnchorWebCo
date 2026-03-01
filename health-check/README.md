@@ -98,6 +98,31 @@ If you call API Gateway directly from browser, set:
 </script>
 ```
 
+### 5.6 Deploy from GitHub Actions
+
+If you prefer CI deployment, run:
+
+1. Open GitHub Actions
+2. Select `Deploy Health Check Infrastructure`
+3. Click `Run workflow`
+4. Choose:
+   - `plan` to preview changes
+   - `apply` to deploy changes
+
+Required GitHub repository secrets:
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`
+- `PAGESPEED_API_KEY`
+- `SES_FROM_EMAIL`
+
+The workflow will:
+- install Lambda dependencies
+- create or reuse Terraform backend state resources
+- run Terraform init/plan/apply
+- write `PAGESPEED_API_KEY` to SSM SecureString at `/anchor-web-co/health-check/pagespeed-api-key`
+- print the deployed API endpoint output
+
 ## 6) SES Setup Notes
 
 - Verify a sender identity or domain in SES for your region.
