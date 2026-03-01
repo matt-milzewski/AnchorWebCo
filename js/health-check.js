@@ -12,6 +12,10 @@
     var progressEl = document.getElementById('health-check-progress');
     var errorEl = document.getElementById('health-check-error');
     var successEl = document.getElementById('health-check-success');
+
+    if (!urlInput || !emailInput || !consentWrap || !consentCheckbox || !submitButton) {
+        return;
+    }
     var isSubmitting = false;
     var lastSubmission = null;
     var duplicateSubmitWindowMs = 60000;
