@@ -209,6 +209,7 @@ resource "aws_lambda_function" "health_check" {
       RATE_LIMIT_WINDOW_SECONDS = tostring(var.per_ip_window_seconds)
       ALLOWED_ORIGINS           = join(",", var.allowed_origins)
       SES_FROM_EMAIL            = var.enable_ses_email ? var.ses_from_email : ""
+      LEAD_NOTIFICATION_EMAIL   = var.enable_ses_email ? var.lead_notification_email : ""
       PAGESPEED_TIMEOUT_MS      = tostring(var.pagespeed_timeout_ms)
     }
   }

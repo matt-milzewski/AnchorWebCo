@@ -109,6 +109,12 @@ variable "ses_from_email" {
   default     = "noreply@anchorwebco.com.au"
 }
 
+variable "lead_notification_email" {
+  description = "Internal lead notification recipient email"
+  type        = string
+  default     = "info@anchorwebco.com.au"
+}
+
 variable "log_retention_days" {
   description = "CloudWatch log retention for Lambda logs"
   type        = number

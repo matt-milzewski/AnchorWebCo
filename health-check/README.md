@@ -1,10 +1,10 @@
 # Website Health Check MVP
 
-This adds a new static page at `/health-check` and a serverless backend that returns a scored report from Google PageSpeed Insights plus extra technical checks.
+This adds a new static page at `/health-check` and a serverless backend that runs a scored report from Google PageSpeed Insights plus extra technical checks.
 
 ## 1) Short Implementation Plan
 
-1. Add `/health-check.html` and `js/health-check.js` with URL/email form, consent toggle, loading state, and results rendering.
+1. Add `/health-check.html` and `js/health-check.js` with URL/email form, consent toggle, loading state, and email-only confirmation UX.
 2. Build a Lambda (`health-check/lambda/index.js`) that runs mobile + desktop PageSpeed checks, computes Anchor Web Score, builds Top 5 fixes, runs extra checks, and optionally sends SES email.
 3. Provision AWS resources via Terraform (`health-check/terraform`): Lambda, HTTP API route `POST /api/health-check`, IAM, SSM parameter, DynamoDB tables, throttling, and CORS.
 4. Update site navigation to include Health Check and allow `/api/*` through CloudFront rewrite logic.
@@ -12,11 +12,11 @@ This adds a new static page at `/health-check` and a serverless backend that ret
 
 ## 2) Architecture
 
-- Frontend: Static HTML/JS page at `/health-check.html`
+- Frontend: Static HTML/JS page at `/health-check.html` (no on-page report rendering)
 - API: API Gateway HTTP API + Lambda (`POST /api/health-check`)
 - External service: Google PageSpeed Insights API (mobile + desktop)
 - Storage: DynamoDB `health_check_runs` (report summary only), `health_check_rate_limits` (per-IP counters)
-- Email: SES (optional, only when email provided and consent checked)
+- Email: SES (required for user report email and internal lead notification)
 - Secret management: SSM Parameter Store SecureString for PageSpeed API key
 
 ## 3) Files Added
@@ -136,10 +136,20 @@ If this step is skipped, browser requests to `/api/health-check` can fail with:
 
 ## 6) SES Setup Notes
 
-- Verify a sender identity or domain in SES for your region.
-- If still in SES sandbox, also verify recipient emails.
-- `ses_from_email` must be verified.
-- Email subject is fixed: `Your Website Health Check Report`.
+To send real customer emails, SES must be fully configured in the same region as Lambda.
+
+1. Verify your domain identity in SES (recommended): `anchorwebco.com.au`
+2. Verify sender address used in Terraform/workflow (for example `info@anchorwebco.com.au`)
+3. Move SES out of sandbox (Production Access enabled)
+4. Ensure DNS verification records exist (DKIM and identity records)
+
+Current production failure symptom when SES is not configured:
+- `MessageRejected: Email address is not verified...`
+
+Email behavior in this MVP:
+- customer receives full report email
+- internal lead notification is sent to `lead_notification_email` (defaults to `info@anchorwebco.com.au`)
+- customer email subject: `Your Website Health Check Report`
 
 ## 7) API Contract
 
@@ -153,6 +163,11 @@ If this step is skipped, browser requests to `/api/health-check` can fail with:
   "email_consent": true
 }
 ```
+
+Notes:
+- `email` is required
+- `email_consent` must be `true`
+- frontend does not render scores on screen, it shows email confirmation only
 
 - Response schema: `health-check/response.schema.json`
 

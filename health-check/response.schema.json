@@ -16,8 +16,10 @@
     "top_fixes",
     "extra_checks",
     "email_sent",
+    "lead_notification_sent",
     "saved",
-    "warnings"
+    "warnings",
+    "message"
   ],
   "properties": {
     "run_id": {
@@ -112,6 +114,9 @@
     "email_sent": {
       "type": "boolean"
     },
+    "lead_notification_sent": {
+      "type": "boolean"
+    },
     "saved": {
       "type": "boolean"
     },
@@ -120,6 +125,9 @@
       "items": {
         "type": "string"
       }
+    },
+    "message": {
+      "type": "string"
     }
   },
   "$defs": {

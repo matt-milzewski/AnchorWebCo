@@ -94,7 +94,11 @@ exports.handler = async (event) => {
         const email = normalizeEmail(body.email);
         const emailConsent = Boolean(body.email_consent);
 
-        if (email && !emailConsent) {
+        if (!email) {
+            throw httpError(400, 'email is required to receive your report.');
+        }
+
+        if (!emailConsent) {
             throw httpError(400, 'Please provide consent to email the report.');
         }
 
@@ -139,22 +143,28 @@ exports.handler = async (event) => {
             top_fixes: topFixes,
             extra_checks: extraChecks,
             email_sent: false,
+            lead_notification_sent: false,
             saved: false,
             warnings: []
         };
 
         reportPayload.saved = await saveRun(reportPayload, email);
 
-        if (email && emailConsent) {
-            reportPayload.email_sent = await sendReportEmail(email, reportPayload);
-            if (!reportPayload.email_sent) {
-                reportPayload.warnings.push('We could not send the email report right now.');
-            }
+        reportPayload.email_sent = await sendReportEmail(email, reportPayload);
+        if (!reportPayload.email_sent) {
+            throw httpError(502, 'We could not send your report email right now. Please try again shortly.');
+        }
+
+        reportPayload.lead_notification_sent = await sendLeadNotificationEmail(email, reportPayload);
+        if (!reportPayload.lead_notification_sent) {
+            reportPayload.warnings.push('Lead notification email was not delivered.');
         }
 
         if (!reportPayload.saved) {
             reportPayload.warnings.push('Report storage is not configured or failed.');
         }
+
+        reportPayload.message = 'Success. Your report is being emailed now. Please check your inbox in the next minute.';
 
         return jsonResponse(200, reportPayload, corsOrigin);
     } catch (error) {
@@ -798,6 +808,48 @@ async function sendReportEmail(recipientEmail, reportPayload) {
     }
 }
 
+async function sendLeadNotificationEmail(prospectEmail, reportPayload) {
+    const senderEmail = process.env.SES_FROM_EMAIL;
+    const destinationEmail = (process.env.LEAD_NOTIFICATION_EMAIL || process.env.SES_FROM_EMAIL || '').trim();
+
+    if (!senderEmail || !destinationEmail) {
+        return false;
+    }
+
+    const subject = `New Website Health Check Lead: ${prospectEmail}`;
+    const html = buildLeadNotificationHtml(prospectEmail, reportPayload);
+    const text = buildLeadNotificationText(prospectEmail, reportPayload);
+
+    try {
+        await sesClient.send(new SendEmailCommand({
+            FromEmailAddress: senderEmail,
+            Destination: {
+                ToAddresses: [destinationEmail]
+            },
+            ReplyToAddresses: [prospectEmail],
+            Content: {
+                Simple: {
+                    Subject: {
+                        Data: subject
+                    },
+                    Body: {
+                        Html: {
+                            Data: html
+                        },
+                        Text: {
+                            Data: text
+                        }
+                    }
+                }
+            }
+        }));
+        return true;
+    } catch (error) {
+        console.error('Failed to send lead notification email:', error);
+        return false;
+    }
+}
+
 function buildEmailHtml(reportPayload) {
     const category = reportPayload.category_scores || {};
     const fixes = (reportPayload.top_fixes || []).map((fix) => `<li>${escapeHtml(fix)}</li>`).join('');
@@ -872,6 +924,93 @@ function buildEmailText(reportPayload) {
         '',
         'Need help implementing fixes?',
         'Contact Anchor Web Co: https://www.anchorwebco.com.au/contact.html'
+    ].join('\n');
+}
+
+function buildLeadNotificationHtml(prospectEmail, reportPayload) {
+    const category = reportPayload.category_scores || {};
+    const fixes = (reportPayload.top_fixes || []).map((fix) => `<li>${escapeHtml(fix)}</li>`).join('');
+    const extraChecks = (reportPayload.extra_checks || [])
+        .map((check) => `<li>${escapeHtml(check.label)}: <strong>${check.passed ? 'Pass' : 'Needs work'}</strong></li>`)
+        .join('');
+
+    return `
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>New Website Health Check Lead</title>
+</head>
+<body style="font-family:Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:0;padding:24px;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:680px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+    <tr>
+      <td style="background:#1f2937;color:#fff;padding:20px 24px;">
+        <h1 style="margin:0;font-size:22px;">New Website Health Check Lead</h1>
+        <p style="margin:8px 0 0 0;font-size:14px;color:#cbd5e1;">Reply to: ${escapeHtml(prospectEmail)}</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:20px 24px;">
+        <p style="margin:0 0 8px 0;"><strong>Lead Email:</strong> ${escapeHtml(prospectEmail)}</p>
+        <p style="margin:0 0 8px 0;"><strong>Website:</strong> ${escapeHtml(reportPayload.website_url)}</p>
+        <p style="margin:0 0 16px 0;"><strong>Overall Score:</strong> ${reportPayload.overall_score}/100</p>
+
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;border-collapse:collapse;">
+          <tr>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">Performance</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;" align="right">${category.performance || 0}/100</td>
+          </tr>
+          <tr>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">SEO</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;" align="right">${category.seo || 0}/100</td>
+          </tr>
+          <tr>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">Best Practices</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;" align="right">${category.best_practices || 0}/100</td>
+          </tr>
+          <tr>
+            <td style="padding:8px;">Accessibility</td>
+            <td style="padding:8px;" align="right">${category.accessibility || 0}/100</td>
+          </tr>
+        </table>
+
+        <h2 style="font-size:18px;margin:24px 0 8px 0;">Top 5 Fixes</h2>
+        <ol style="padding-left:20px;margin:0;color:#334155;">${fixes}</ol>
+
+        <h2 style="font-size:18px;margin:24px 0 8px 0;">Extra Checks</h2>
+        <ul style="padding-left:20px;margin:0;color:#334155;">${extraChecks}</ul>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+}
+
+function buildLeadNotificationText(prospectEmail, reportPayload) {
+    const category = reportPayload.category_scores || {};
+    const fixes = (reportPayload.top_fixes || []).map((fix, index) => `${index + 1}. ${fix}`).join('\n');
+    const extraChecks = (reportPayload.extra_checks || [])
+        .map((check) => `- ${check.label}: ${check.passed ? 'Pass' : 'Needs work'}`)
+        .join('\n');
+
+    return [
+        'New Website Health Check Lead',
+        '',
+        `Lead Email: ${prospectEmail}`,
+        `Website: ${reportPayload.website_url}`,
+        `Overall Score: ${reportPayload.overall_score}/100`,
+        '',
+        `Performance: ${category.performance || 0}/100`,
+        `SEO: ${category.seo || 0}/100`,
+        `Best Practices: ${category.best_practices || 0}/100`,
+        `Accessibility: ${category.accessibility || 0}/100`,
+        '',
+        'Top 5 Fixes:',
+        fixes,
+        '',
+        'Extra Checks:',
+        extraChecks
     ].join('\n');
 }
 

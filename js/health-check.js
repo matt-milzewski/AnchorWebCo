@@ -11,24 +11,15 @@
     var submitButton = document.getElementById('run-health-check-btn');
     var progressEl = document.getElementById('health-check-progress');
     var errorEl = document.getElementById('health-check-error');
-    var resultsEl = document.getElementById('health-check-results');
-
-    var overallScoreEl = document.getElementById('overall-score');
-    var reportSummaryEl = document.getElementById('report-summary');
-    var categoryCardsEl = document.getElementById('category-score-cards');
-    var mobileScoreEl = document.getElementById('mobile-score');
-    var desktopScoreEl = document.getElementById('desktop-score');
-    var cwvEl = document.getElementById('core-web-vitals');
-    var topFixesEl = document.getElementById('top-fixes');
-    var extraChecksEl = document.getElementById('extra-checks');
+    var successEl = document.getElementById('health-check-success');
 
     var progressTimer = null;
     var progressMessages = [
         'Validating your website URL...',
-        'Running Google PageSpeed tests for mobile...',
-        'Running Google PageSpeed tests for desktop...',
-        'Compiling scores and recommendations...',
-        'Finalizing your report...'
+        'Running mobile checks...',
+        'Running desktop checks...',
+        'Preparing your report email...',
+        'Sending report...'
     ];
 
     function resolveApiUrl() {
@@ -52,6 +43,16 @@
     function clearError() {
         errorEl.textContent = '';
         errorEl.classList.add('hidden');
+    }
+
+    function showSuccess(message) {
+        successEl.textContent = message;
+        successEl.classList.remove('hidden');
+    }
+
+    function clearSuccess() {
+        successEl.textContent = '';
+        successEl.classList.add('hidden');
     }
 
     function updateConsentVisibility() {
@@ -98,7 +99,7 @@
     function startLoadingState() {
         var defaultLabel = submitButton.getAttribute('data-default-label') || 'Run Health Check';
         submitButton.setAttribute('data-default-label', defaultLabel);
-        submitButton.textContent = 'Running Health Check...';
+        submitButton.textContent = 'Sending...';
         submitButton.disabled = true;
 
         var index = 0;
@@ -106,7 +107,7 @@
         progressTimer = setInterval(function() {
             index = (index + 1) % progressMessages.length;
             progressEl.textContent = progressMessages[index];
-        }, 2800);
+        }, 2500);
     }
 
     function stopLoadingState(message) {
@@ -118,151 +119,6 @@
         submitButton.textContent = submitButton.getAttribute('data-default-label') || 'Run Health Check';
         submitButton.disabled = false;
         progressEl.textContent = message || '';
-    }
-
-    function formatMetricValue(metricName, metricData) {
-        if (!metricData || metricData.percentile == null) {
-            return 'Not available';
-        }
-
-        var value = metricData.percentile;
-
-        if (metricName === 'cls') {
-            return Number(value).toFixed(2);
-        }
-
-        if (metricName === 'lcp' || metricName === 'inp') {
-            return (Number(value) / 1000).toFixed(2) + 's';
-        }
-
-        return String(value);
-    }
-
-    function formatCategoryLabel(key) {
-        var mapping = {
-            performance: 'Performance',
-            seo: 'SEO',
-            best_practices: 'Best Practices',
-            accessibility: 'Accessibility'
-        };
-        return mapping[key] || key;
-    }
-
-    function scorePill(score) {
-        var numericScore = Number(score) || 0;
-        if (numericScore >= 90) {
-            return 'bg-green-100 text-green-800';
-        }
-        if (numericScore >= 50) {
-            return 'bg-yellow-100 text-yellow-800';
-        }
-        return 'bg-red-100 text-red-800';
-    }
-
-    function renderCategoryCards(categoryScores) {
-        categoryCardsEl.innerHTML = '';
-
-        Object.keys(categoryScores).forEach(function(key) {
-            var score = categoryScores[key];
-            var card = document.createElement('div');
-            card.className = 'bg-white border border-blue-100 rounded-xl p-4 shadow-sm';
-            card.innerHTML = [
-                '<p class="text-sm text-slate-600">' + formatCategoryLabel(key) + '</p>',
-                '<div class="mt-2 inline-flex px-3 py-1 rounded-full text-sm font-semibold ' + scorePill(score) + '">' + score + '/100</div>'
-            ].join('');
-            categoryCardsEl.appendChild(card);
-        });
-    }
-
-    function renderCoreWebVitals(cwvData) {
-        cwvEl.innerHTML = '';
-
-        var vitals = [
-            { key: 'lcp', label: 'LCP' },
-            { key: 'cls', label: 'CLS' },
-            { key: 'inp', label: 'INP' }
-        ];
-
-        vitals.forEach(function(vital) {
-            var metricData = cwvData ? cwvData[vital.key] : null;
-            var row = document.createElement('div');
-            row.className = 'flex justify-between items-center';
-            row.innerHTML = [
-                '<span class="text-slate-700">' + vital.label + '</span>',
-                '<span class="font-bold text-anchor-navy">' + formatMetricValue(vital.key, metricData) + '</span>'
-            ].join('');
-            cwvEl.appendChild(row);
-        });
-
-        if (cwvData && cwvData.source) {
-            var sourceEl = document.createElement('p');
-            sourceEl.className = 'text-xs text-slate-500 pt-2';
-            sourceEl.textContent = 'Field data source: ' + cwvData.source;
-            cwvEl.appendChild(sourceEl);
-        }
-    }
-
-    function renderTopFixes(fixes) {
-        topFixesEl.innerHTML = '';
-
-        if (!Array.isArray(fixes) || fixes.length === 0) {
-            var emptyFix = document.createElement('li');
-            emptyFix.textContent = 'No major Lighthouse opportunities were flagged for this URL.';
-            topFixesEl.appendChild(emptyFix);
-            return;
-        }
-
-        fixes.slice(0, 5).forEach(function(fix) {
-            var item = document.createElement('li');
-            item.textContent = fix;
-            topFixesEl.appendChild(item);
-        });
-    }
-
-    function renderExtraChecks(checks) {
-        extraChecksEl.innerHTML = '';
-
-        if (!Array.isArray(checks) || checks.length === 0) {
-            var emptyState = document.createElement('p');
-            emptyState.className = 'text-slate-600';
-            emptyState.textContent = 'No extra checks were returned for this run.';
-            extraChecksEl.appendChild(emptyState);
-            return;
-        }
-
-        checks.forEach(function(check) {
-            var wrap = document.createElement('div');
-            wrap.className = 'rounded-lg border px-4 py-3 ' + (check.passed ? 'border-green-200 bg-green-50' : 'border-amber-200 bg-amber-50');
-
-            var status = check.passed ? 'Pass' : 'Needs work';
-            var recommendation = check.recommendation || '';
-
-            wrap.innerHTML = [
-                '<p class="font-semibold text-anchor-navy">' + check.label + ' <span class="text-sm text-slate-600">(' + status + ')</span></p>',
-                '<p class="text-sm text-slate-700 mt-1">' + recommendation + '</p>'
-            ].join('');
-
-            extraChecksEl.appendChild(wrap);
-        });
-    }
-
-    function renderResults(report) {
-        var overall = Number(report.overall_score || 0);
-        overallScoreEl.textContent = String(overall);
-
-        reportSummaryEl.textContent = report.email_sent
-            ? 'Complete. Your report is on screen and has also been emailed.'
-            : 'Complete. Your report is ready.';
-
-        renderCategoryCards(report.category_scores || {});
-        mobileScoreEl.textContent = String(report.mobile_score != null ? report.mobile_score + '/100' : '-');
-        desktopScoreEl.textContent = String(report.desktop_score != null ? report.desktop_score + '/100' : '-');
-        renderCoreWebVitals(report.core_web_vitals || null);
-        renderTopFixes(report.top_fixes || []);
-        renderExtraChecks(report.extra_checks || []);
-
-        resultsEl.classList.remove('hidden');
-        resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     async function fetchWithTimeout(url, options, timeoutMs) {
@@ -290,6 +146,7 @@
         event.preventDefault();
 
         clearError();
+        clearSuccess();
 
         var normalizedUrl;
         var email = emailInput.value.trim();
@@ -301,12 +158,17 @@
             return;
         }
 
-        if (email && !isValidEmail(email)) {
+        if (!email) {
+            showError('Please enter your email so we can send the report.');
+            return;
+        }
+
+        if (!isValidEmail(email)) {
             showError('Please enter a valid email address.');
             return;
         }
 
-        if (email && !consentCheckbox.checked) {
+        if (!consentCheckbox.checked) {
             showError('Please tick "Email me the report" to receive your report by email.');
             return;
         }
@@ -321,8 +183,8 @@
                 },
                 body: JSON.stringify({
                     website_url: normalizedUrl,
-                    email: email || null,
-                    email_consent: Boolean(email && consentCheckbox.checked)
+                    email: email,
+                    email_consent: true
                 })
             }, 45000);
 
@@ -342,8 +204,22 @@
                 throw new Error(message);
             }
 
-            renderResults(payload);
-            stopLoadingState('Report complete.');
+            if (payload && payload.email_sent === false) {
+                throw new Error('Your report ran, but we could not send the email. Please try again in a moment.');
+            }
+
+            showSuccess(payload && payload.message
+                ? payload.message
+                : 'Success. Your report is being emailed now. Please check your inbox in the next minute.');
+
+            if (payload && Array.isArray(payload.warnings) && payload.warnings.length > 0) {
+                stopLoadingState(payload.warnings.join(' '));
+            } else {
+                stopLoadingState('Request complete.');
+            }
+
+            form.reset();
+            updateConsentVisibility();
         } catch (err) {
             if (err.name === 'AbortError') {
                 showError('The health check timed out. Please retry in a moment.');

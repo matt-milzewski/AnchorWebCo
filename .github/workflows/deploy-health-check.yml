@@ -26,6 +26,7 @@ jobs:
       TF_VAR_aws_region: ${{ secrets.AWS_REGION }}
       TF_VAR_enable_ses_email: ${{ (secrets.SES_FROM_EMAIL != '' || secrets.SES_SENDER_EMAIL != '') && 'true' || 'false' }}
       TF_VAR_ses_from_email: ${{ secrets.SES_FROM_EMAIL || secrets.SES_SENDER_EMAIL || 'noreply@anchorwebco.com.au' }}
+      TF_VAR_lead_notification_email: ${{ secrets.LEAD_NOTIFICATION_EMAIL || secrets.SES_FROM_EMAIL || secrets.SES_SENDER_EMAIL || 'info@anchorwebco.com.au' }}
 
     steps:
       - name: Checkout repository

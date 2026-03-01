@@ -89,8 +89,8 @@
                     <p class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-anchor-navy shadow-sm border border-blue-100 mb-6">
                         Website Health Check
                     </p>
-                    <h1 class="text-4xl md:text-5xl font-poppins font-bold text-anchor-navy mb-4">Get Your Website Health Score in Under 30 Seconds</h1>
-                    <p class="text-lg md:text-xl text-slate-700 mb-8">See how your site performs on speed, SEO, accessibility, and best practices with practical fixes you can action today.</p>
+                    <h1 class="text-4xl md:text-5xl font-poppins font-bold text-anchor-navy mb-4">Get Your Website Health Report by Email</h1>
+                    <p class="text-lg md:text-xl text-slate-700 mb-8">Enter your website and business email. We run the audit and email your full report directly.</p>
                 </div>
 
                 <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-blue-100 p-6 md:p-8 mb-10">
@@ -110,14 +110,16 @@
                         </div>
 
                         <div>
-                            <label for="health-email" class="block text-sm font-semibold text-anchor-navy mb-2">Email (optional)</label>
+                            <label for="health-email" class="block text-sm font-semibold text-anchor-navy mb-2">Email</label>
                             <input
                                 id="health-email"
                                 name="health-email"
                                 type="email"
+                                required
                                 placeholder="you@business.com"
                                 autocomplete="email"
                             >
+                            <p class="text-sm text-slate-600 mt-2">We will send your full report to this email.</p>
                         </div>
 
                         <div id="email-consent-wrap" class="hidden rounded-lg border border-blue-200 bg-blue-50 px-4 py-3">
@@ -133,52 +135,9 @@
                         </div>
 
                         <p id="health-check-error" class="hidden text-sm text-red-700 rounded-lg bg-red-50 border border-red-200 px-3 py-2" role="alert"></p>
+                        <p id="health-check-success" class="hidden text-sm text-green-800 rounded-lg bg-green-50 border border-green-200 px-3 py-2" role="status" aria-live="polite"></p>
                     </form>
                 </div>
-
-                <section id="health-check-results" class="hidden max-w-5xl mx-auto" aria-live="polite">
-                    <div class="rounded-2xl bg-anchor-navy text-white p-6 md:p-8 shadow-xl mb-6">
-                        <p class="text-sm uppercase tracking-wide text-coast-sky">Anchor Web Score</p>
-                        <div class="flex flex-wrap items-end gap-3 mt-2">
-                            <p id="overall-score" class="text-5xl md:text-6xl font-poppins leading-none">0</p>
-                            <p class="text-lg text-slate-200 pb-1">out of 100</p>
-                        </div>
-                        <p id="report-summary" class="mt-4 text-slate-200 text-sm"></p>
-                    </div>
-
-                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="category-score-cards"></div>
-
-                    <div class="grid lg:grid-cols-2 gap-6 mb-6">
-                        <div class="bg-white border border-blue-100 rounded-xl p-5 shadow-sm">
-                            <h2 class="text-xl font-poppins font-bold text-anchor-navy mb-4">Mobile and Desktop Scores</h2>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-slate-700">Mobile</span>
-                                    <span id="mobile-score" class="font-bold text-anchor-navy">-</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-slate-700">Desktop</span>
-                                    <span id="desktop-score" class="font-bold text-anchor-navy">-</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white border border-blue-100 rounded-xl p-5 shadow-sm">
-                            <h2 class="text-xl font-poppins font-bold text-anchor-navy mb-4">Core Web Vitals</h2>
-                            <div class="space-y-3" id="core-web-vitals"></div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border border-blue-100 rounded-xl p-5 shadow-sm mb-6">
-                        <h2 class="text-xl font-poppins font-bold text-anchor-navy mb-4">Top 5 Fixes</h2>
-                        <ol id="top-fixes" class="space-y-2 list-decimal pl-5 text-slate-700"></ol>
-                    </div>
-
-                    <div class="bg-white border border-blue-100 rounded-xl p-5 shadow-sm">
-                        <h2 class="text-xl font-poppins font-bold text-anchor-navy mb-4">Extra Technical Checks</h2>
-                        <div id="extra-checks" class="space-y-3"></div>
-                    </div>
-                </section>
             </div>
         </section>
     </main>

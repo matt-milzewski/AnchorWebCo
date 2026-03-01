@@ -22,6 +22,7 @@ per_ip_window_seconds   = 3600
 
 enable_ses_email        = true
 ses_from_email          = "noreply@anchorwebco.com.au"
+lead_notification_email = "info@anchorwebco.com.au"
 
 log_retention_days      = 30
 
