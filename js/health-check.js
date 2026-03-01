@@ -327,13 +327,17 @@
             }, 45000);
 
             var payload;
+            var rawResponse = await response.text();
             try {
-                payload = await response.json();
+                payload = rawResponse ? JSON.parse(rawResponse) : null;
             } catch (err) {
                 payload = null;
             }
 
             if (!response.ok) {
+                if (response.status === 403 && /not configured to allow the HTTP request method/i.test(rawResponse || '')) {
+                    throw new Error('Your CloudFront distribution is blocking POST requests to /api/health-check. Add a /api/* behavior that allows POST and routes to API Gateway.');
+                }
                 var message = payload && payload.error ? payload.error : 'Health check failed. Please try again.';
                 throw new Error(message);
             }
