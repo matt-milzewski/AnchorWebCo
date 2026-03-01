@@ -123,6 +123,17 @@ The workflow will:
 - write `PAGESPEED_API_KEY` to SSM SecureString at `/anchor-web-co/health-check/pagespeed-api-key`
 - print the deployed API endpoint output
 
+### 5.7 Configure CloudFront API Route
+
+After infrastructure deploy, run the `Configure CloudFront API Route` workflow once to wire `/api/*` to API Gateway and allow `POST`.
+
+Required GitHub repository secret:
+- `CLOUDFRONT_DISTRIBUTION_ID`
+
+If this step is skipped, browser requests to `/api/health-check` can fail with:
+- `403 Forbidden` from CloudFront
+- `"This distribution is not configured to allow the HTTP request method..."`
+
 ## 6) SES Setup Notes
 
 - Verify a sender identity or domain in SES for your region.
@@ -156,6 +167,16 @@ curl -X POST "https://{api_id}.execute-api.{region}.amazonaws.com/api/health-che
 ```
 
 Expected status: `200` with score payload.
+
+If you get `502` with `Google PageSpeed request failed...`, verify the SSM key value:
+
+```bash
+aws ssm put-parameter \
+  --name "/anchor-web-co/health-check/pagespeed-api-key" \
+  --type "SecureString" \
+  --value "YOUR_REAL_PAGESPEED_API_KEY" \
+  --overwrite
+```
 
 ## 9) Security and Abuse Controls
 

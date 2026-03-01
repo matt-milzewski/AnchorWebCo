@@ -1,0 +1,205 @@
+name: Configure CloudFront API Route
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_name:
+        description: API Gateway HTTP API name
+        required: true
+        default: anchor-health-check-prod-api
+        type: string
+
+jobs:
+  configure-cloudfront:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+      API_NAME: ${{ github.event.inputs.api_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate required secrets
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          missing=0
+          for var in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION CLOUDFRONT_DISTRIBUTION_ID; do
+            if [ -z "${!var}" ]; then
+              echo "Missing required secret: $var"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Resolve API endpoint and managed policy IDs
+        id: resolve
+        run: |
+          API_ENDPOINT="$(aws apigatewayv2 get-apis --query "Items[?Name=='${API_NAME}'].ApiEndpoint | [0]" --output text)"
+          if [ -z "$API_ENDPOINT" ] || [ "$API_ENDPOINT" = "None" ]; then
+            echo "Could not find API Gateway HTTP API named: ${API_NAME}"
+            exit 1
+          fi
+
+          API_HOST="${API_ENDPOINT#https://}"
+          CACHE_POLICY_ID="$(aws cloudfront list-cache-policies --type managed --query "CachePolicyList.Items[?CachePolicy.CachePolicyConfig.Name=='Managed-CachingDisabled'].CachePolicy.Id | [0]" --output text)"
+          ORIGIN_REQUEST_POLICY_ID="$(aws cloudfront list-origin-request-policies --type managed --query "OriginRequestPolicyList.Items[?OriginRequestPolicy.OriginRequestPolicyConfig.Name=='Managed-AllViewerExceptHostHeader'].OriginRequestPolicy.Id | [0]" --output text)"
+
+          if [ -z "$CACHE_POLICY_ID" ] || [ "$CACHE_POLICY_ID" = "None" ]; then
+            echo "Unable to resolve managed cache policy Managed-CachingDisabled"
+            exit 1
+          fi
+
+          if [ -z "$ORIGIN_REQUEST_POLICY_ID" ] || [ "$ORIGIN_REQUEST_POLICY_ID" = "None" ]; then
+            echo "Unable to resolve managed origin request policy Managed-AllViewerExceptHostHeader"
+            exit 1
+          fi
+
+          echo "api_endpoint=$API_ENDPOINT" >> "$GITHUB_OUTPUT"
+          echo "api_host=$API_HOST" >> "$GITHUB_OUTPUT"
+          echo "cache_policy_id=$CACHE_POLICY_ID" >> "$GITHUB_OUTPUT"
+          echo "origin_request_policy_id=$ORIGIN_REQUEST_POLICY_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Update CloudFront distribution behavior for /api/*
+        run: |
+          aws cloudfront get-distribution-config --id "$DISTRIBUTION_ID" > /tmp/cf-full.json
+          ETAG="$(jq -r '.ETag' /tmp/cf-full.json)"
+          jq '.DistributionConfig' /tmp/cf-full.json > /tmp/cf-config.json
+
+          jq \
+            --arg apiHost "${{ steps.resolve.outputs.api_host }}" \
+            --arg cachePolicy "${{ steps.resolve.outputs.cache_policy_id }}" \
+            --arg originRequestPolicy "${{ steps.resolve.outputs.origin_request_policy_id }}" \
+            '
+            .Origins.Items |= (
+              if any(.Id == "api-gateway-health-check") then
+                map(
+                  if .Id == "api-gateway-health-check" then
+                    .DomainName = $apiHost
+                    | .OriginPath = ""
+                    | .CustomHeaders = {"Quantity": 0}
+                    | .ConnectionAttempts = 3
+                    | .ConnectionTimeout = 10
+                    | .OriginShield = {"Enabled": false}
+                    | .CustomOriginConfig = {
+                        "HTTPPort": 80,
+                        "HTTPSPort": 443,
+                        "OriginProtocolPolicy": "https-only",
+                        "OriginSslProtocols": {"Quantity": 1, "Items": ["TLSv1.2"]},
+                        "OriginReadTimeout": 30,
+                        "OriginKeepaliveTimeout": 5
+                      }
+                    | del(.S3OriginConfig, .OriginAccessControlId)
+                  else
+                    .
+                  end
+                )
+              else
+                . + [{
+                  "Id": "api-gateway-health-check",
+                  "DomainName": $apiHost,
+                  "OriginPath": "",
+                  "CustomHeaders": {"Quantity": 0},
+                  "ConnectionAttempts": 3,
+                  "ConnectionTimeout": 10,
+                  "OriginShield": {"Enabled": false},
+                  "CustomOriginConfig": {
+                    "HTTPPort": 80,
+                    "HTTPSPort": 443,
+                    "OriginProtocolPolicy": "https-only",
+                    "OriginSslProtocols": {"Quantity": 1, "Items": ["TLSv1.2"]},
+                    "OriginReadTimeout": 30,
+                    "OriginKeepaliveTimeout": 5
+                  }
+                }]
+              end
+            )
+            | .Origins.Quantity = (.Origins.Items | length)
+            | .CacheBehaviors = (.CacheBehaviors // {"Quantity": 0, "Items": []})
+            | .CacheBehaviors.Items = (.CacheBehaviors.Items // [])
+            | .CacheBehaviors.Items |= (
+              if any(.PathPattern == "/api/*") then
+                map(
+                  if .PathPattern == "/api/*" then
+                    .PathPattern = "/api/*"
+                    .TargetOriginId = "api-gateway-health-check"
+                    | .ViewerProtocolPolicy = "redirect-to-https"
+                    | .AllowedMethods = {
+                        "Quantity": 7,
+                        "Items": ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
+                        "CachedMethods": {"Quantity": 2, "Items": ["GET", "HEAD"]}
+                      }
+                    | .Compress = true
+                    | .CachePolicyId = $cachePolicy
+                    | .OriginRequestPolicyId = $originRequestPolicy
+                    | .SmoothStreaming = false
+                    | .FieldLevelEncryptionId = ""
+                    | .TrustedSigners = {"Enabled": false, "Quantity": 0}
+                    | .TrustedKeyGroups = {"Enabled": false, "Quantity": 0}
+                    | .GrpcConfig = {"Enabled": false}
+                    | .FunctionAssociations = {"Quantity": 0}
+                    | .LambdaFunctionAssociations = {"Quantity": 0}
+                    | del(.ForwardedValues, .MinTTL, .DefaultTTL, .MaxTTL, .RealtimeLogConfigArn)
+                  else
+                    .
+                  end
+                )
+              else
+                . + [{
+                  "PathPattern": "/api/*",
+                  "TargetOriginId": "api-gateway-health-check",
+                  "ViewerProtocolPolicy": "redirect-to-https",
+                  "AllowedMethods": {
+                    "Quantity": 7,
+                    "Items": ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
+                    "CachedMethods": {"Quantity": 2, "Items": ["GET", "HEAD"]}
+                  },
+                  "Compress": true,
+                  "CachePolicyId": $cachePolicy,
+                  "OriginRequestPolicyId": $originRequestPolicy,
+                  "SmoothStreaming": false,
+                  "FieldLevelEncryptionId": "",
+                  "TrustedSigners": {"Enabled": false, "Quantity": 0},
+                  "TrustedKeyGroups": {"Enabled": false, "Quantity": 0},
+                  "GrpcConfig": {"Enabled": false},
+                  "FunctionAssociations": {"Quantity": 0},
+                  "LambdaFunctionAssociations": {"Quantity": 0}
+                }]
+              end
+            )
+            | .CacheBehaviors.Quantity = (.CacheBehaviors.Items | length)
+            ' /tmp/cf-config.json > /tmp/cf-config-updated.json
+
+          aws cloudfront update-distribution \
+            --id "$DISTRIBUTION_ID" \
+            --if-match "$ETAG" \
+            --distribution-config file:///tmp/cf-config-updated.json >/tmp/cf-update.json
+
+          echo "Distribution update submitted."
+
+      - name: Create CloudFront invalidation
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "$DISTRIBUTION_ID" \
+            --paths "/api/*" "/health-check.html" "/js/health-check.js" "/index.html"
+
+      - name: Output resolved API endpoint
+        run: |
+          echo "API endpoint linked to CloudFront /api/*:"
+          echo "${{ steps.resolve.outputs.api_endpoint }}"
