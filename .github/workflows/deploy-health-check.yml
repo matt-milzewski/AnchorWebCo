@@ -70,6 +70,12 @@ jobs:
         working-directory: ${{ env.LAMBDA_DIR }}
         run: npm ci --omit=dev
 
+      - name: Run Lambda checks
+        working-directory: ${{ env.LAMBDA_DIR }}
+        run: |
+          npm run lint
+          npm test
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:

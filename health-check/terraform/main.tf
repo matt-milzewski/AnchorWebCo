@@ -157,6 +157,21 @@ data "aws_iam_policy_document" "lambda_permissions" {
       }
     }
   }
+
+  dynamic "statement" {
+    for_each = var.enable_ses_email ? [1] : []
+
+    content {
+      sid = "ReadSesDeliveryStatus"
+
+      actions = [
+        "ses:GetAccount",
+        "ses:GetEmailIdentity"
+      ]
+
+      resources = ["*"]
+    }
+  }
 }
 
 resource "aws_iam_policy" "lambda_permissions" {

@@ -2,7 +2,12 @@
 
 const { randomUUID } = require('crypto');
 const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm');
-const { SESv2Client, SendEmailCommand } = require('@aws-sdk/client-sesv2');
+const {
+    SESv2Client,
+    SendEmailCommand,
+    GetAccountCommand,
+    GetEmailIdentityCommand
+} = require('@aws-sdk/client-sesv2');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, PutCommand, UpdateCommand } = require('@aws-sdk/lib-dynamodb');
 
@@ -13,6 +18,16 @@ const dynamoClient = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
         removeUndefinedValues: true
     }
 });
+
+const defaultRuntimeDeps = {
+    randomUUIDFn: randomUUID,
+    ssmClient,
+    sesClient,
+    dynamoClient,
+    fetchFn: (...args) => fetch(...args)
+};
+
+const runtimeDeps = { ...defaultRuntimeDeps };
 
 const SCORE_WEIGHTS = {
     performance: 0.5,
@@ -60,6 +75,8 @@ const FIX_BY_AUDIT_ID = {
 };
 
 let cachedPageSpeedApiKey = null;
+let cachedSesAccount = null;
+const cachedSesIdentityStatus = new Map();
 
 exports.handler = async (event) => {
     const requestOrigin = getHeader(event, 'origin');
@@ -105,6 +122,11 @@ exports.handler = async (event) => {
         const sourceIp = getSourceIp(event);
         await enforceRateLimit(sourceIp);
 
+        const recipientValidation = await validateRecipientCanReceiveEmail(email);
+        if (!recipientValidation.ok) {
+            throw httpError(400, recipientValidation.message);
+        }
+
         const apiKey = await getPageSpeedApiKey();
 
         const [mobileResult, desktopResult, extraChecks] = await Promise.all([
@@ -124,7 +146,7 @@ exports.handler = async (event) => {
             { strategy: 'desktop', lighthouseResult: desktopResult?.lighthouseResult }
         ]);
 
-        const runId = randomUUID();
+        const runId = runtimeDeps.randomUUIDFn();
         const createdAt = new Date().toISOString();
 
         const reportPayload = {
@@ -150,9 +172,10 @@ exports.handler = async (event) => {
 
         reportPayload.saved = await saveRun(reportPayload, email);
 
-        reportPayload.email_sent = await sendReportEmail(email, reportPayload);
-        if (!reportPayload.email_sent) {
-            throw httpError(502, 'We could not send your report email right now. Please try again shortly.');
+        const reportEmailResult = await sendReportEmail(email, reportPayload);
+        reportPayload.email_sent = reportEmailResult.sent;
+        if (!reportEmailResult.sent) {
+            throw httpError(reportEmailResult.statusCode || 502, reportEmailResult.message || 'We could not send your report email right now. Please try again shortly.');
         }
 
         reportPayload.lead_notification_sent = await sendLeadNotificationEmail(email, reportPayload);
@@ -253,6 +276,92 @@ function normalizeEmail(input) {
     return email;
 }
 
+async function validateRecipientCanReceiveEmail(email) {
+    const senderEmail = (process.env.SES_FROM_EMAIL || '').trim();
+    if (!senderEmail) {
+        return {
+            ok: false,
+            message: 'Report email delivery is not configured right now.'
+        };
+    }
+
+    let account;
+    try {
+        account = await getSesAccount();
+    } catch (error) {
+        console.warn('Unable to verify SES account status before sending report email:', error);
+        return { ok: true };
+    }
+
+    if (account?.ProductionAccessEnabled) {
+        return { ok: true };
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const domain = normalizedEmail.includes('@') ? normalizedEmail.split('@')[1] : '';
+
+    const emailIdentityVerified = await isSesIdentityVerifiedForSending(normalizedEmail);
+    if (emailIdentityVerified) {
+        return { ok: true };
+    }
+
+    if (domain) {
+        const domainIdentityVerified = await isSesIdentityVerifiedForSending(domain);
+        if (domainIdentityVerified) {
+            return { ok: true };
+        }
+    }
+
+    return {
+        ok: false,
+        message: 'We can currently send reports only to verified email addresses. Please contact us if you need help.'
+    };
+}
+
+async function getSesAccount() {
+    if (cachedSesAccount) {
+        return cachedSesAccount;
+    }
+
+    const account = await runtimeDeps.sesClient.send(new GetAccountCommand({}));
+    cachedSesAccount = account;
+    return account;
+}
+
+async function isSesIdentityVerifiedForSending(identity) {
+    const normalizedIdentity = String(identity || '').trim().toLowerCase();
+    if (!normalizedIdentity) {
+        return false;
+    }
+
+    if (cachedSesIdentityStatus.has(normalizedIdentity)) {
+        return cachedSesIdentityStatus.get(normalizedIdentity);
+    }
+
+    let verified = false;
+
+    try {
+        const response = await runtimeDeps.sesClient.send(new GetEmailIdentityCommand({
+            EmailIdentity: normalizedIdentity
+        }));
+
+        verified =
+            response?.VerificationStatus === 'SUCCESS' &&
+            response?.SendingEnabled !== false;
+    } catch (error) {
+        if (error?.name !== 'NotFoundException') {
+            console.warn(`SES identity lookup failed for ${normalizedIdentity}:`, error);
+        }
+        verified = false;
+    }
+
+    if (cachedSesIdentityStatus.size < 200) {
+        cachedSesIdentityStatus.set(normalizedIdentity, verified);
+    }
+
+    return verified;
+}
+
 async function getPageSpeedApiKey() {
     if (cachedPageSpeedApiKey) {
         return cachedPageSpeedApiKey;
@@ -263,7 +372,7 @@ async function getPageSpeedApiKey() {
         throw httpError(500, 'PageSpeed API key parameter is not configured.');
     }
 
-    const response = await ssmClient.send(new GetParameterCommand({
+    const response = await runtimeDeps.ssmClient.send(new GetParameterCommand({
         Name: paramName,
         WithDecryption: true
     }));
@@ -698,7 +807,7 @@ async function enforceRateLimit(sourceIp) {
     const ttl = now + windowSeconds;
 
     try {
-        await dynamoClient.send(new UpdateCommand({
+        await runtimeDeps.dynamoClient.send(new UpdateCommand({
             TableName: tableName,
             Key: { ip_window: windowKey },
             UpdateExpression: 'SET updated_at = :updatedAt, expires_at = :ttl ADD request_count :inc',
@@ -745,7 +854,7 @@ async function saveRun(reportPayload, email) {
     };
 
     try {
-        await dynamoClient.send(new PutCommand({
+        await runtimeDeps.dynamoClient.send(new PutCommand({
             TableName: tableName,
             Item: item
         }));
@@ -772,7 +881,11 @@ function summarizeCoreWebVitals(coreWebVitals) {
 async function sendReportEmail(recipientEmail, reportPayload) {
     const senderEmail = process.env.SES_FROM_EMAIL;
     if (!senderEmail) {
-        return false;
+        return {
+            sent: false,
+            statusCode: 502,
+            message: 'Report email delivery is not configured right now.'
+        };
     }
 
     const subject = 'Your Website Health Check Report';
@@ -780,7 +893,7 @@ async function sendReportEmail(recipientEmail, reportPayload) {
     const text = buildEmailText(reportPayload);
 
     try {
-        await sesClient.send(new SendEmailCommand({
+        await runtimeDeps.sesClient.send(new SendEmailCommand({
             FromEmailAddress: senderEmail,
             Destination: {
                 ToAddresses: [recipientEmail]
@@ -801,10 +914,23 @@ async function sendReportEmail(recipientEmail, reportPayload) {
                 }
             }
         }));
-        return true;
+        return { sent: true };
     } catch (error) {
         console.error('Failed to send report email:', error);
-        return false;
+
+        if (isSesRecipientNotVerifiedError(error)) {
+            return {
+                sent: false,
+                statusCode: 400,
+                message: 'We can currently send reports only to verified email addresses. Please contact us if you need help.'
+            };
+        }
+
+        return {
+            sent: false,
+            statusCode: 502,
+            message: 'We could not send your report email right now. Please try again shortly.'
+        };
     }
 }
 
@@ -821,7 +947,7 @@ async function sendLeadNotificationEmail(prospectEmail, reportPayload) {
     const text = buildLeadNotificationText(prospectEmail, reportPayload);
 
     try {
-        await sesClient.send(new SendEmailCommand({
+        await runtimeDeps.sesClient.send(new SendEmailCommand({
             FromEmailAddress: senderEmail,
             Destination: {
                 ToAddresses: [destinationEmail]
@@ -1023,12 +1149,23 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
+function isSesRecipientNotVerifiedError(error) {
+    if (!error) {
+        return false;
+    }
+
+    const name = String(error.name || '');
+    const message = String(error.message || '');
+
+    return name === 'MessageRejected' && /email address is not verified/i.test(message);
+}
+
 async function fetchWithTimeout(url, options, timeoutMs) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
-        const response = await fetch(url, {
+        const response = await runtimeDeps.fetchFn(url, {
             ...options,
             signal: controller.signal
         });
@@ -1119,3 +1256,24 @@ function httpError(statusCode, message) {
     error.statusCode = statusCode;
     return error;
 }
+
+function setRuntimeDependenciesForTests(overrides) {
+    Object.assign(runtimeDeps, overrides || {});
+}
+
+function resetRuntimeDependenciesForTests() {
+    Object.assign(runtimeDeps, defaultRuntimeDeps);
+    resetCachedState();
+}
+
+function resetCachedState() {
+    cachedPageSpeedApiKey = null;
+    cachedSesAccount = null;
+    cachedSesIdentityStatus.clear();
+}
+
+exports.__testing = {
+    setRuntimeDependenciesForTests,
+    resetRuntimeDependenciesForTests,
+    resetCachedState
+};

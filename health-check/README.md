@@ -146,6 +146,9 @@ To send real customer emails, SES must be fully configured in the same region as
 Current production failure symptom when SES is not configured:
 - `MessageRejected: Email address is not verified...`
 
+Current API behavior when SES is still in sandbox:
+- requests to non-verified recipients return `400` quickly with a verified-recipient message (before expensive PageSpeed calls run)
+
 Email behavior in this MVP:
 - customer receives full report email
 - internal lead notification is sent to `lead_notification_email` (defaults to `info@anchorwebco.com.au`)
@@ -182,6 +185,15 @@ curl -X POST "https://{api_id}.execute-api.{region}.amazonaws.com/api/health-che
 ```
 
 Expected status: `200` with score payload.
+
+Run Lambda integration checks locally:
+
+```bash
+cd health-check/lambda
+npm ci --omit=dev
+npm run lint
+npm test
+```
 
 If you get `502` with `Google PageSpeed request failed...`, verify the SSM key value:
 
