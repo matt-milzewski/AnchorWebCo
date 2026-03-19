@@ -1,5 +1,5 @@
 # Robots.txt for Anchor Web Co.
-# Website: https://anchorwebco.com.au
+# Website: https://www.anchorwebco.com.au
 
 User-agent: *
 Allow: /
@@ -8,6 +8,9 @@ Allow: /
 Allow: /about
 Allow: /blog
 Allow: /contact
+Allow: /health-check
+Allow: /free-website-audit-hervey-bay
+Allow: /web-design-hervey-bay
 Allow: /blog-local-seo-hervey-bay
 Allow: /blog-website-design-sunshine-coast
 Allow: /blog-brisbane-business-seo
@@ -16,6 +19,7 @@ Allow: /blog-google-my-business-optimization
 Allow: /blog-website-speed-optimization
 Allow: /blog-seo-hervey-bay-fraser-coast
 Allow: /web-design-maryborough
+Allow: /seo-hervey-bay
 Allow: /seo-maryborough
 Allow: /blog-web-design-maryborough
 Allow: /blog-seo-maryborough-local-search
@@ -40,4 +44,4 @@ Crawl-delay: 1
 # Sitemap locations
 Sitemap: https://www.anchorwebco.com.au/sitemap.xml
 Sitemap: https://www.anchorwebco.com.au/sitemap-blog.xml
-Sitemap: https://www.anchorwebco.com.au/sitemap-images.xml 
+Sitemap: https://www.anchorwebco.com.au/sitemap-images.xml
