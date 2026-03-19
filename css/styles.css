@@ -266,6 +266,162 @@ textarea:focus {
     position: relative;
 }
 
+.google-reviews-shell {
+    background:
+        linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(255, 255, 255, 0) 38%),
+        linear-gradient(320deg, rgba(245, 158, 11, 0.12), rgba(255, 255, 255, 0) 45%),
+        #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    margin-bottom: 2rem;
+}
+
+.google-reviews-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(16rem, 0.9fr);
+    gap: 1.5rem;
+    align-items: end;
+}
+
+.google-reviews-kicker {
+    color: var(--coast-sky);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.google-reviews-score {
+    background-color: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 1rem;
+    padding: 1.25rem;
+}
+
+.google-reviews-score-count {
+    font-family: 'Poppins', sans-serif;
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--anchor-navy);
+    margin-bottom: 0.5rem;
+}
+
+.google-reviews-score-label {
+    color: #475569;
+    line-height: 1.6;
+}
+
+.google-reviews-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.google-review-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    border-radius: 999px;
+    background-color: rgba(31, 41, 55, 0.05);
+    color: var(--anchor-navy);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.google-reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.google-review-card {
+    position: relative;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    min-height: 100%;
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    overflow: hidden;
+}
+
+.google-review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
+    border-color: rgba(56, 189, 248, 0.4);
+}
+
+.google-review-card::before {
+    content: '"';
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+    font-size: 4.5rem;
+    line-height: 1;
+    color: rgba(56, 189, 248, 0.14);
+    font-family: Georgia, serif;
+}
+
+.google-review-card--featured {
+    background:
+        linear-gradient(160deg, rgba(56, 189, 248, 0.08), rgba(255, 255, 255, 0) 50%),
+        #ffffff;
+    border-color: rgba(56, 189, 248, 0.3);
+}
+
+.google-review-card--featured:nth-child(1) {
+    grid-column: span 2;
+}
+
+.google-review-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.google-review-badge {
+    color: var(--coast-sky);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+}
+
+.google-review-name {
+    font-family: 'Poppins', sans-serif;
+    color: var(--anchor-navy);
+    font-size: 1.15rem;
+    line-height: 1.35;
+}
+
+.google-review-date,
+.google-review-meta {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.google-review-date {
+    white-space: nowrap;
+    padding-top: 0.2rem;
+}
+
+.google-review-quote {
+    color: #1f2937;
+    font-size: 1.125rem;
+    font-style: italic;
+    line-height: 1.75;
+    margin: 0;
+}
+
 .js-enabled .testimonial-carousel .testimonial {
     display: none;
     margin-bottom: 0;
@@ -273,6 +429,20 @@ textarea:focus {
 
 .js-enabled .testimonial-carousel .testimonial.active {
     display: block;
+}
+
+@media (max-width: 1100px) {
+    .google-reviews-intro {
+        grid-template-columns: 1fr;
+    }
+
+    .google-reviews-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .google-review-card--featured:nth-child(1) {
+        grid-column: span 2;
+    }
 }
 
 @media (max-width: 768px) {
@@ -289,6 +459,27 @@ textarea:focus {
     p {
         font-size: 1rem;
         line-height: 1.5rem;
+    }
+
+    .google-reviews-shell {
+        padding: 1.5rem;
+    }
+
+    .google-reviews-intro,
+    .google-reviews-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .google-review-card--featured:nth-child(1) {
+        grid-column: span 1;
+    }
+
+    .google-review-top {
+        flex-direction: column;
+    }
+
+    .google-review-date {
+        white-space: normal;
     }
 }
 

@@ -314,20 +314,36 @@
 
     <!-- Testimonials Section -->
     <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-poppins font-bold text-center mb-12">What Our Clients Say</h2>
-            <div class="testimonial-carousel">
-                <div class="testimonial">
-                    <p class="text-lg italic mb-4">"Anchor Web Co. transformed our café's online presence. Our bookings have increased by 40% since the new site launched!"</p>
-                    <p class="font-bold">- Sarah Johnson, Café Owner</p>
+        <div class="container mx-auto px-4" data-google-reviews>
+            <div class="max-w-6xl mx-auto">
+                <div class="google-reviews-shell">
+                    <div class="google-reviews-intro">
+                        <div>
+                            <p class="google-reviews-kicker">Google Review Highlights</p>
+                            <h2 class="text-3xl font-poppins font-bold mb-4">What Our Clients Say</h2>
+                            <p class="text-gray-600">Real feedback from Fraser Coast and Brisbane clients we've helped with websites, SEO, and technical delivery.</p>
+                        </div>
+                        <div class="google-reviews-score">
+                            <p class="google-reviews-score-count" data-google-reviews-count>0</p>
+                            <p class="google-reviews-score-label">real Google reviews from clients and collaborators, displayed in a cleaner on-site showcase.</p>
+                        </div>
+                    </div>
+
+                    <div class="google-reviews-highlights" data-google-reviews-highlights></div>
                 </div>
-                <div class="testimonial">
-                    <p class="text-lg italic mb-4">"Finally, a web company that speaks plain English and delivers exactly what they promise. Couldn't be happier!"</p>
-                    <p class="font-bold">- Michael Brown, Local Tradesman</p>
-                </div>
-                <div class="testimonial">
-                    <p class="text-lg italic mb-4">"The team at Anchor Web Co. made the whole process stress-free. Our new website perfectly represents our family business."</p>
-                    <p class="font-bold">- Lisa Chen, Small Business Owner</p>
+
+                <div class="google-reviews-grid" data-google-reviews-list>
+                    <div class="google-review-card google-review-card--featured">
+                        <div class="google-review-top">
+                            <div>
+                                <p class="google-review-badge">Google review</p>
+                                <h3 class="google-review-name">Anchor Web Co.</h3>
+                            </div>
+                            <p class="google-review-date">Loading</p>
+                        </div>
+                        <p class="google-review-meta">Review data file</p>
+                        <p class="google-review-quote">"Your real client reviews will load here from the local reviews file."</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -457,6 +473,8 @@
 
     <!-- JavaScript -->
     <script src="js/main.js" defer></script>
+    <script src="js/google-reviews-data.js" defer></script>
+    <script src="js/google-reviews.js" defer></script>
     
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16766129889"></script>
