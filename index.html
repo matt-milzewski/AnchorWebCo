@@ -316,33 +316,53 @@
     <section class="py-16 bg-white">
         <div class="container mx-auto px-4" data-google-reviews>
             <div class="max-w-6xl mx-auto">
-                <div class="google-reviews-shell">
-                    <div class="google-reviews-intro">
-                        <div>
-                            <p class="google-reviews-kicker">Google Review Highlights</p>
-                            <h2 class="text-3xl font-poppins font-bold mb-4">What Our Clients Say</h2>
-                            <p class="text-gray-600">Real feedback from Fraser Coast and Brisbane clients we've helped with websites, SEO, and technical delivery.</p>
-                        </div>
+                <div class="google-reviews-showcase">
+                    <div class="google-reviews-shell">
+                        <p class="google-reviews-kicker">Google Review Highlights</p>
+                        <h2 class="text-3xl font-poppins font-bold mb-4">What Our Clients Say</h2>
+                        <p class="text-gray-600">Real feedback from Fraser Coast and Brisbane clients we've helped with websites, SEO, and technical delivery.</p>
+
                         <div class="google-reviews-score">
                             <p class="google-reviews-score-count" data-google-reviews-count>0</p>
-                            <p class="google-reviews-score-label">real Google reviews from clients and collaborators, displayed in a cleaner on-site showcase.</p>
+                            <p class="google-reviews-score-label">real Google reviews from clients and collaborators, shown one at a time so each review is easy to read.</p>
                         </div>
+
+                        <div class="google-reviews-highlights" data-google-reviews-highlights></div>
                     </div>
 
-                    <div class="google-reviews-highlights" data-google-reviews-highlights></div>
-                </div>
-
-                <div class="google-reviews-grid" data-google-reviews-list>
-                    <div class="google-review-card google-review-card--featured">
-                        <div class="google-review-top">
-                            <div>
-                                <p class="google-review-badge">Google review</p>
-                                <h3 class="google-review-name">Anchor Web Co.</h3>
-                            </div>
-                            <p class="google-review-date">Loading</p>
+                    <div class="google-review-stage" data-google-reviews-stage role="region" aria-label="Client reviews" tabindex="0">
+                        <div class="google-review-stage-top">
+                            <p class="google-review-stage-label">Client Feedback</p>
+                            <p class="google-review-stage-index">
+                                <span data-google-reviews-current>01</span>
+                                <span>/</span>
+                                <span data-google-reviews-total>01</span>
+                            </p>
                         </div>
-                        <p class="google-review-meta">Review data file</p>
-                        <p class="google-review-quote">"Your real client reviews will load here from the local reviews file."</p>
+
+                        <div class="google-review-carousel-window">
+                            <div class="google-review-carousel-track" data-google-reviews-track aria-live="polite">
+                                <article class="google-review-card">
+                                    <div class="google-review-top">
+                                        <div>
+                                            <p class="google-review-badge">Google review</p>
+                                            <h3 class="google-review-name">Link Stevens</h3>
+                                        </div>
+                                        <p class="google-review-date">2 weeks ago</p>
+                                    </div>
+                                    <p class="google-review-meta">1 review</p>
+                                    <blockquote class="google-review-quote">"Best web design company in Maryborough. Our new website looks amazing, loads quickly, and we're getting more leads from Google."</blockquote>
+                                </article>
+                            </div>
+                        </div>
+
+                        <div class="google-review-stage-controls">
+                            <div class="google-review-tabs" data-google-reviews-tabs role="tablist" aria-label="Select a client review"></div>
+                            <div class="google-review-nav">
+                                <button type="button" class="google-review-nav-btn" data-google-reviews-prev aria-label="Show previous review">Prev</button>
+                                <button type="button" class="google-review-nav-btn" data-google-reviews-next aria-label="Show next review">Next</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
