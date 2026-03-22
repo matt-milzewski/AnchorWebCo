@@ -6,7 +6,6 @@
         return;
     }
 
-    const reviewCount = reviewsSection.querySelector('[data-google-reviews-count]');
     const highlights = reviewsSection.querySelector('[data-google-reviews-highlights]');
     const stage = reviewsSection.querySelector('[data-google-reviews-stage]');
     const track = reviewsSection.querySelector('[data-google-reviews-track]');
@@ -16,10 +15,6 @@
     const prevButton = reviewsSection.querySelector('[data-google-reviews-prev]');
     const nextButton = reviewsSection.querySelector('[data-google-reviews-next]');
     const reviews = reviewData.reviews.slice();
-
-    if (reviewCount) {
-        reviewCount.textContent = reviews.length;
-    }
 
     if (highlights) {
         highlights.innerHTML = '';
