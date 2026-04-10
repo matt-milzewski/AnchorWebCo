@@ -1,8 +1,10 @@
 backend:
-  name: github
-  repo: "matt-milzewski/AnchorWebCo"
+  name: git-gateway
   branch: main
-  # On S3/CloudFront, configure a Decap-compatible GitHub OAuth provider and add base_url/auth_endpoint here before client login will work.
+  # Requires Netlify Identity + Git Gateway to be enabled on the linked Netlify project.
+
+site_url: "https://www.anchorwebco.com.au"
+display_url: "https://www.anchorwebco.com.au"
 
 media_folder: "src/images/blog"
 public_folder: "/images/blog"
