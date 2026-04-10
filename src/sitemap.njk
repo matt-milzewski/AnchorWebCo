@@ -1,0 +1,25 @@
+---
+permalink: /sitemap.xml
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="UTF-8"?>
+{% set posts = collections.blog | reverse %}
+{% set blogUpdated = posts[0].date if posts.length else page.date %}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {% for item in legacyPages %}
+  <url>
+    <loc>{{ site.url }}{{ item.url }}</loc>
+    <lastmod>{{ item.lastmod }}</lastmod>
+  </url>
+  {% endfor %}
+  <url>
+    <loc>{{ site.url }}/blog/</loc>
+    <lastmod>{{ blogUpdated | dateToISO }}</lastmod>
+  </url>
+  {% for post in collections.blog %}
+  <url>
+    <loc>{{ site.url }}{{ post.url }}</loc>
+    <lastmod>{{ post.date | dateToISO }}</lastmod>
+  </url>
+  {% endfor %}
+</urlset>

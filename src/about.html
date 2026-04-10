@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Meet Anchor Web Co, a Maryborough-based web design and SEO specialist helping Fraser Coast businesses build faster websites, stronger local visibility, and better enquiry flow.">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.anchorwebco.com.au/about.html" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="180x180" href="icons/favicon-180.png">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.anchorwebco.com.au/about.html">
+    <meta property="og:title" content="About Anchor Web Co | Maryborough Web Design &amp; SEO Specialist">
+    <meta property="og:description" content="Meet Anchor Web Co, a Maryborough-based web design and SEO specialist helping Fraser Coast businesses build faster websites, stronger local visibility, and better enquiry flow.">
+    <meta property="og:image" content="https://www.anchorwebco.com.au/img/og-image.webp">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.anchorwebco.com.au/about.html">
+    <meta property="twitter:title" content="About Anchor Web Co | Maryborough Web Design &amp; SEO Specialist">
+    <meta property="twitter:description" content="Meet Anchor Web Co, a Maryborough-based web design and SEO specialist helping Fraser Coast businesses build faster websites, stronger local visibility, and better enquiry flow.">
+    <meta property="twitter:image" content="https://www.anchorwebco.com.au/img/og-image.webp">
+
+    <title>About Anchor Web Co | Maryborough Web Design &amp; SEO Specialist</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&amp;family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'anchor-navy': '#1f2937',
+                        'coast-sky': '#38bdf8',
+                        'sand-beige': '#f2f2f0',
+                        'dark-text': '#111827'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Smooth Scroll Polyfill -->
+    <script src="https://unpkg.com/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js"></script>
+</head>
+<body class="bg-sand-beige text-dark-text font-roboto">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-anchor-navy focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg">Skip to main content</a>
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-white shadow-md z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-poppins font-bold text-anchor-navy">Anchor Web Co.</a>
+            <button id="mobile-menu-button" class="xl:hidden" aria-label="Toggle menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <div class="hidden xl:flex items-center gap-4 text-sm">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link active">About</a>
+                <a href="web-design-hervey-bay.html" class="nav-link">Web Design Hervey Bay</a>
+                <a href="web-design-maryborough.html" class="nav-link">Web Design Maryborough</a>
+                <a href="seo-hervey-bay.html" class="nav-link">SEO Hervey Bay</a>
+                <a href="seo-maryborough.html" class="nav-link">SEO Maryborough</a>
+                <a href="/blog/" class="nav-link">Blog</a>
+                <a href="health-check.html" class="nav-link">Health Check</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="contact.html" class="nav-button">Get a Quote</a>
+            </div>
+        </div>
+    </nav>
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 z-50 bg-white bg-opacity-95 flex-col items-center justify-center space-y-8 text-2xl font-poppins font-bold hidden transition-all duration-300">
+        <button id="mobile-menu-close" class="absolute top-6 right-6 text-4xl text-anchor-navy" aria-label="Close menu">&times;</button>
+        <nav class="flex flex-col items-center space-y-6 mt-12">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="about.html" class="nav-link active">About</a>
+            <a href="web-design-hervey-bay.html" class="nav-link">Web Design Hervey Bay</a>
+            <a href="web-design-maryborough.html" class="nav-link">Web Design Maryborough</a>
+            <a href="seo-hervey-bay.html" class="nav-link">SEO Hervey Bay</a>
+            <a href="seo-maryborough.html" class="nav-link">SEO Maryborough</a>
+            <a href="/blog/" class="nav-link">Blog</a>
+            <a href="health-check.html" class="nav-link">Health Check</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </nav>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="main-content" class="pt-24 pb-16 md:pt-32 md:pb-24">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl">
+                <h1 class="text-4xl md:text-6xl font-poppins font-bold text-anchor-navy mb-4">
+                    About Anchor Web Co
+                </h1>
+                <p class="text-xl md:text-2xl text-coast-sky mb-6">Founded in Maryborough, built for Fraser Coast businesses</p>
+                <p class="text-lg mb-8">We help businesses across Maryborough, Hervey Bay, and the wider Fraser Coast get better results from their website, local SEO, and day-to-day digital setup without the agency runaround.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h2 class="text-3xl font-poppins font-bold mb-6">Founded in Maryborough, Built for Fraser Coast Businesses</h2>
+                    <p class="mb-4">Anchor Web Co. was founded by Matt Milzewski in Maryborough, QLD. Growing up in the Fraser Coast means we understand how local customers search, compare, and choose service providers.</p>
+                    <p class="mb-4">We build websites and SEO campaigns that work for local intent, not generic national traffic. That means clear service pages, practical conversion copy, and technical SEO that supports rankings in both Maryborough and Hervey Bay.</p>
+                    <p>We are based in Maryborough and primarily support businesses across Maryborough, Hervey Bay, and the wider Fraser Coast. That local focus shapes how we write, structure, and optimise websites for real service-area searches.</p>
+                </div>
+                <div class="relative">
+                    <img src="img/fraser-coast.webp" alt="Aerial view of Queensland's Fraser Coast shoreline with pristine beaches and turquoise waters" class="w-full rounded-lg" width="800" height="600" loading="lazy" decoding="async">
+                    <div class="absolute bottom-0 left-0 right-0 bg-anchor-navy bg-opacity-75 text-white p-4 rounded-b-lg">
+                        <blockquote class="italic">"Based in Maryborough, supporting businesses across the Fraser Coast."</blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </section>
+
+        <section class="py-16">
+            <div class="container mx-auto px-4">
+                <div class="max-w-5xl mx-auto">
+                    <div class="max-w-3xl mb-10">
+                        <h2 class="text-3xl font-poppins font-bold mb-4">Why Businesses Work With Anchor Web Co</h2>
+                        <p class="text-lg text-gray-700">The appeal is simple. Clear delivery, direct local support, and work that is built around enquiries rather than agency theatre.</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="service-card">
+                            <h3 class="text-xl font-poppins font-bold mb-3">Local and direct</h3>
+                            <p>Based in Maryborough and focused on Fraser Coast businesses. You deal directly with the person doing the work.</p>
+                        </div>
+                        <div class="service-card">
+                            <h3 class="text-xl font-poppins font-bold mb-3">Practical, fixed-scope delivery</h3>
+                            <p>Clear proposals, fixed fees, and no vague retainers. You know what is included before work starts.</p>
+                        </div>
+                        <div class="service-card">
+                            <h3 class="text-xl font-poppins font-bold mb-3">Built around enquiries</h3>
+                            <p>Every site and SEO campaign is shaped around getting more calls, quote requests, and real local leads.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Founder credentials -->
+        <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 items-start">
+                <div>
+                    <h2 class="text-3xl font-poppins font-bold mb-6">Founder Credentials</h2>
+                    <ul class="space-y-3 list-disc list-inside text-gray-700">
+                        <li>Bachelor of Information Technology (QUT)</li>
+                        <li>Diploma of Software Development</li>
+                        <li>5+ years at Telstra building enterprise-grade systems</li>
+                        <li>Hands-on experience across custom HTML, CSS, and JavaScript websites, cloud hosting, and technical SEO</li>
+                    </ul>
+                </div>
+                <div class="bg-sand-beige rounded-lg shadow-lg p-8">
+                    <h3 class="text-xl font-poppins font-bold mb-4">How We Work</h3>
+                    <ul class="space-y-3 list-disc list-inside text-gray-700">
+                        <li>Clear fixed-scope proposals before work starts.</li>
+                        <li>Direct communication with Matt, no account-manager layers.</li>
+                        <li>Build and SEO decisions tied to leads and enquiries.</li>
+                        <li>Transparent progress updates and practical next steps.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Who We Help -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="max-w-5xl mx-auto">
+                <div class="max-w-3xl mb-10">
+                    <h2 class="text-3xl font-poppins font-bold mb-4">Who We Help and Why Local Context Matters</h2>
+                    <p class="text-lg text-gray-700">We work best with service businesses that need a clearer offer, stronger local visibility, and direct support from someone who understands Maryborough, Hervey Bay, and the wider Fraser Coast market.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="service-card">
+                        <h3 class="text-xl font-poppins font-bold mb-3">Local Service Businesses</h3>
+                        <p>Tradies, cleaners, lawn care teams, security providers, and other service businesses that need a website built to convert calls and quote requests.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3 class="text-xl font-poppins font-bold mb-3">Growing Small Businesses</h3>
+                        <p>Businesses ready to move beyond a basic template site and invest in better structure, faster performance, and stronger search visibility.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3 class="text-xl font-poppins font-bold mb-3">Multi-Area Operators</h3>
+                        <p>Businesses serving both Maryborough and Hervey Bay that need cleaner service and location pages, clearer internal linking, and local SEO foundations that scale.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-poppins font-bold text-center mb-12">How the Process Works</h2>
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="process-step">
+                    <div class="text-4xl mb-4">1</div>
+                    <h3 class="text-xl font-poppins font-bold mb-2">Discover</h3>
+                    <p>We learn about your business and goals to create the perfect solution.</p>
+                </div>
+                <div class="process-step">
+                    <div class="text-4xl mb-4">2</div>
+                    <h3 class="text-xl font-poppins font-bold mb-2">Draft</h3>
+                    <p>We design and develop your site with your feedback at every step.</p>
+                </div>
+                <div class="process-step">
+                    <div class="text-4xl mb-4">3</div>
+                    <h3 class="text-xl font-poppins font-bold mb-2">Launch</h3>
+                    <p>We deploy your site and ensure everything is working perfectly.</p>
+                </div>
+                <div class="process-step">
+                    <div class="text-4xl mb-4">4</div>
+                    <h3 class="text-xl font-poppins font-bold mb-2">Grow</h3>
+                    <p>We help you maintain and improve your site over time.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-poppins font-bold text-center mb-12">What We Do</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="service-card">
+                    <div class="text-4xl mb-4">⚓️</div>
+                    <h3 class="text-xl font-poppins font-bold mb-2">Web Design</h3>
+                    <p>Fast, modern websites for Maryborough and Hervey Bay businesses that need stronger first impressions, clearer enquiries, and better mobile usability.</p>
+                    <a href="web-design-maryborough.html" class="inline-block mt-4 text-coast-sky font-medium hover:underline">Web design in Maryborough</a>
+                    <a href="web-design-hervey-bay.html" class="inline-block mt-2 text-coast-sky font-medium hover:underline">Web design in Hervey Bay</a>
+                </div>
+                <div class="service-card">
+                    <div class="text-4xl mb-4">🌐</div>
+                    <h3 class="text-xl font-poppins font-bold mb-2">Local SEO</h3>
+                    <p>Practical SEO campaigns built around local search behaviour, service-area targeting, Google Business Profile improvements, and clean technical foundations.</p>
+                    <a href="seo-hervey-bay.html" class="inline-block mt-4 text-coast-sky font-medium hover:underline">SEO services in Hervey Bay</a>
+                    <a href="seo-maryborough.html" class="inline-block mt-2 text-coast-sky font-medium hover:underline">Local SEO for Maryborough businesses</a>
+                </div>
+                <div class="service-card">
+                    <div class="text-4xl mb-4">🔧</div>
+                    <h3 class="text-xl font-poppins font-bold mb-2">Ongoing Maintenance</h3>
+                    <p>Regular updates, security fixes, and performance support to keep your website stable after launch.</p>
+                    <a href="website-care-plans.html" class="inline-block mt-4 text-coast-sky font-medium hover:underline">View website care plans</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Next Step Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="max-w-5xl mx-auto bg-anchor-navy text-white rounded-2xl p-8 md:p-12 shadow-xl">
+                <p class="text-sm uppercase tracking-wide text-coast-sky mb-3">Where to Go Next</p>
+                <h2 class="text-3xl font-poppins font-bold mb-4">Need web design or SEO support for your business?</h2>
+                <p class="text-gray-200 mb-6">Start with the service page that matches your location, or get in touch if you want a direct recommendation.</p>
+                <p class="text-gray-200 mb-8">If you already know what you need, explore <a href="web-design-maryborough.html" class="text-coast-sky hover:underline">web design in Maryborough</a>, <a href="web-design-hervey-bay.html" class="text-coast-sky hover:underline">web design in Hervey Bay</a>, <a href="seo-maryborough.html" class="text-coast-sky hover:underline">SEO in Maryborough</a>, and <a href="seo-hervey-bay.html" class="text-coast-sky hover:underline">SEO in Hervey Bay</a>, or <a href="contact.html" class="text-coast-sky hover:underline">get in touch</a> for a fixed-scope recommendation.</p>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <a href="web-design-hervey-bay.html" class="btn-outline">Web Design Hervey Bay</a>
+                    <a href="web-design-maryborough.html" class="btn-outline">Web Design Maryborough</a>
+                    <a href="seo-hervey-bay.html" class="btn-outline">SEO Hervey Bay</a>
+                    <a href="seo-maryborough.html" class="btn-outline">SEO Maryborough</a>
+                    <a href="contact.html" class="btn-primary">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-poppins font-bold text-center mb-12">Recent Fraser Coast Outcomes</h2>
+            <div class="testimonial-carousel">
+                <div class="testimonial">
+                    <p class="text-lg italic mb-4">"BH Lock & Security achieved #1 visibility for locksmith queries in Maryborough with focused service-page SEO and local profile optimisation."</p>
+                    <p class="font-bold">- Local service campaign, Maryborough</p>
+                </div>
+                <div class="testimonial">
+                    <p class="text-lg italic mb-4">"Maryborough Mowerman improved enquiry flow after a conversion-focused rebuild and local keyword mapping across Maryborough and Hervey Bay."</p>
+                    <p class="font-bold">- Tradie growth campaign, Fraser Coast</p>
+                </div>
+                <div class="testimonial">
+                    <p class="text-lg italic mb-4">"Bannister Communications moved to a faster static build with cleaner structure and stronger technical foundations for future SEO growth."</p>
+                    <p class="font-bold">- Website rebuild, Fraser Coast</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-anchor-navy text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-poppins font-bold mb-4">Anchor Web Co.</h3>
+                    <p class="text-white">Websites that keep your business grounded.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-poppins font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="text-white hover:text-coast-sky">Home</a></li>
+                        <li><a href="about.html" class="text-white hover:text-coast-sky">About</a></li>
+                        <li><a href="web-design-hervey-bay.html" class="text-white hover:text-coast-sky">Web Design Hervey Bay</a></li>
+                        <li><a href="web-design-maryborough.html" class="text-white hover:text-coast-sky">Web Design Maryborough</a></li>
+                        <li><a href="seo-hervey-bay.html" class="text-white hover:text-coast-sky">SEO Hervey Bay</a></li>
+                        <li><a href="seo-maryborough.html" class="text-white hover:text-coast-sky">SEO Maryborough</a></li>
+                        <li><a href="website-care-plans.html" class="text-white hover:text-coast-sky">Website Care Plans</a></li>
+                        <li><a href="free-website-audit-hervey-bay.html" class="text-white hover:text-coast-sky">Free Website Audit</a></li>
+                        <li><a href="/blog/" class="text-white hover:text-coast-sky">Blog</a></li>
+                        <li><a href="health-check.html" class="text-white hover:text-coast-sky">Health Check</a></li>
+                        <li><a href="contact.html" class="text-white hover:text-coast-sky">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-poppins font-bold mb-4">Connect</h3>
+                    <p class="mt-4">📞 <a href="tel:+61439499944" class="text-white hover:text-coast-sky">0439 499 944</a></p>
+                    <p>📧 <a href="mailto:info@anchorwebco.com.au" class="text-white hover:text-coast-sky">info@anchorwebco.com.au</a></p>
+                    <p>📍 Maryborough, QLD 4650</p>
+                </div>
+            </div>
+            <div class="mt-8 text-center text-sm">
+                <p class="text-white">&copy; <span class="copyright-year">2026</span> Anchor Web Co. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button id="scroll-top" class="fixed bottom-4 right-4 bg-anchor-navy text-white p-3 rounded-full hidden" aria-label="Scroll to top">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+        </svg>
+    </button>
+
+    <!-- JavaScript -->
+    <script src="js/main.js" defer></script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16766129889"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'AW-16766129889');
+    </script>
+
+    <!-- WhatsApp Chat Button -->
+    <a href="https://wa.me/61439499944" target="_blank" rel="noopener noreferrer"
+       class="fixed bottom-4 left-4 z-50 bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-lg transition-all duration-200"
+       aria-label="Chat with us on WhatsApp"
+       title="Chat on WhatsApp">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+    </a>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Anchor Web Co.",
+      "url": "https://www.anchorwebco.com.au/",
+      "logo": "https://www.anchorwebco.com.au/img/og-image.webp",
+      "telephone": "+61-439-499-944",
+      "email": "info@anchorwebco.com.au",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Maryborough",
+        "addressRegion": "QLD",
+        "postalCode": "4650",
+        "addressCountry": "AU"
+      },
+      "areaServed": ["Maryborough", "Hervey Bay", "Fraser Coast"]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Matt Milzewski",
+      "jobTitle": "Founder",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Anchor Web Co."
+      },
+      "alumniOf": [
+        {
+          "@type": "CollegeOrUniversity",
+          "name": "Queensland University of Technology"
+        }
+      ],
+      "description": "Maryborough-based founder of Anchor Web Co, specialising in website development and local SEO for Fraser Coast businesses."
+    }
+    </script>
+</body>
+</html>

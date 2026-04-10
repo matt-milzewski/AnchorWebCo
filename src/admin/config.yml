@@ -1,0 +1,22 @@
+backend:
+  name: github
+  repo: "matt-milzewski/AnchorWebCo"
+  branch: main
+  # On S3/CloudFront, configure a Decap-compatible GitHub OAuth provider and add base_url/auth_endpoint here before client login will work.
+
+media_folder: "src/images/blog"
+public_folder: "/images/blog"
+
+collections:
+  - name: "blog"
+    label: "Blog Posts"
+    folder: "src/blog/posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    sort: "date:desc"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text", hint: "A short summary shown on the blog listing and in search results. Keep it under 160 characters." }
+      - { label: "Date", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false }
+      - { label: "Featured Image", name: "featuredImage", widget: "image", required: false, hint: "Landscape image, ideally 1200x630px." }
+      - { label: "Body", name: "body", widget: "markdown" }

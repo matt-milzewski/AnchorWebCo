@@ -1,0 +1,47 @@
+---
+layout: layouts/blog-listing.njk
+title: Blog
+description: Practical guides, updates, and website advice for Fraser Coast businesses.
+permalink: /blog/
+---
+<section class="pt-24 pb-16 md:pt-32 md:pb-20">
+    <div class="container mx-auto px-4">
+        <div class="max-w-3xl">
+            <h1 class="text-4xl md:text-6xl font-poppins font-bold text-anchor-navy mb-4">Anchor Web Co. Blog</h1>
+            <p class="text-xl md:text-2xl text-coast-sky mb-6">Practical notes on websites, SEO, and lead generation for Fraser Coast businesses.</p>
+            <p class="text-lg text-gray-700">This section is where new CMS-managed articles will appear as static, search-friendly pages. Existing site pages stay as they are, and new posts publish here.</p>
+        </div>
+    </div>
+</section>
+
+<section class="pb-16">
+    <div class="container mx-auto px-4">
+        {% if collections.blog.length %}
+        <div class="blog-listing">
+            {% for post in collections.blog | reverse %}
+            <article class="blog-card">
+                {% if post.data.featuredImage %}
+                <a href="{{ post.url }}" class="blog-card__image-link">
+                    <img class="blog-card__image" src="{{ post.data.featuredImage }}" alt="{{ post.data.title }}">
+                </a>
+                {% endif %}
+                <div class="blog-card__content">
+                    <p class="blog-card__meta">
+                        <time datetime="{{ post.date | dateToISO }}">{{ post.date | readableDate }}</time>
+                    </p>
+                    <h2 class="blog-card__title">
+                        <a href="{{ post.url }}">{{ post.data.title }}</a>
+                    </h2>
+                    <p class="blog-card__excerpt">{{ post.data.description }}</p>
+                    <a href="{{ post.url }}" class="blog-card__link">Read article</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="blog-empty">
+            <p>No posts yet — check back soon!</p>
+        </div>
+        {% endif %}
+    </div>
+</section>

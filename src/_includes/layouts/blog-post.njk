@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ description or site.description }}">
+    <link rel="canonical" href="{{ site.url ~ page.url }}">
+    <link rel="icon" type="image/png" sizes="180x180" href="/icons/favicon-180.png">
+
+    {% set pageTitle = title ~ " | " ~ site.name %}
+    {% set pageDescription = description or site.description %}
+    {% set ogImage = site.url ~ (featuredImage or site.defaultOgImage) %}
+
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ site.url ~ page.url }}">
+    <meta property="og:title" content="{{ pageTitle }}">
+    <meta property="og:description" content="{{ pageDescription }}">
+    <meta property="og:image" content="{{ ogImage }}">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ site.url ~ page.url }}">
+    <meta property="twitter:title" content="{{ pageTitle }}">
+    <meta property="twitter:description" content="{{ pageDescription }}">
+    <meta property="twitter:image" content="{{ ogImage }}">
+
+    <title>{{ pageTitle }}</title>
+
+    <link rel="alternate" type="application/atom+xml" title="{{ site.name }} Blog Feed" href="{{ site.url }}/blog/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&amp;family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'anchor-navy': '#1f2937',
+                        'coast-sky': '#38bdf8',
+                        'sand-beige': '#f2f2f0',
+                        'dark-text': '#111827'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/blog.css">
+    <script src="https://unpkg.com/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js"></script>
+</head>
+<body class="bg-sand-beige text-dark-text font-roboto">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-anchor-navy focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg">Skip to main content</a>
+    {% include "header.njk" %}
+
+    <main id="main-content" class="pt-24 pb-16 md:pt-32 md:pb-24">
+        <div class="container mx-auto px-4">
+            <article class="blog-post">
+                <div class="blog-post__shell">
+                    <p class="blog-post__meta">
+                        <time datetime="{{ date | dateToISO }}">{{ date | readableDate }}</time>
+                    </p>
+                    <h1 class="blog-post__title">{{ title }}</h1>
+                    {% if description %}
+                    <p class="blog-post__lede">{{ description }}</p>
+                    {% endif %}
+                    {% if featuredImage %}
+                    <div class="blog-post__image-wrap">
+                        <img class="blog-post__image" src="{{ featuredImage }}" alt="{{ title }}">
+                    </div>
+                    {% endif %}
+                    <div class="blog-content">
+                        {{ content | safe }}
+                    </div>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    {% include "footer.njk" %}
+    <script src="/js/main.js" defer></script>
+</body>
+</html>
