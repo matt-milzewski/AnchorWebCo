@@ -6,24 +6,14 @@ Allow: /
 
 # Allow crawling of all important pages
 Allow: /about
-Allow: /blog
+Allow: /blog/
 Allow: /contact
 Allow: /health-check
 Allow: /free-website-audit-hervey-bay
 Allow: /web-design-hervey-bay
-Allow: /blog-local-seo-hervey-bay
-Allow: /blog-website-design-sunshine-coast
-Allow: /blog-brisbane-business-seo
-Allow: /blog-mobile-first-design
-Allow: /blog-google-my-business-optimization
-Allow: /blog-website-speed-optimization
-Allow: /blog-seo-hervey-bay-fraser-coast
 Allow: /web-design-maryborough
 Allow: /seo-hervey-bay
 Allow: /seo-maryborough
-Allow: /blog-web-design-maryborough
-Allow: /blog-seo-maryborough-local-search
-Allow: /blog-google-ads-hervey-bay
 
 # Allow crawling of assets
 Allow: /css/
@@ -43,5 +33,4 @@ Crawl-delay: 1
 
 # Sitemap locations
 Sitemap: https://www.anchorwebco.com.au/sitemap.xml
-Sitemap: https://www.anchorwebco.com.au/sitemap-blog.xml
 Sitemap: https://www.anchorwebco.com.au/sitemap-images.xml
