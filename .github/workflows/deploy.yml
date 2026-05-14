@@ -42,6 +42,37 @@ jobs:
             --exclude "bucket-policy.json" \
             --delete
 
+      - name: Publish CloudFront viewer-request function
+        env:
+          DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          set -euo pipefail
+          DIST=$(aws cloudfront get-distribution-config --id "$DISTRIBUTION_ID")
+          FUNCTION_ARN=$(echo "$DIST" | jq -r '
+            [.DistributionConfig.DefaultCacheBehavior, (.DistributionConfig.CacheBehaviors.Items // [])[]]
+            | map(.FunctionAssociations.Items // [])
+            | add
+            | map(select(.EventType == "viewer-request"))
+            | .[0].FunctionARN // empty
+          ')
+          if [ -z "$FUNCTION_ARN" ]; then
+            echo "No viewer-request CloudFront function associated with distribution; skipping."
+            exit 0
+          fi
+          FUNCTION_NAME="${FUNCTION_ARN##*/}"
+          echo "Updating CloudFront function: $FUNCTION_NAME"
+          DESC=$(aws cloudfront describe-function --name "$FUNCTION_NAME")
+          RUNTIME=$(echo "$DESC" | jq -r '.FunctionSummary.FunctionConfig.Runtime')
+          ETAG=$(echo "$DESC" | jq -r '.ETag')
+          aws cloudfront update-function \
+            --name "$FUNCTION_NAME" \
+            --if-match "$ETAG" \
+            --function-config "Comment=anchor web routing,Runtime=$RUNTIME" \
+            --function-code fileb://cloudfront-function.js >/dev/null
+          NEW_ETAG=$(aws cloudfront describe-function --name "$FUNCTION_NAME" --query 'ETag' --output text)
+          aws cloudfront publish-function --name "$FUNCTION_NAME" --if-match "$NEW_ETAG"
+          echo "Published $FUNCTION_NAME."
+
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
