@@ -1,38 +1,50 @@
 <header>
-    <nav class="fixed w-full bg-white shadow-md z-50">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="/" class="text-2xl font-poppins font-bold text-anchor-navy">Anchor Web Co.</a>
+    <nav class="fixed w-full bg-white z-50" style="border-bottom: 1px solid var(--line);">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="/" class="text-xl font-poppins font-bold" style="color: var(--ink);">Anchor Web Co.</a>
             <button id="mobile-menu-button" class="xl:hidden" aria-label="Toggle menu">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
-            <div class="hidden xl:flex items-center gap-4 text-sm">
-                <a href="/" class="nav-link">Home</a>
+            <div class="hidden xl:flex items-center gap-8 text-sm">
+                <a href="/#work" class="nav-link">Work</a>
+                <div class="has-dropdown">
+                    <a href="#" class="nav-link" aria-haspopup="true" aria-expanded="false">Services</a>
+                    <div class="dropdown-menu" role="menu">
+                        <a href="/web-design-hervey-bay.html">Web Design — Hervey Bay</a>
+                        <a href="/web-design-maryborough.html">Web Design — Maryborough</a>
+                        <a href="/seo-hervey-bay.html">SEO — Hervey Bay</a>
+                        <a href="/seo-maryborough.html">SEO — Maryborough</a>
+                        <hr class="divider" style="margin: 6px 8px;">
+                        <a href="/website-care-plans.html">Website Care Plans</a>
+                        <a href="/free-website-audit-hervey-bay.html">Free Website Audit</a>
+                    </div>
+                </div>
                 <a href="/about.html" class="nav-link">About</a>
-                <a href="/web-design-hervey-bay.html" class="nav-link">Web Design Hervey Bay</a>
-                <a href="/web-design-maryborough.html" class="nav-link">Web Design Maryborough</a>
-                <a href="/seo-hervey-bay.html" class="nav-link">SEO Hervey Bay</a>
-                <a href="/seo-maryborough.html" class="nav-link">SEO Maryborough</a>
-                <a href="/blog/" class="nav-link active">Blog</a>
-                <a href="/health-check.html" class="nav-link">Health Check</a>
-                <a href="/contact.html" class="nav-link">Contact</a>
-                <a href="/contact.html" class="nav-button">Get a Quote</a>
+                <a href="/blog/" class="nav-link" style="color: var(--accent);">Blog</a>
+                <a href="/contact.html" class="nav-button">Get a quote</a>
             </div>
         </div>
     </nav>
-    <div id="mobile-menu" class="fixed inset-0 z-50 bg-white bg-opacity-95 flex-col items-center justify-center space-y-8 text-2xl font-poppins font-bold hidden transition-all duration-300">
-        <button id="mobile-menu-close" class="absolute top-6 right-6 text-4xl text-anchor-navy" aria-label="Close menu">&times;</button>
-        <nav class="flex flex-col items-center space-y-6 mt-12">
-            <a href="/" class="nav-link">Home</a>
+    <div id="mobile-menu" class="fixed inset-0 z-50 bg-white flex-col items-center justify-center space-y-6 text-xl font-poppins font-bold hidden transition-all duration-300">
+        <button id="mobile-menu-close" class="absolute top-6 right-6 text-4xl" style="color: var(--ink);" aria-label="Close menu">&times;</button>
+        <nav class="flex flex-col items-center space-y-4 mt-12 w-full px-6">
+            <a href="/#work" class="nav-link">Work</a>
+            <details class="w-full text-center">
+                <summary class="nav-link cursor-pointer list-none">Services</summary>
+                <div class="flex flex-col items-center gap-3 mt-3 text-base font-normal">
+                    <a href="/web-design-hervey-bay.html" class="nav-link">Web Design — Hervey Bay</a>
+                    <a href="/web-design-maryborough.html" class="nav-link">Web Design — Maryborough</a>
+                    <a href="/seo-hervey-bay.html" class="nav-link">SEO — Hervey Bay</a>
+                    <a href="/seo-maryborough.html" class="nav-link">SEO — Maryborough</a>
+                    <a href="/website-care-plans.html" class="nav-link">Website Care Plans</a>
+                    <a href="/free-website-audit-hervey-bay.html" class="nav-link">Free Website Audit</a>
+                </div>
+            </details>
             <a href="/about.html" class="nav-link">About</a>
-            <a href="/web-design-hervey-bay.html" class="nav-link">Web Design Hervey Bay</a>
-            <a href="/web-design-maryborough.html" class="nav-link">Web Design Maryborough</a>
-            <a href="/seo-hervey-bay.html" class="nav-link">SEO Hervey Bay</a>
-            <a href="/seo-maryborough.html" class="nav-link">SEO Maryborough</a>
-            <a href="/blog/" class="nav-link active">Blog</a>
-            <a href="/health-check.html" class="nav-link">Health Check</a>
-            <a href="/contact.html" class="nav-link">Contact</a>
+            <a href="/blog/" class="nav-link">Blog</a>
+            <a href="/contact.html" class="nav-button mt-4">Get a quote</a>
         </nav>
     </div>
 </header>
