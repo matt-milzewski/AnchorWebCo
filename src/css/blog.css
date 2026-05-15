@@ -110,9 +110,16 @@
 .blog-card__link {
     margin-top: auto;
     color: var(--accent);
-    font-weight: 500;
+    font-weight: 600;
     font-size: 14px;
-    text-decoration: none;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+}
+
+.blog-card__link:hover,
+.blog-card__link:focus {
+    text-decoration-thickness: 2px;
 }
 
 .blog-post {

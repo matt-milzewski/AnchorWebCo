@@ -746,8 +746,8 @@ label {
     text-transform: uppercase;
     letter-spacing: 0.08em;
     font-size: 14px;
-    font-weight: 500;
-    color: var(--muted);
+    font-weight: 600;
+    color: var(--accent);
     margin-bottom: 16px;
 }
 
@@ -799,7 +799,8 @@ label {
 
 .hero-gradient {
     background:
-        radial-gradient(ellipse 80% 60% at 80% 0%, rgba(56, 189, 248, 0.18), transparent 60%),
+        radial-gradient(ellipse 110% 75% at 78% 0%, rgba(56, 189, 248, 0.35), transparent 65%),
+        radial-gradient(ellipse 70% 50% at 15% 100%, rgba(56, 189, 248, 0.12), transparent 60%),
         var(--surface);
 }
 
@@ -855,7 +856,7 @@ label {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
     font-size: 14px;
-    color: var(--muted);
+    color: var(--accent);
     letter-spacing: 0.08em;
     margin-bottom: 12px;
 }
