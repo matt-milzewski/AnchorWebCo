@@ -1,0 +1,30 @@
+aws_region  = "ap-southeast-2"
+environment = "prod"
+
+allowed_origins = [
+  "https://www.anchorwebco.com.au",
+  "https://anchorwebco.com.au",
+  "https://www.bannistercommunications.com",
+  "https://bannistercommunications.com"
+]
+
+site_configs = [
+  {
+    siteId         = "anchor-web-co"
+    username       = "anchor"
+    passwordHash   = "REPLACE_WITH_HASH_FROM_NODE"
+    githubOwner    = "matt-milzewski"
+    githubRepo     = "AnchorWebCo"
+    githubWorkflow = "deploy.yml"
+    githubRef      = "main"
+  },
+  {
+    siteId         = "bannister-communications"
+    username       = "bannister"
+    passwordHash   = "REPLACE_WITH_HASH_FROM_NODE"
+    githubOwner    = "matt-milzewski"
+    githubRepo     = "bannisterCommunications"
+    githubWorkflow = "deploy.yml"
+    githubRef      = "main"
+  }
+]

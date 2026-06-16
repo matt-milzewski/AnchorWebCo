@@ -21,7 +21,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Configure CMS admin API
+        if: ${{ vars.ANCHOR_CMS_API_BASE != '' }}
+        run: |
+          node -e "const fs=require('fs'); const p='src/admin/index.html'; let html=fs.readFileSync(p,'utf8'); html=html.replace('window.ANCHOR_CMS_API_BASE = window.ANCHOR_CMS_API_BASE || \"\";', 'window.ANCHOR_CMS_API_BASE = \"' + process.env.ANCHOR_CMS_API_BASE + '\";'); fs.writeFileSync(p, html);"
+        env:
+          ANCHOR_CMS_API_BASE: ${{ vars.ANCHOR_CMS_API_BASE }}
+
       - name: Build site
+        env:
+          ANCHOR_CMS_API_BASE: ${{ vars.ANCHOR_CMS_API_BASE }}
+          ANCHOR_CMS_SITE_ID: anchor-web-co
         run: npm run build
 
       - name: Configure AWS credentials

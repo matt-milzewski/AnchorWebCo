@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
   <title>Anchor Blog Manager</title>
+  <script>
+    window.ANCHOR_CMS_API_BASE = window.ANCHOR_CMS_API_BASE || "";
+  </script>
   <style>
     :root {
       --ink: #0a0a0a;
@@ -250,6 +253,7 @@
       </div>
       <div class="toolbar">
         <button class="btn" id="new-post" type="button">New</button>
+        <button class="btn secondary" id="publish-site" type="button">Publish Site</button>
         <button class="btn secondary" id="export-posts" type="button">Export JSON</button>
         <button class="btn secondary" id="logout" type="button">Log out</button>
       </div>
@@ -260,7 +264,7 @@
     <main>
       <form class="panel" id="post-form">
         <div class="notice">
-          This prototype saves to browser storage and exports `cmsBlogPosts.json`. The AWS version will save through `/api/cms/posts` and trigger the static deploy.
+          API mode saves posts through `/api/cms/sites/anchor-web-co`. If the API is not configured yet, this page falls back to browser storage and JSON export.
         </div>
         <div class="grid">
           <div class="field">
@@ -314,12 +318,15 @@
   <script>
     const STORAGE_KEY = "anchor-blog-manager-posts";
     const SESSION_KEY = "anchor-blog-manager-session";
+    const SITE_ID = "anchor-web-co";
+    const API_BASE = window.ANCHOR_CMS_API_BASE || "";
     const DEMO_USER = "anchor";
     const DEMO_PASS = "demo-password";
 
     const state = {
       posts: [],
       selectedSlug: "",
+      apiMode: false,
     };
 
     const loginView = document.querySelector("#login-view");
@@ -368,6 +375,23 @@
       };
     }
 
+    async function apiRequest(path, options = {}) {
+      const response = await fetch(`${API_BASE}/api/cms/sites/${SITE_ID}${path}`, {
+        credentials: "include",
+        headers: {
+          "content-type": "application/json",
+          ...(options.headers || {}),
+        },
+        ...options,
+      });
+
+      const payload = response.status === 204 ? {} : await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.error || `CMS API request failed: ${response.status}`);
+      }
+      return payload;
+    }
+
     async function loadSeedPosts() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -384,6 +408,15 @@
       }
 
       return [blankPost()];
+    }
+
+    async function loadPosts() {
+      if (state.apiMode) {
+        const payload = await apiRequest("/posts");
+        return payload.posts || [];
+      }
+
+      return loadSeedPosts();
     }
 
     function persistPosts() {
@@ -415,7 +448,7 @@
 
     function renderPostList() {
       const published = state.posts.filter((post) => post.status === "published").length;
-      postCount.textContent = `${state.posts.length} posts, ${published} published`;
+      postCount.textContent = `${state.posts.length} posts, ${published} published · ${state.apiMode ? "API mode" : "local mode"}`;
       postList.innerHTML = "";
 
       state.posts
@@ -468,6 +501,29 @@
       saveState.textContent = `Saved ${new Date().toLocaleTimeString()}.`;
     }
 
+    async function saveCurrentPostAsync() {
+      const post = readFormPost();
+
+      if (state.apiMode) {
+        const payload = await apiRequest(`/posts/${encodeURIComponent(post.slug)}`, {
+          method: "PUT",
+          body: JSON.stringify(post),
+        });
+        const existingIndex = state.posts.findIndex((item) => item.slug === state.selectedSlug || item.slug === payload.post.slug);
+        if (existingIndex >= 0) {
+          state.posts[existingIndex] = payload.post;
+        } else {
+          state.posts.unshift(payload.post);
+        }
+        state.selectedSlug = payload.post.slug;
+        renderPostList();
+        saveState.textContent = `Saved to API ${new Date().toLocaleTimeString()}.`;
+        return;
+      }
+
+      saveCurrentPost();
+    }
+
     function exportPosts() {
       const blob = new Blob([JSON.stringify(state.posts, null, 2) + "\n"], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -483,20 +539,34 @@
       const username = document.querySelector("#username").value;
       const password = document.querySelector("#password").value;
 
-      if (username !== DEMO_USER || password !== DEMO_PASS) {
-        alert("Demo credentials are anchor / demo-password.");
-        return;
+      try {
+        await apiRequest("/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ username, password }),
+        });
+        state.apiMode = true;
+      } catch (error) {
+        if (username !== DEMO_USER || password !== DEMO_PASS) {
+          alert("Login failed. When API mode is unavailable, demo credentials are anchor / demo-password.");
+          return;
+        }
+        state.apiMode = false;
       }
 
       sessionStorage.setItem(SESSION_KEY, "true");
-      state.posts = await loadSeedPosts();
+      sessionStorage.setItem(`${SESSION_KEY}-api`, state.apiMode ? "true" : "false");
+      state.posts = await loadPosts();
       showApp();
       selectPost(state.posts[0]?.slug || blankPost().slug);
     });
 
-    document.querySelector("#post-form").addEventListener("submit", (event) => {
+    document.querySelector("#post-form").addEventListener("submit", async (event) => {
       event.preventDefault();
-      saveCurrentPost();
+      try {
+        await saveCurrentPostAsync();
+      } catch (error) {
+        alert(error.message);
+      }
     });
 
     fields.title.addEventListener("input", () => {
@@ -528,22 +598,56 @@
         return;
       }
 
-      state.posts = state.posts.filter((post) => post.slug !== state.selectedSlug);
-      persistPosts();
-      selectPost(state.posts[0]?.slug || blankPost().slug);
+      const deleteLocal = () => {
+        state.posts = state.posts.filter((post) => post.slug !== state.selectedSlug);
+        persistPosts();
+        selectPost(state.posts[0]?.slug || blankPost().slug);
+      };
+
+      if (!state.apiMode) {
+        deleteLocal();
+        return;
+      }
+
+      apiRequest(`/posts/${encodeURIComponent(state.selectedSlug)}`, { method: "DELETE" })
+        .then(deleteLocal)
+        .catch((error) => alert(error.message));
     });
 
     document.querySelector("#export-posts").addEventListener("click", exportPosts);
+    document.querySelector("#publish-site").addEventListener("click", async () => {
+      if (!state.apiMode) {
+        alert("Publish requires API mode.");
+        return;
+      }
+
+      try {
+        await apiRequest("/deploy", { method: "POST", body: "{}" });
+        saveState.textContent = "Deploy triggered.";
+      } catch (error) {
+        alert(error.message);
+      }
+    });
     document.querySelector("#logout").addEventListener("click", () => {
       sessionStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem(`${SESSION_KEY}-api`);
       location.reload();
     });
 
     if (sessionStorage.getItem(SESSION_KEY) === "true") {
-      loadSeedPosts().then((posts) => {
+      state.apiMode = sessionStorage.getItem(`${SESSION_KEY}-api`) === "true";
+      loadPosts().then((posts) => {
         state.posts = posts;
         showApp();
         selectPost(posts[0]?.slug || blankPost().slug);
+      }).catch(() => {
+        state.apiMode = false;
+        sessionStorage.setItem(`${SESSION_KEY}-api`, "false");
+        return loadPosts().then((posts) => {
+          state.posts = posts;
+          showApp();
+          selectPost(posts[0]?.slug || blankPost().slug);
+        });
       });
     }
   </script>
