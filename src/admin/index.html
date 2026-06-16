@@ -1,22 +1,549 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-AU">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="noindex" />
-  <title>Content Manager</title>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Anchor Blog Manager</title>
+  <style>
+    :root {
+      --ink: #0a0a0a;
+      --muted: #5f6673;
+      --line: #dedbd2;
+      --surface: #fafaf7;
+      --accent: #38bdf8;
+      --danger: #b42318;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--surface);
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      border-right: 1px solid var(--line);
+      background: #fff;
+      padding: 24px;
+    }
+
+    .brand {
+      display: grid;
+      gap: 4px;
+      margin-bottom: 24px;
+    }
+
+    .brand strong {
+      font-size: 20px;
+    }
+
+    .brand span,
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .post-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .post-button {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .post-button[aria-current="true"] {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.18);
+    }
+
+    .post-button strong {
+      display: block;
+      margin-bottom: 4px;
+      line-height: 1.25;
+    }
+
+    main {
+      padding: 32px;
+    }
+
+    .panel {
+      max-width: 980px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 24px;
+    }
+
+    .login {
+      max-width: 420px;
+      margin: 12vh auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    textarea {
+      min-height: 260px;
+      resize: vertical;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      line-height: 1.55;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+      margin-top: 8px;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: #fff;
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .btn.secondary {
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .btn.danger {
+      background: var(--danger);
+      border-color: var(--danger);
+    }
+
+    .notice {
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #ecfeff;
+      border: 1px solid #bae6fd;
+      color: #155e75;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 840px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      main {
+        padding: 18px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-  <script src="https://unpkg.com/decap-cms@^3.3.3/dist/decap-cms.js"></script>
+  <section id="login-view" class="panel login">
+    <div class="brand">
+      <strong>Anchor Blog Manager</strong>
+      <span>Local prototype for the AWS CMS flow.</span>
+    </div>
+    <div class="notice">
+      Demo login only. Production auth will be enforced by Lambda with a hashed password, secure cookie, and rate limiting.
+    </div>
+    <form id="login-form">
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" autocomplete="username" value="anchor">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" value="demo-password">
+      </div>
+      <button class="btn" type="submit">Log in</button>
+    </form>
+  </section>
+
+  <section id="app-view" class="shell hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <strong>Anchor Blog Manager</strong>
+        <span>One-site blog CMS prototype</span>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="new-post" type="button">New</button>
+        <button class="btn secondary" id="export-posts" type="button">Export JSON</button>
+        <button class="btn secondary" id="logout" type="button">Log out</button>
+      </div>
+      <p class="meta" id="post-count"></p>
+      <div class="post-list" id="post-list"></div>
+    </aside>
+
+    <main>
+      <form class="panel" id="post-form">
+        <div class="notice">
+          This prototype saves to browser storage and exports `cmsBlogPosts.json`. The AWS version will save through `/api/cms/posts` and trigger the static deploy.
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label for="title">Title</label>
+            <input id="title" required>
+          </div>
+          <div class="field">
+            <label for="slug">Slug</label>
+            <input id="slug" required>
+          </div>
+          <div class="field">
+            <label for="date">Date</label>
+            <input id="date" type="date" required>
+          </div>
+          <div class="field">
+            <label for="status">Status</label>
+            <select id="status">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="description">Excerpt / Meta Description</label>
+            <textarea id="description" style="min-height: 86px;"></textarea>
+          </div>
+          <div class="field">
+            <label for="seo-title">SEO Title</label>
+            <input id="seo-title">
+          </div>
+          <div class="field">
+            <label for="featured-image">Featured Image URL</label>
+            <input id="featured-image" placeholder="/images/blog/example.png">
+          </div>
+          <div class="field full">
+            <label for="body">Body HTML</label>
+            <textarea id="body"></textarea>
+          </div>
+        </div>
+        <div class="actions">
+          <span class="meta" id="save-state">Not saved yet.</span>
+          <div class="action-group">
+            <button class="btn secondary" id="duplicate-post" type="button">Duplicate</button>
+            <button class="btn danger" id="delete-post" type="button">Delete</button>
+            <button class="btn" type="submit">Save Post</button>
+          </div>
+        </div>
+      </form>
+    </main>
+  </section>
+
   <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", function(user) {
-        if (!user) {
-          window.netlifyIdentity.on("login", function() {
-            document.location.href = "/admin/";
-          });
+    const STORAGE_KEY = "anchor-blog-manager-posts";
+    const SESSION_KEY = "anchor-blog-manager-session";
+    const DEMO_USER = "anchor";
+    const DEMO_PASS = "demo-password";
+
+    const state = {
+      posts: [],
+      selectedSlug: "",
+    };
+
+    const loginView = document.querySelector("#login-view");
+    const appView = document.querySelector("#app-view");
+    const postList = document.querySelector("#post-list");
+    const postCount = document.querySelector("#post-count");
+    const saveState = document.querySelector("#save-state");
+
+    const fields = {
+      title: document.querySelector("#title"),
+      slug: document.querySelector("#slug"),
+      date: document.querySelector("#date"),
+      status: document.querySelector("#status"),
+      description: document.querySelector("#description"),
+      seoTitle: document.querySelector("#seo-title"),
+      featuredImage: document.querySelector("#featured-image"),
+      body: document.querySelector("#body"),
+    };
+
+    function slugify(value) {
+      return value
+        .normalize("NFKD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .trim()
+        .replace(/[\s-]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
+
+    function today() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function blankPost() {
+      return {
+        title: "Untitled post",
+        slug: "untitled-post",
+        date: today(),
+        status: "draft",
+        description: "",
+        seoTitle: "",
+        seoDescription: "",
+        featuredImage: "",
+        body: "<p>Write the article body here.</p>",
+      };
+    }
+
+    async function loadSeedPosts() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+
+      try {
+        const response = await fetch("/admin/seed-blog-posts.json", { cache: "no-store" });
+        if (response.ok) {
+          return await response.json();
         }
+      } catch (error) {
+        console.warn("Unable to load seed posts", error);
+      }
+
+      return [blankPost()];
+    }
+
+    function persistPosts() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.posts, null, 2));
+    }
+
+    function showApp() {
+      loginView.classList.add("hidden");
+      appView.classList.remove("hidden");
+    }
+
+    function selectPost(slug) {
+      state.selectedSlug = slug;
+      const post = state.posts.find((item) => item.slug === slug) || state.posts[0] || blankPost();
+      state.selectedSlug = post.slug;
+
+      fields.title.value = post.title || "";
+      fields.slug.value = post.slug || "";
+      fields.date.value = post.date || today();
+      fields.status.value = post.status || "draft";
+      fields.description.value = post.description || "";
+      fields.seoTitle.value = post.seoTitle || "";
+      fields.featuredImage.value = post.featuredImage || "";
+      fields.body.value = post.body || "";
+
+      renderPostList();
+      saveState.textContent = "Loaded.";
+    }
+
+    function renderPostList() {
+      const published = state.posts.filter((post) => post.status === "published").length;
+      postCount.textContent = `${state.posts.length} posts, ${published} published`;
+      postList.innerHTML = "";
+
+      state.posts
+        .slice()
+        .sort((left, right) => new Date(right.date) - new Date(left.date))
+        .forEach((post) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "post-button";
+          button.setAttribute("aria-current", post.slug === state.selectedSlug ? "true" : "false");
+          button.innerHTML = `<strong>${post.title}</strong><span class="meta">${post.status} · ${post.date}</span>`;
+          button.addEventListener("click", () => selectPost(post.slug));
+          postList.appendChild(button);
+        });
+    }
+
+    function readFormPost() {
+      return {
+        title: fields.title.value.trim(),
+        slug: slugify(fields.slug.value || fields.title.value),
+        date: fields.date.value || today(),
+        status: fields.status.value,
+        description: fields.description.value.trim(),
+        seoTitle: fields.seoTitle.value.trim() || fields.title.value.trim(),
+        seoDescription: fields.description.value.trim(),
+        featuredImage: fields.featuredImage.value.trim(),
+        body: fields.body.value.trim(),
+      };
+    }
+
+    function saveCurrentPost() {
+      const post = readFormPost();
+      const existingIndex = state.posts.findIndex((item) => item.slug === state.selectedSlug);
+      const slugCollision = state.posts.some((item, index) => item.slug === post.slug && index !== existingIndex);
+
+      if (slugCollision) {
+        alert("Another post already uses that slug.");
+        return;
+      }
+
+      if (existingIndex >= 0) {
+        state.posts[existingIndex] = post;
+      } else {
+        state.posts.unshift(post);
+      }
+
+      state.selectedSlug = post.slug;
+      persistPosts();
+      renderPostList();
+      saveState.textContent = `Saved ${new Date().toLocaleTimeString()}.`;
+    }
+
+    function exportPosts() {
+      const blob = new Blob([JSON.stringify(state.posts, null, 2) + "\n"], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "cmsBlogPosts.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.querySelector("#login-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const username = document.querySelector("#username").value;
+      const password = document.querySelector("#password").value;
+
+      if (username !== DEMO_USER || password !== DEMO_PASS) {
+        alert("Demo credentials are anchor / demo-password.");
+        return;
+      }
+
+      sessionStorage.setItem(SESSION_KEY, "true");
+      state.posts = await loadSeedPosts();
+      showApp();
+      selectPost(state.posts[0]?.slug || blankPost().slug);
+    });
+
+    document.querySelector("#post-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      saveCurrentPost();
+    });
+
+    fields.title.addEventListener("input", () => {
+      if (!fields.slug.value || fields.slug.value === state.selectedSlug) {
+        fields.slug.value = slugify(fields.title.value);
+      }
+    });
+
+    document.querySelector("#new-post").addEventListener("click", () => {
+      const post = blankPost();
+      post.slug = `${post.slug}-${Date.now()}`;
+      state.posts.unshift(post);
+      selectPost(post.slug);
+      saveState.textContent = "New draft created. Save to keep it.";
+    });
+
+    document.querySelector("#duplicate-post").addEventListener("click", () => {
+      const post = readFormPost();
+      post.title = `${post.title} Copy`;
+      post.slug = `${post.slug}-copy-${Date.now()}`;
+      post.status = "draft";
+      state.posts.unshift(post);
+      persistPosts();
+      selectPost(post.slug);
+    });
+
+    document.querySelector("#delete-post").addEventListener("click", () => {
+      if (!confirm("Delete this post from the local prototype?")) {
+        return;
+      }
+
+      state.posts = state.posts.filter((post) => post.slug !== state.selectedSlug);
+      persistPosts();
+      selectPost(state.posts[0]?.slug || blankPost().slug);
+    });
+
+    document.querySelector("#export-posts").addEventListener("click", exportPosts);
+    document.querySelector("#logout").addEventListener("click", () => {
+      sessionStorage.removeItem(SESSION_KEY);
+      location.reload();
+    });
+
+    if (sessionStorage.getItem(SESSION_KEY) === "true") {
+      loadSeedPosts().then((posts) => {
+        state.posts = posts;
+        showApp();
+        selectPost(posts[0]?.slug || blankPost().slug);
       });
     }
   </script>

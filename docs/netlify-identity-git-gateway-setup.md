@@ -1,4 +1,8 @@
-# Netlify Identity + Git Gateway Setup
+# Superseded: Netlify Identity + Git Gateway Setup
+
+This document is retained as historical context only. The site is being moved away from Decap CMS, Netlify Identity, and Git Gateway toward the custom AWS-native Anchor Blog Manager described in `docs/custom-cms-architecture.md`.
+
+The instructions below should not be used for new CMS setup.
 
 This repo is configured so Netlify can be used as the CMS/auth layer while AWS S3 + CloudFront remains the public production host.
 
