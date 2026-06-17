@@ -156,3 +156,23 @@ jobs:
         if: ${{ github.event.inputs.terraform_action == 'apply' }}
         working-directory: ${{ env.TERRAFORM_DIR }}
         run: terraform output
+
+      - name: Seed existing blog posts
+        if: ${{ github.event.inputs.terraform_action == 'apply' }}
+        env:
+          ANCHOR_CMS_SITE_ID: anchor-web-co
+        run: |
+          export ANCHOR_CMS_POSTS_TABLE="$(terraform -chdir="${TERRAFORM_DIR}" output -raw posts_table_name)"
+          node scripts/seed-cms-posts.js
+
+      - name: Install GitHub deploy token
+        if: ${{ github.event.inputs.terraform_action == 'apply' && secrets.CMS_GITHUB_TOKEN != '' }}
+        env:
+          CMS_GITHUB_TOKEN: ${{ secrets.CMS_GITHUB_TOKEN }}
+        run: |
+          PARAMETER_NAME="$(terraform -chdir="${TERRAFORM_DIR}" output -raw github_token_parameter)"
+          aws ssm put-parameter \
+            --name "$PARAMETER_NAME" \
+            --type "SecureString" \
+            --value "$CMS_GITHUB_TOKEN" \
+            --overwrite >/dev/null
