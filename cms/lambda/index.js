@@ -342,6 +342,15 @@ async function triggerDeploy(event, siteId) {
   });
 
   if (!response.ok) {
+    const responseBody = await response.text().catch(() => "");
+    console.error("GitHub deploy trigger failed", {
+      siteId,
+      repo: `${site.githubOwner}/${site.githubRepo}`,
+      workflow,
+      ref: site.githubRef || "main",
+      status: response.status,
+      responseBody: responseBody.slice(0, 500),
+    });
     return json(event, 502, { error: "GitHub deploy trigger failed.", status: response.status });
   }
 
