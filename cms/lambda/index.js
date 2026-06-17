@@ -220,8 +220,10 @@ function publicPost(post) {
 async function login(event, siteId) {
   const site = await getSite(siteId);
   const body = parseBody(event);
+  const username = String(body.username || "").trim().toLowerCase();
+  const password = String(body.password || "").trim();
 
-  if (body.username !== site.username || !verifyPassword(body.password, site.passwordHash)) {
+  if (username !== String(site.username || "").trim().toLowerCase() || !verifyPassword(password, site.passwordHash)) {
     return json(event, 401, { error: "Invalid login." });
   }
 
