@@ -166,6 +166,19 @@ jobs:
           export ANCHOR_CMS_POSTS_TABLE="$(terraform -chdir="${TERRAFORM_DIR}" output -raw posts_table_name)"
           node scripts/seed-cms-posts.js
 
+      - name: Sync CMS site config parameter
+        if: ${{ github.event.inputs.terraform_action == 'apply' }}
+        env:
+          CMS_SITE_CONFIGS_JSON: ${{ secrets.CMS_SITE_CONFIGS_JSON }}
+        run: |
+          PARAMETER_NAME="$(terraform -chdir="${TERRAFORM_DIR}" output -raw sites_config_parameter)"
+          CONFIG_VALUE="$(node -e 'process.stdout.write(JSON.stringify({ sites: JSON.parse(process.env.CMS_SITE_CONFIGS_JSON) }))')"
+          aws ssm put-parameter \
+            --name "$PARAMETER_NAME" \
+            --type "SecureString" \
+            --value "$CONFIG_VALUE" \
+            --overwrite >/dev/null
+
       - name: Install GitHub deploy token
         if: ${{ github.event.inputs.terraform_action == 'apply' }}
         env:

@@ -21,6 +21,7 @@ const env = {
 };
 
 let cachedSitesConfig;
+let cachedSitesConfigUntil = 0;
 
 function responseHeaders(event, extra = {}) {
   const origin = event.headers?.origin || event.headers?.Origin || "";
@@ -145,9 +146,10 @@ async function getSecureParameter(name) {
 }
 
 async function loadSitesConfig() {
-  if (cachedSitesConfig) return cachedSitesConfig;
+  if (cachedSitesConfig && Date.now() < cachedSitesConfigUntil) return cachedSitesConfig;
   const raw = await getSecureParameter(env.sitesConfigParameter);
   cachedSitesConfig = JSON.parse(raw);
+  cachedSitesConfigUntil = Date.now() + 30 * 1000;
   return cachedSitesConfig;
 }
 
