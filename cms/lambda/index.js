@@ -96,6 +96,9 @@ function verifySession(token, siteId) {
 }
 
 function getCookie(event, name) {
+  const apiGatewayCookie = (event.cookies || []).find((part) => part.startsWith(`${name}=`));
+  if (apiGatewayCookie) return apiGatewayCookie.slice(name.length + 1);
+
   const cookieHeader = event.headers?.cookie || event.headers?.Cookie || "";
   return cookieHeader
     .split(";")
