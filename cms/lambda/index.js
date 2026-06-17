@@ -224,6 +224,13 @@ async function login(event, siteId) {
   const password = String(body.password || "").trim();
 
   if (username !== String(site.username || "").trim().toLowerCase() || !verifyPassword(password, site.passwordHash)) {
+    console.warn("CMS login failed", {
+      siteId,
+      username,
+      expectedUsername: String(site.username || "").trim().toLowerCase(),
+      passwordLength: password.length,
+      origin: event.headers?.origin || event.headers?.Origin || "",
+    });
     return json(event, 401, { error: "Invalid login." });
   }
 
