@@ -168,7 +168,10 @@ async function getSite(siteId) {
 }
 
 function requireAuth(event, siteId) {
-  if (!verifySession(getCookie(event, "anchor_cms_session"), siteId)) {
+  const authHeader = event.headers?.authorization || event.headers?.Authorization || "";
+  const bearerToken = authHeader.toLowerCase().startsWith("bearer ") ? authHeader.slice(7).trim() : "";
+
+  if (!verifySession(bearerToken || getCookie(event, "anchor_cms_session"), siteId)) {
     return json(event, 401, { error: "Unauthorized" });
   }
   return null;
@@ -243,7 +246,7 @@ async function login(event, siteId) {
   return json(
     event,
     200,
-    { ok: true, siteId },
+    { ok: true, siteId, token },
     {
       "set-cookie": `anchor_cms_session=${token}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=28800`,
     },

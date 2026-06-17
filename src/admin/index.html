@@ -570,6 +570,7 @@
       selectedSlug: "",
       apiMode: false,
       dirty: false,
+      token: sessionStorage.getItem(`${SESSION_KEY}-token`) || "",
     };
 
     const el = {
@@ -692,6 +693,7 @@
         credentials: "include",
         headers: {
           "content-type": "application/json",
+          ...(state.token ? { authorization: `Bearer ${state.token}` } : {}),
           ...(options.headers || {}),
         },
         ...options,
@@ -901,6 +903,9 @@
         await apiRequest("/auth/login", {
           method: "POST",
           body: JSON.stringify({ username: fields.username.value.trim(), password: fields.password.value }),
+        }).then((payload) => {
+          state.token = payload.token || "";
+          if (state.token) sessionStorage.setItem(`${SESSION_KEY}-token`, state.token);
         });
         state.apiMode = true;
         sessionStorage.setItem(SESSION_KEY, "true");
@@ -984,6 +989,7 @@
 
     document.querySelector("#logout").addEventListener("click", () => {
       sessionStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem(`${SESSION_KEY}-token`);
       location.reload();
     });
 
