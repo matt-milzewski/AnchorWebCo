@@ -15,6 +15,16 @@ Build a small AWS-native blog manager that can be reused as a paid add-on for An
 
 ## Target Runtime Shape
 
+Status: deployed for Anchor Web Co on 2026-06-17.
+
+Live admin:
+
+- `https://www.anchorwebco.com.au/admin/`
+
+Live API:
+
+- `https://u0x9ignb0h.execute-api.ap-southeast-2.amazonaws.com`
+
 ### Public Site
 
 The public site should not call the CMS API in the browser. Instead:
@@ -45,14 +55,14 @@ For the MVP, the admin should support:
 
 ### AWS Services
 
-MVP AWS services:
+Current AWS services:
 
-- S3 for uploaded images
-- DynamoDB for post metadata/body
-- Lambda for the CMS API
-- API Gateway or Lambda Function URL for API access
-- SSM Parameter Store or Secrets Manager for password hash and signing secret
-- GitHub Actions workflow dispatch for rebuild/deploy
+- API Gateway HTTP API for `/api/cms/sites/{siteId}/...`
+- Lambda for auth, post CRUD, upload signing, and deploy triggering
+- DynamoDB on-demand table `anchor_blog_manager_posts`, partitioned by `siteId`
+- S3 bucket for uploaded blog images
+- SSM SecureString parameters for site config, session secret, and GitHub deploy token
+- GitHub Actions for Terraform deploy, post seeding, and static-site deploy
 
 Later, if this becomes a real multi-client product, add Cognito or another managed auth layer. Do not start there for the first experiment.
 
@@ -90,7 +100,21 @@ Only posts with `"status": "published"` should appear on the public site.
 
 ## Reusable Client Integration
 
-Each client site needs only:
+The backend is reusable. Add each client as a new object in `CMS_SITE_CONFIGS_JSON`:
+
+```json
+{
+  "siteId": "client-site-id",
+  "username": "client",
+  "passwordHash": "generated-with-cms-password-hash",
+  "githubOwner": "matt-milzewski",
+  "githubRepo": "clientRepo",
+  "githubWorkflow": "deploy.yml",
+  "githubRef": "main"
+}
+```
+
+Each client static site needs:
 
 1. a CMS data fetch/export step before build
 2. blog listing template
@@ -98,4 +122,42 @@ Each client site needs only:
 4. sitemap/feed integration
 5. optional admin link hidden from public navigation
 
-The CMS backend itself should stay separate from client repositories.
+The CMS backend itself should stay separate from client repositories. Client repos should only know:
+
+- `ANCHOR_CMS_API_BASE`
+- their own `ANCHOR_CMS_SITE_ID`
+- how to render the returned post JSON
+
+## Bannister Communications Reuse Plan
+
+1. Keep the existing shared CMS stack.
+2. Add or keep `bannister-communications` in `CMS_SITE_CONFIGS_JSON`.
+3. Add the same `scripts/fetch-cms-posts.js` pattern to the Bannister repo.
+4. Add Eleventy or framework-equivalent blog listing and blog post templates.
+5. Add repo variable `ANCHOR_CMS_API_BASE` with the shared API URL.
+6. Set `ANCHOR_CMS_SITE_ID=bannister-communications` in the Bannister build workflow.
+7. Deploy the Bannister site.
+8. Give Bannister their simple username/password and `/admin/` URL.
+
+## SEO Defaults
+
+The admin hides SEO by default but still fills it:
+
+- slug is generated from the title
+- search title defaults to the post title and is trimmed to search-result length
+- search description defaults to the summary, or article body if the summary is blank
+- the public templates use `seoTitle`, `seoDescription`, canonical URL, Open Graph, Twitter card, and the featured image
+
+The cheap default is deterministic extraction from the article. A later paid upgrade could add AI suggestions, but the baseline does not need an AI API or monthly SaaS cost.
+
+## Cost Shape
+
+The current architecture should stay cheap at small-client scale:
+
+- DynamoDB is on-demand and only stores blog records.
+- Lambda/API Gateway bill per request.
+- SSM parameters are low-cost.
+- S3 stores uploaded media.
+- Static sites remain on S3/CloudFront.
+
+Avoid per-client CMS services until a client needs more than blog CRUD.
