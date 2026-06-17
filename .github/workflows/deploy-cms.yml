@@ -166,10 +166,15 @@ jobs:
           node scripts/seed-cms-posts.js
 
       - name: Install GitHub deploy token
-        if: ${{ github.event.inputs.terraform_action == 'apply' && secrets.CMS_GITHUB_TOKEN != '' }}
+        if: ${{ github.event.inputs.terraform_action == 'apply' }}
         env:
           CMS_GITHUB_TOKEN: ${{ secrets.CMS_GITHUB_TOKEN }}
         run: |
+          if [ -z "$CMS_GITHUB_TOKEN" ]; then
+            echo "CMS_GITHUB_TOKEN is not configured; skipping deploy token install."
+            exit 0
+          fi
+
           PARAMETER_NAME="$(terraform -chdir="${TERRAFORM_DIR}" output -raw github_token_parameter)"
           aws ssm put-parameter \
             --name "$PARAMETER_NAME" \
