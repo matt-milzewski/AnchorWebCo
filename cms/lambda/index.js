@@ -54,7 +54,7 @@ function options(event) {
     statusCode: 204,
     headers: responseHeaders(event, {
       "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS",
-      "access-control-allow-headers": "content-type",
+      "access-control-allow-headers": "authorization,content-type",
       "access-control-max-age": "3600",
     }),
     body: "",
