@@ -162,6 +162,7 @@ jobs:
         env:
           ANCHOR_CMS_SITE_ID: anchor-web-co
         run: |
+          npm ci --omit=dev
           export ANCHOR_CMS_POSTS_TABLE="$(terraform -chdir="${TERRAFORM_DIR}" output -raw posts_table_name)"
           node scripts/seed-cms-posts.js
 
