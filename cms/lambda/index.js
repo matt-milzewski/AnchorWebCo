@@ -17,6 +17,7 @@ const env = {
   allowedOrigins: (process.env.CMS_ALLOWED_ORIGINS || "").split(",").map((origin) => origin.trim()).filter(Boolean),
   githubTokenParameter: process.env.GITHUB_TOKEN_PARAMETER,
   defaultWorkflow: process.env.GITHUB_WORKFLOW || "deploy.yml",
+  awsRegion: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "ap-southeast-2",
 };
 
 let cachedSitesConfig;
@@ -113,6 +114,31 @@ function slugify(value = "") {
     .replace(/^-+|-+$/g, "");
 }
 
+function stripHtml(value = "") {
+  return String(value)
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function truncateSentence(value, maxLength) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (text.length <= maxLength) return text;
+  const clipped = text.slice(0, maxLength + 1);
+  const sentenceEnd = Math.max(clipped.lastIndexOf(". "), clipped.lastIndexOf("? "), clipped.lastIndexOf("! "));
+  if (sentenceEnd >= 80) return clipped.slice(0, sentenceEnd + 1).trim();
+  const lastSpace = clipped.lastIndexOf(" ");
+  return `${clipped.slice(0, lastSpace > 80 ? lastSpace : maxLength).trim()}...`;
+}
+
 async function getSecureParameter(name) {
   const result = await ssm.send(new GetParameterCommand({ Name: name, WithDecryption: true }));
   return result.Parameter?.Value || "";
@@ -150,17 +176,24 @@ function normalizePost(input, siteId) {
     throw new Error("Post title and slug are required.");
   }
 
+  const title = String(input.title).trim();
+  const body = String(input.body || "");
+  const plainBody = stripHtml(body);
+  const description = truncateSentence(input.description || plainBody, 155);
+  const seoTitle = truncateSentence(input.seoTitle || title, 60);
+  const seoDescription = truncateSentence(input.seoDescription || description || plainBody, 155);
+
   return {
     siteId,
     slug,
-    title: String(input.title),
+    title,
     date: String(input.date || new Date().toISOString().slice(0, 10)),
     status: input.status === "published" ? "published" : "draft",
-    description: String(input.description || ""),
-    seoTitle: String(input.seoTitle || input.title),
-    seoDescription: String(input.seoDescription || input.description || ""),
+    description,
+    seoTitle,
+    seoDescription,
     featuredImage: String(input.featuredImage || ""),
-    body: String(input.body || ""),
+    body,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -267,7 +300,7 @@ async function signUpload(event, siteId) {
   return json(event, 200, {
     key,
     uploadUrl: await getSignedUrl(s3, command, { expiresIn: 300 }),
-    publicUrl: `/images/blog/${key.split("/").pop()}`,
+    publicUrl: `https://${env.mediaBucket}.s3.${env.awsRegion}.amazonaws.com/${key}`,
   });
 }
 

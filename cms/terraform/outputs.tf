@@ -18,6 +18,11 @@ output "media_bucket_name" {
   value       = aws_s3_bucket.media.bucket
 }
 
+output "media_base_url" {
+  description = "Public base URL for CMS-uploaded media"
+  value       = "https://${aws_s3_bucket.media.bucket}.s3.${var.aws_region}.amazonaws.com"
+}
+
 output "sites_config_parameter" {
   description = "SSM parameter storing CMS site configuration"
   value       = aws_ssm_parameter.sites_config.name

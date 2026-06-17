@@ -4,18 +4,27 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
-  <title>Anchor Blog Manager</title>
+  <title>Anchor Blog Console</title>
   <script>
     window.ANCHOR_CMS_API_BASE = window.ANCHOR_CMS_API_BASE || "";
   </script>
   <style>
     :root {
-      --ink: #0a0a0a;
-      --muted: #5f6673;
-      --line: #dedbd2;
-      --surface: #fafaf7;
-      --accent: #38bdf8;
-      --danger: #b42318;
+      color-scheme: light;
+      --ink: #151515;
+      --soft-ink: #3f454d;
+      --muted: #6f7782;
+      --line: #dde2e7;
+      --panel: #ffffff;
+      --surface: #f5f7f8;
+      --surface-strong: #edf2f5;
+      --accent: #007a7a;
+      --accent-strong: #005f5f;
+      --accent-soft: #e1f5f3;
+      --warning: #9a5b00;
+      --danger: #a12828;
+      --ok: #177245;
+      --shadow: 0 18px 48px rgba(17, 24, 39, 0.1);
     }
 
     * {
@@ -24,6 +33,7 @@
 
     body {
       margin: 0;
+      min-height: 100vh;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--ink);
       background: var(--surface);
@@ -36,39 +46,151 @@
       font: inherit;
     }
 
-    .shell {
+    button {
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .login-screen {
       min-height: 100vh;
       display: grid;
-      grid-template-columns: 320px minmax(0, 1fr);
+      place-items: center;
+      padding: 24px;
+    }
+
+    .login-panel {
+      width: min(100%, 420px);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr) 340px;
+    }
+
+    .sidebar,
+    .assist {
+      background: var(--panel);
+      border-color: var(--line);
+      border-style: solid;
     }
 
     .sidebar {
-      border-right: 1px solid var(--line);
-      background: #fff;
-      padding: 24px;
+      border-width: 0 1px 0 0;
+      padding: 20px;
+      overflow: auto;
+    }
+
+    .assist {
+      border-width: 0 0 0 1px;
+      padding: 20px;
+      overflow: auto;
     }
 
     .brand {
       display: grid;
       gap: 4px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .brand strong {
-      font-size: 20px;
+      font-size: 19px;
+      letter-spacing: 0;
     }
 
     .brand span,
-    .meta {
+    .meta,
+    .hint {
       color: var(--muted);
       font-size: 13px;
+      line-height: 1.45;
     }
 
-    .toolbar {
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      border-radius: 999px;
+      background: var(--surface-strong);
+      color: var(--soft-ink);
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status-pill::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--warning);
+    }
+
+    .status-pill.live::before {
+      background: var(--ok);
+    }
+
+    .top-actions,
+    .button-row {
       display: flex;
-      gap: 8px;
       flex-wrap: wrap;
-      margin-bottom: 16px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .top-actions {
+      margin-bottom: 18px;
+    }
+
+    .btn {
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      border-radius: 7px;
+      min-height: 40px;
+      padding: 9px 13px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .btn:hover {
+      background: var(--accent-strong);
+      border-color: var(--accent-strong);
+    }
+
+    .btn.secondary {
+      background: #fff;
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .btn.secondary:hover {
+      background: var(--surface-strong);
+      border-color: #c9d1d8;
+    }
+
+    .btn.danger {
+      background: var(--danger);
+      border-color: var(--danger);
+    }
+
+    .btn.full {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .search {
+      width: 100%;
+      margin-bottom: 12px;
     }
 
     .post-list {
@@ -78,60 +200,67 @@
 
     .post-button {
       width: 100%;
-      text-align: left;
       border: 1px solid var(--line);
       background: #fff;
       border-radius: 8px;
-      padding: 10px;
-      cursor: pointer;
+      padding: 12px;
+      text-align: left;
     }
 
     .post-button[aria-current="true"] {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.18);
+      box-shadow: 0 0 0 3px var(--accent-soft);
     }
 
     .post-button strong {
       display: block;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       line-height: 1.25;
     }
 
     main {
-      padding: 32px;
+      min-width: 0;
+      padding: 22px;
+      overflow: auto;
     }
 
-    .panel {
-      max-width: 980px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 24px;
-    }
-
-    .login {
-      max-width: 420px;
-      margin: 12vh auto;
-    }
-
-    .grid {
+    .editor {
+      max-width: 960px;
+      margin: 0 auto;
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
+    }
+
+    .editor-head,
+    .editor-card,
+    .help-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .editor-head {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .editor-card,
+    .help-card {
+      padding: 18px;
     }
 
     .field {
       display: grid;
-      gap: 6px;
-      margin-bottom: 16px;
+      gap: 7px;
     }
 
-    .field.full {
-      grid-column: 1 / -1;
+    .field + .field {
+      margin-top: 14px;
     }
 
     label {
-      font-weight: 700;
+      font-weight: 850;
       font-size: 13px;
     }
 
@@ -140,210 +269,340 @@
     select {
       width: 100%;
       border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 10px 12px;
+      border-radius: 7px;
       background: #fff;
+      color: var(--ink);
+      padding: 10px 11px;
+      outline: none;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
     }
 
     textarea {
-      min-height: 260px;
+      min-height: 280px;
       resize: vertical;
-      font-family: "SFMono-Regular", Consolas, monospace;
-      line-height: 1.55;
+      line-height: 1.58;
     }
 
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid var(--line);
-      padding-top: 16px;
-      margin-top: 8px;
+    #article-body {
+      min-height: 520px;
+      font-size: 16px;
     }
 
-    .action-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      border: 1px solid var(--ink);
-      background: var(--ink);
-      color: #fff;
-      border-radius: 8px;
-      padding: 10px 14px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    .btn.secondary {
-      background: #fff;
-      color: var(--ink);
-    }
-
-    .btn.danger {
-      background: var(--danger);
-      border-color: var(--danger);
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
     }
 
     .notice {
-      padding: 12px 14px;
+      border: 1px solid #bfe8df;
+      background: var(--accent-soft);
+      color: #174b43;
       border-radius: 8px;
-      background: #ecfeff;
-      border: 1px solid #bae6fd;
-      color: #155e75;
-      margin-bottom: 16px;
-      font-size: 14px;
+      padding: 11px 12px;
+      font-size: 13px;
+      line-height: 1.45;
     }
 
-    .hidden {
-      display: none;
+    .warning {
+      border-color: #f0d29a;
+      background: #fff8e8;
+      color: #5f3b00;
     }
 
-    @media (max-width: 840px) {
-      .shell {
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 15px;
+    }
+
+    .preview-title {
+      color: #1a0dab;
+      font-size: 18px;
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+
+    .preview-url {
+      color: #006621;
+      font-size: 13px;
+      margin-bottom: 6px;
+      word-break: break-word;
+    }
+
+    .preview-desc {
+      color: #545454;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .quality-list {
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .quality-list li {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      color: var(--soft-ink);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .quality-list li::before {
+      content: "";
+      flex: 0 0 auto;
+      width: 8px;
+      height: 8px;
+      margin-top: 5px;
+      border-radius: 50%;
+      background: var(--warning);
+    }
+
+    .quality-list li.good::before {
+      background: var(--ok);
+    }
+
+    details {
+      border-top: 1px solid var(--line);
+      margin-top: 16px;
+      padding-top: 14px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 850;
+      color: var(--soft-ink);
+    }
+
+    .image-preview {
+      display: block;
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    @media (max-width: 1180px) {
+      .app-shell {
+        grid-template-columns: 300px minmax(0, 1fr);
+      }
+
+      .assist {
+        grid-column: 1 / -1;
+        border-width: 1px 0 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app-shell,
+      .assist,
+      .split {
         grid-template-columns: 1fr;
       }
 
       .sidebar {
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
+        border-width: 0 0 1px;
       }
 
       main {
-        padding: 18px;
-      }
-
-      .grid {
-        grid-template-columns: 1fr;
+        padding: 14px;
       }
     }
   </style>
 </head>
 <body>
-  <section id="login-view" class="panel login">
-    <div class="brand">
-      <strong>Anchor Blog Manager</strong>
-      <span>Local prototype for the AWS CMS flow.</span>
-    </div>
-    <div class="notice">
-      Demo login only. Production auth will be enforced by Lambda with a hashed password, secure cookie, and rate limiting.
-    </div>
-    <form id="login-form">
+  <section id="login-view" class="login-screen">
+    <form id="login-form" class="login-panel">
+      <div class="brand">
+        <strong>Blog Console</strong>
+        <span>Anchor Web Co content manager</span>
+      </div>
       <div class="field">
         <label for="username">Username</label>
-        <input id="username" autocomplete="username" value="anchor">
+        <input id="username" autocomplete="username" placeholder="Enter your username" required>
       </div>
       <div class="field">
         <label for="password">Password</label>
-        <input id="password" type="password" autocomplete="current-password" value="demo-password">
+        <input id="password" type="password" autocomplete="current-password" placeholder="Enter your password" required>
       </div>
-      <button class="btn" type="submit">Log in</button>
+      <div class="field">
+        <button class="btn full" type="submit">Log in</button>
+      </div>
+      <p class="hint" id="login-hint">Use the CMS username and password from the local setup notes.</p>
     </form>
   </section>
 
-  <section id="app-view" class="shell hidden">
+  <section id="app-view" class="app-shell hidden">
     <aside class="sidebar">
       <div class="brand">
-        <strong>Anchor Blog Manager</strong>
-        <span>One-site blog CMS prototype</span>
+        <strong>Blog Console</strong>
+        <span id="mode-label">Connecting...</span>
       </div>
-      <div class="toolbar">
-        <button class="btn" id="new-post" type="button">New</button>
-        <button class="btn secondary" id="publish-site" type="button">Publish Site</button>
-        <button class="btn secondary" id="export-posts" type="button">Export JSON</button>
-        <button class="btn secondary" id="logout" type="button">Log out</button>
+      <div class="top-actions">
+        <button class="btn" id="new-post" type="button">New post</button>
+        <button class="btn secondary" id="publish-site" type="button">Publish site</button>
       </div>
+      <input id="post-search" class="search" placeholder="Search posts">
       <p class="meta" id="post-count"></p>
       <div class="post-list" id="post-list"></div>
     </aside>
 
     <main>
-      <form class="panel" id="post-form">
-        <div class="notice">
-          API mode saves posts through `/api/cms/sites/anchor-web-co`. If the API is not configured yet, this page falls back to browser storage and JSON export.
-        </div>
-        <div class="grid">
+      <form class="editor" id="post-form">
+        <section class="editor-head">
+          <div class="notice" id="connection-notice"></div>
           <div class="field">
-            <label for="title">Title</label>
-            <input id="title" required>
+            <label for="title">Post title</label>
+            <input id="title" placeholder="Example: How to choose a local web designer" required>
           </div>
-          <div class="field">
-            <label for="slug">Slug</label>
-            <input id="slug" required>
+          <div class="split">
+            <div class="field">
+              <label for="date">Publish date</label>
+              <input id="date" type="date" required>
+            </div>
+            <div class="field">
+              <label for="status">Visibility</label>
+              <select id="status">
+                <option value="draft">Draft - hidden from website</option>
+                <option value="published">Published - shown on website</option>
+              </select>
+            </div>
           </div>
-          <div class="field">
-            <label for="date">Date</label>
-            <input id="date" type="date" required>
-          </div>
-          <div class="field">
-            <label for="status">Status</label>
-            <select id="status">
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-            </select>
-          </div>
-          <div class="field full">
-            <label for="description">Excerpt / Meta Description</label>
-            <textarea id="description" style="min-height: 86px;"></textarea>
-          </div>
-          <div class="field">
-            <label for="seo-title">SEO Title</label>
-            <input id="seo-title">
-          </div>
-          <div class="field">
-            <label for="featured-image">Featured Image URL</label>
-            <input id="featured-image" placeholder="/images/blog/example.png">
-          </div>
-          <div class="field full">
-            <label for="body">Body HTML</label>
-            <textarea id="body"></textarea>
-          </div>
-        </div>
-        <div class="actions">
-          <span class="meta" id="save-state">Not saved yet.</span>
-          <div class="action-group">
+          <div class="button-row">
+            <button class="btn" type="submit">Save post</button>
             <button class="btn secondary" id="duplicate-post" type="button">Duplicate</button>
             <button class="btn danger" id="delete-post" type="button">Delete</button>
-            <button class="btn" type="submit">Save Post</button>
+            <span class="meta" id="save-state">No post loaded.</span>
           </div>
-        </div>
+        </section>
+
+        <section class="editor-card">
+          <div class="field">
+            <label for="description">Short summary</label>
+            <textarea id="description" placeholder="A one or two sentence summary. If you leave this blank, the console will create one from the article." style="min-height: 92px;"></textarea>
+          </div>
+          <div class="field">
+            <label for="article-body">Article</label>
+            <textarea id="article-body" placeholder="Write naturally. Use a blank line between paragraphs. Start a line with ## for a section heading."></textarea>
+            <span class="hint">The website will format paragraphs and section headings for you.</span>
+          </div>
+        </section>
+
+        <section class="editor-card">
+          <h2 class="section-title">Featured image</h2>
+          <img id="image-preview" class="image-preview hidden" alt="">
+          <div class="split">
+            <div class="field">
+              <label for="image-upload">Upload image</label>
+              <input id="image-upload" type="file" accept="image/*">
+            </div>
+            <div class="field">
+              <label for="featured-image">Image URL</label>
+              <input id="featured-image" placeholder="/img/og-image.webp">
+            </div>
+          </div>
+        </section>
+
+        <section class="editor-card">
+          <details>
+            <summary>Advanced search settings</summary>
+            <div class="field">
+              <label for="slug">URL slug</label>
+              <input id="slug" required>
+            </div>
+            <div class="field">
+              <label for="seo-title">Search title</label>
+              <input id="seo-title">
+            </div>
+            <div class="field">
+              <label for="seo-description">Search description</label>
+              <textarea id="seo-description" style="min-height: 92px;"></textarea>
+            </div>
+          </details>
+        </section>
       </form>
     </main>
+
+    <aside class="assist">
+      <section class="help-card">
+        <h2 class="section-title">Search preview</h2>
+        <div class="preview-title" id="preview-title">Post title</div>
+        <div class="preview-url" id="preview-url">anchorwebco.com.au/blog/post-url/</div>
+        <div class="preview-desc" id="preview-desc">The summary shown in Google will appear here.</div>
+      </section>
+      <section class="help-card">
+        <h2 class="section-title">Writing checks</h2>
+        <ul class="quality-list" id="quality-list"></ul>
+      </section>
+      <section class="help-card">
+        <h2 class="section-title">Simple tips</h2>
+        <p class="hint">Use short paragraphs. Add helpful headings with <strong>## Heading</strong>. Save as draft until it is ready, then switch visibility to published and press Publish site.</p>
+      </section>
+      <section class="help-card">
+        <button class="btn secondary full" id="logout" type="button">Log out</button>
+      </section>
+    </aside>
   </section>
 
   <script>
-    const STORAGE_KEY = "anchor-blog-manager-posts";
-    const SESSION_KEY = "anchor-blog-manager-session";
+    const STORAGE_KEY = "anchor-blog-console-posts";
+    const SESSION_KEY = "anchor-blog-console-session";
     const SITE_ID = "anchor-web-co";
-    const API_BASE = window.ANCHOR_CMS_API_BASE || "";
-    const DEMO_USER = "anchor";
-    const DEMO_PASS = "demo-password";
+    const API_BASE = (window.ANCHOR_CMS_API_BASE || "").replace(/\/$/, "");
 
     const state = {
       posts: [],
       selectedSlug: "",
       apiMode: false,
+      dirty: false,
     };
 
-    const loginView = document.querySelector("#login-view");
-    const appView = document.querySelector("#app-view");
-    const postList = document.querySelector("#post-list");
-    const postCount = document.querySelector("#post-count");
-    const saveState = document.querySelector("#save-state");
+    const el = {
+      loginView: document.querySelector("#login-view"),
+      appView: document.querySelector("#app-view"),
+      loginForm: document.querySelector("#login-form"),
+      loginHint: document.querySelector("#login-hint"),
+      modeLabel: document.querySelector("#mode-label"),
+      connectionNotice: document.querySelector("#connection-notice"),
+      postList: document.querySelector("#post-list"),
+      postCount: document.querySelector("#post-count"),
+      postSearch: document.querySelector("#post-search"),
+      saveState: document.querySelector("#save-state"),
+      qualityList: document.querySelector("#quality-list"),
+      imagePreview: document.querySelector("#image-preview"),
+      previewTitle: document.querySelector("#preview-title"),
+      previewUrl: document.querySelector("#preview-url"),
+      previewDesc: document.querySelector("#preview-desc"),
+    };
 
     const fields = {
+      username: document.querySelector("#username"),
+      password: document.querySelector("#password"),
       title: document.querySelector("#title"),
       slug: document.querySelector("#slug"),
       date: document.querySelector("#date"),
       status: document.querySelector("#status"),
       description: document.querySelector("#description"),
       seoTitle: document.querySelector("#seo-title"),
+      seoDescription: document.querySelector("#seo-description"),
       featuredImage: document.querySelector("#featured-image"),
-      body: document.querySelector("#body"),
+      body: document.querySelector("#article-body"),
+      imageUpload: document.querySelector("#image-upload"),
     };
 
     function slugify(value) {
@@ -361,21 +620,74 @@
       return new Date().toISOString().slice(0, 10);
     }
 
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function htmlToPlain(value) {
+      const template = document.createElement("template");
+      template.innerHTML = String(value || "")
+        .replace(/<\/(p|h2|h3|li)>/gi, "\n\n")
+        .replace(/<br\s*\/?>/gi, "\n");
+      return template.content.textContent.replace(/\n{3,}/g, "\n\n").trim();
+    }
+
+    function plainToHtml(value) {
+      return String(value || "")
+        .split(/\n{2,}/)
+        .map((block) => block.trim())
+        .filter(Boolean)
+        .map((block) => {
+          if (block.startsWith("### ")) {
+            return `<h3 class="text-xl font-poppins font-bold mb-4 text-anchor-navy">${escapeHtml(block.slice(4))}</h3>`;
+          }
+          if (block.startsWith("## ")) {
+            return `<h2 class="text-2xl font-poppins font-bold mb-6 text-anchor-navy">${escapeHtml(block.slice(3))}</h2>`;
+          }
+          return `<p class="text-lg mb-6">${escapeHtml(block).replace(/\n/g, "<br>")}</p>`;
+        })
+        .join("\n");
+    }
+
+    function stripText(value) {
+      return htmlToPlain(value).replace(/\s+/g, " ").trim();
+    }
+
+    function truncate(value, max) {
+      const text = String(value || "").replace(/\s+/g, " ").trim();
+      if (text.length <= max) return text;
+      const clipped = text.slice(0, max + 1);
+      const sentence = Math.max(clipped.lastIndexOf(". "), clipped.lastIndexOf("? "), clipped.lastIndexOf("! "));
+      if (sentence >= 80) return clipped.slice(0, sentence + 1).trim();
+      const space = clipped.lastIndexOf(" ");
+      return `${clipped.slice(0, space > 80 ? space : max).trim()}...`;
+    }
+
+    function autoDescription() {
+      return truncate(fields.description.value || fields.body.value, 155);
+    }
+
     function blankPost() {
       return {
-        title: "Untitled post",
-        slug: "untitled-post",
+        title: "",
+        slug: "",
         date: today(),
         status: "draft",
         description: "",
         seoTitle: "",
         seoDescription: "",
-        featuredImage: "",
-        body: "<p>Write the article body here.</p>",
+        featuredImage: "/img/og-image.webp",
+        body: "",
       };
     }
 
     async function apiRequest(path, options = {}) {
+      if (!API_BASE) throw new Error("CMS API is not configured yet.");
       const response = await fetch(`${API_BASE}/api/cms/sites/${SITE_ID}${path}`, {
         credentials: "include",
         headers: {
@@ -384,29 +696,16 @@
         },
         ...options,
       });
-
       const payload = response.status === 204 ? {} : await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new Error(payload.error || `CMS API request failed: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(payload.error || `CMS request failed: ${response.status}`);
       return payload;
     }
 
     async function loadSeedPosts() {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        return JSON.parse(saved);
-      }
-
-      try {
-        const response = await fetch("/admin/seed-blog-posts.json", { cache: "no-store" });
-        if (response.ok) {
-          return await response.json();
-        }
-      } catch (error) {
-        console.warn("Unable to load seed posts", error);
-      }
-
+      if (saved) return JSON.parse(saved);
+      const response = await fetch("/admin/seed-blog-posts.json", { cache: "no-store" });
+      if (response.ok) return response.json();
       return [blankPost()];
     }
 
@@ -415,172 +714,244 @@
         const payload = await apiRequest("/posts");
         return payload.posts || [];
       }
-
       return loadSeedPosts();
     }
 
-    function persistPosts() {
+    function persistLocalPosts() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state.posts, null, 2));
     }
 
+    function setConnected() {
+      el.modeLabel.textContent = state.apiMode ? "Live AWS CMS" : "Local draft mode";
+      el.connectionNotice.textContent = state.apiMode
+        ? "Connected to the live AWS CMS. Saved published posts can be deployed to the website."
+        : "Local draft mode is active. Deploy the CMS API to save posts for the live website.";
+      el.connectionNotice.classList.toggle("warning", !state.apiMode);
+    }
+
     function showApp() {
-      loginView.classList.add("hidden");
-      appView.classList.remove("hidden");
+      el.loginView.classList.add("hidden");
+      el.appView.classList.remove("hidden");
+      setConnected();
+    }
+
+    function currentPost() {
+      return state.posts.find((post) => post.slug === state.selectedSlug) || state.posts[0] || blankPost();
     }
 
     function selectPost(slug) {
-      state.selectedSlug = slug;
       const post = state.posts.find((item) => item.slug === slug) || state.posts[0] || blankPost();
       state.selectedSlug = post.slug;
-
       fields.title.value = post.title || "";
-      fields.slug.value = post.slug || "";
+      fields.slug.value = post.slug || slugify(post.title || "");
       fields.date.value = post.date || today();
       fields.status.value = post.status || "draft";
       fields.description.value = post.description || "";
       fields.seoTitle.value = post.seoTitle || "";
+      fields.seoDescription.value = post.seoDescription || "";
       fields.featuredImage.value = post.featuredImage || "";
-      fields.body.value = post.body || "";
-
-      renderPostList();
-      saveState.textContent = "Loaded.";
-    }
-
-    function renderPostList() {
-      const published = state.posts.filter((post) => post.status === "published").length;
-      postCount.textContent = `${state.posts.length} posts, ${published} published · ${state.apiMode ? "API mode" : "local mode"}`;
-      postList.innerHTML = "";
-
-      state.posts
-        .slice()
-        .sort((left, right) => new Date(right.date) - new Date(left.date))
-        .forEach((post) => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.className = "post-button";
-          button.setAttribute("aria-current", post.slug === state.selectedSlug ? "true" : "false");
-          button.innerHTML = `<strong>${post.title}</strong><span class="meta">${post.status} · ${post.date}</span>`;
-          button.addEventListener("click", () => selectPost(post.slug));
-          postList.appendChild(button);
-        });
+      fields.body.value = htmlToPlain(post.body || "");
+      fields.imageUpload.value = "";
+      state.dirty = false;
+      render();
+      el.saveState.textContent = "Loaded.";
     }
 
     function readFormPost() {
+      const title = fields.title.value.trim() || "Untitled post";
+      const slug = slugify(fields.slug.value || title);
+      const body = plainToHtml(fields.body.value);
+      const description = truncate(fields.description.value || fields.body.value, 155);
       return {
-        title: fields.title.value.trim(),
-        slug: slugify(fields.slug.value || fields.title.value),
+        title,
+        slug,
         date: fields.date.value || today(),
         status: fields.status.value,
-        description: fields.description.value.trim(),
-        seoTitle: fields.seoTitle.value.trim() || fields.title.value.trim(),
-        seoDescription: fields.description.value.trim(),
+        description,
+        seoTitle: truncate(fields.seoTitle.value || title, 60),
+        seoDescription: truncate(fields.seoDescription.value || description || fields.body.value, 155),
         featuredImage: fields.featuredImage.value.trim(),
-        body: fields.body.value.trim(),
+        body,
       };
     }
 
-    function saveCurrentPost() {
-      const post = readFormPost();
-      const existingIndex = state.posts.findIndex((item) => item.slug === state.selectedSlug);
-      const slugCollision = state.posts.some((item, index) => item.slug === post.slug && index !== existingIndex);
-
-      if (slugCollision) {
-        alert("Another post already uses that slug.");
-        return;
-      }
-
-      if (existingIndex >= 0) {
-        state.posts[existingIndex] = post;
-      } else {
-        state.posts.unshift(post);
-      }
-
-      state.selectedSlug = post.slug;
-      persistPosts();
-      renderPostList();
-      saveState.textContent = `Saved ${new Date().toLocaleTimeString()}.`;
+    function renderPostList() {
+      const query = el.postSearch.value.trim().toLowerCase();
+      const posts = state.posts
+        .filter((post) => !query || `${post.title} ${post.slug}`.toLowerCase().includes(query))
+        .sort((left, right) => new Date(right.date) - new Date(left.date));
+      const published = state.posts.filter((post) => post.status === "published").length;
+      el.postCount.textContent = `${state.posts.length} posts, ${published} published`;
+      el.postList.innerHTML = "";
+      posts.forEach((post) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "post-button";
+        button.setAttribute("aria-current", post.slug === state.selectedSlug ? "true" : "false");
+        button.innerHTML = `<strong>${escapeHtml(post.title || "Untitled post")}</strong><span class="status-pill ${post.status === "published" ? "live" : ""}">${post.status === "published" ? "Published" : "Draft"}</span><div class="meta">${escapeHtml(post.date || "")}</div>`;
+        button.addEventListener("click", () => selectPost(post.slug));
+        el.postList.appendChild(button);
+      });
     }
 
-    async function saveCurrentPostAsync() {
+    function renderAssistant() {
       const post = readFormPost();
+      const plain = stripText(post.body);
+      const wordCount = plain ? plain.split(/\s+/).length : 0;
+      const checks = [
+        { good: post.title.length >= 12, text: "Use a clear title that explains the article." },
+        { good: post.description.length >= 70 && post.description.length <= 155, text: "Keep the summary around one or two sentences." },
+        { good: wordCount >= 250, text: "Aim for at least 250 words for a useful article." },
+        { good: /<h2|<h3/.test(post.body), text: "Add section headings with ## to make the post easy to scan." },
+        { good: Boolean(post.featuredImage), text: "Add a featured image before publishing." },
+      ];
+      el.previewTitle.textContent = post.seoTitle || post.title || "Post title";
+      el.previewUrl.textContent = `anchorwebco.com.au/blog/${post.slug || "post-url"}/`;
+      el.previewDesc.textContent = post.seoDescription || "The summary shown in Google will appear here.";
+      el.qualityList.innerHTML = checks
+        .map((check) => `<li class="${check.good ? "good" : ""}">${escapeHtml(check.text)}</li>`)
+        .join("");
+      if (post.featuredImage) {
+        el.imagePreview.src = post.featuredImage;
+        el.imagePreview.classList.remove("hidden");
+      } else {
+        el.imagePreview.classList.add("hidden");
+      }
+    }
 
+    function render() {
+      renderPostList();
+      renderAssistant();
+    }
+
+    async function saveCurrentPost() {
+      const post = readFormPost();
+      const previousSlug = state.selectedSlug;
+      const existingIndex = state.posts.findIndex((item) => item.slug === previousSlug || item.slug === post.slug);
+      const collision = state.posts.some((item, index) => item.slug === post.slug && index !== existingIndex);
+      if (collision) {
+        alert("Another post already uses that URL slug.");
+        return;
+      }
       if (state.apiMode) {
         const payload = await apiRequest(`/posts/${encodeURIComponent(post.slug)}`, {
           method: "PUT",
           body: JSON.stringify(post),
         });
-        const existingIndex = state.posts.findIndex((item) => item.slug === state.selectedSlug || item.slug === payload.post.slug);
-        if (existingIndex >= 0) {
-          state.posts[existingIndex] = payload.post;
-        } else {
-          state.posts.unshift(payload.post);
+        if (previousSlug && previousSlug !== payload.post.slug) {
+          await apiRequest(`/posts/${encodeURIComponent(previousSlug)}`, { method: "DELETE" }).catch(() => {});
         }
+        if (existingIndex >= 0) state.posts[existingIndex] = payload.post;
+        else state.posts.unshift(payload.post);
         state.selectedSlug = payload.post.slug;
-        renderPostList();
-        saveState.textContent = `Saved to API ${new Date().toLocaleTimeString()}.`;
+      } else {
+        if (existingIndex >= 0) state.posts[existingIndex] = post;
+        else state.posts.unshift(post);
+        state.selectedSlug = post.slug;
+        persistLocalPosts();
+      }
+      state.dirty = false;
+      render();
+      el.saveState.textContent = `Saved ${new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}.`;
+    }
+
+    async function deleteCurrentPost() {
+      const post = currentPost();
+      if (!post.slug || !confirm(`Delete "${post.title || "this post"}"?`)) return;
+      if (state.apiMode) {
+        await apiRequest(`/posts/${encodeURIComponent(post.slug)}`, { method: "DELETE" });
+      }
+      state.posts = state.posts.filter((item) => item.slug !== post.slug);
+      if (!state.apiMode) persistLocalPosts();
+      selectPost(state.posts[0]?.slug || "");
+    }
+
+    async function uploadImage(file) {
+      if (!file) return;
+      if (!state.apiMode) {
+        alert("Image upload is available after the CMS API is deployed.");
+        fields.imageUpload.value = "";
         return;
       }
-
-      saveCurrentPost();
+      el.saveState.textContent = "Uploading image...";
+      const signed = await apiRequest("/uploads/sign", {
+        method: "POST",
+        body: JSON.stringify({ filename: file.name, contentType: file.type || "application/octet-stream" }),
+      });
+      const upload = await fetch(signed.uploadUrl, {
+        method: "PUT",
+        headers: { "content-type": file.type || "application/octet-stream" },
+        body: file,
+      });
+      if (!upload.ok) throw new Error(`Image upload failed: ${upload.status}`);
+      fields.featuredImage.value = signed.publicUrl;
+      el.saveState.textContent = "Image uploaded. Save the post to keep it.";
+      markDirty();
+      renderAssistant();
     }
 
-    function exportPosts() {
-      const blob = new Blob([JSON.stringify(state.posts, null, 2) + "\n"], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "cmsBlogPosts.json";
-      link.click();
-      URL.revokeObjectURL(url);
+    function markDirty() {
+      state.dirty = true;
+      el.saveState.textContent = "Unsaved changes.";
     }
 
-    document.querySelector("#login-form").addEventListener("submit", async (event) => {
+    el.loginForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const username = document.querySelector("#username").value;
-      const password = document.querySelector("#password").value;
-
       try {
         await apiRequest("/auth/login", {
           method: "POST",
-          body: JSON.stringify({ username, password }),
+          body: JSON.stringify({ username: fields.username.value.trim(), password: fields.password.value }),
         });
         state.apiMode = true;
+        sessionStorage.setItem(SESSION_KEY, "true");
+        state.posts = await loadPosts();
+        showApp();
+        selectPost(state.posts[0]?.slug || "");
       } catch (error) {
-        if (username !== DEMO_USER || password !== DEMO_PASS) {
-          alert("Login failed. When API mode is unavailable, demo credentials are anchor / demo-password.");
-          return;
-        }
-        state.apiMode = false;
+        el.loginHint.textContent = error.message;
       }
-
-      sessionStorage.setItem(SESSION_KEY, "true");
-      sessionStorage.setItem(`${SESSION_KEY}-api`, state.apiMode ? "true" : "false");
-      state.posts = await loadPosts();
-      showApp();
-      selectPost(state.posts[0]?.slug || blankPost().slug);
     });
 
     document.querySelector("#post-form").addEventListener("submit", async (event) => {
       event.preventDefault();
       try {
-        await saveCurrentPostAsync();
+        await saveCurrentPost();
       } catch (error) {
         alert(error.message);
       }
     });
 
     fields.title.addEventListener("input", () => {
-      if (!fields.slug.value || fields.slug.value === state.selectedSlug) {
-        fields.slug.value = slugify(fields.title.value);
-      }
+      if (!fields.slug.value || fields.slug.value === state.selectedSlug) fields.slug.value = slugify(fields.title.value);
+      if (!fields.seoTitle.value) fields.seoTitle.value = truncate(fields.title.value, 60);
+      markDirty();
+      renderAssistant();
     });
+
+    [fields.slug, fields.date, fields.status, fields.description, fields.seoTitle, fields.seoDescription, fields.featuredImage, fields.body].forEach((field) => {
+      field.addEventListener("input", () => {
+        markDirty();
+        if (field === fields.body || field === fields.description) {
+          if (!fields.seoDescription.value) fields.seoDescription.value = autoDescription();
+        }
+        renderAssistant();
+      });
+    });
+
+    fields.imageUpload.addEventListener("change", () => {
+      uploadImage(fields.imageUpload.files[0]).catch((error) => alert(error.message));
+    });
+
+    el.postSearch.addEventListener("input", renderPostList);
 
     document.querySelector("#new-post").addEventListener("click", () => {
       const post = blankPost();
-      post.slug = `${post.slug}-${Date.now()}`;
+      post.title = "Untitled post";
+      post.slug = `untitled-post-${Date.now()}`;
       state.posts.unshift(post);
+      if (!state.apiMode) persistLocalPosts();
       selectPost(post.slug);
-      saveState.textContent = "New draft created. Save to keep it.";
+      el.saveState.textContent = "New draft ready.";
     });
 
     document.querySelector("#duplicate-post").addEventListener("click", () => {
@@ -589,66 +960,48 @@
       post.slug = `${post.slug}-copy-${Date.now()}`;
       post.status = "draft";
       state.posts.unshift(post);
-      persistPosts();
+      if (!state.apiMode) persistLocalPosts();
       selectPost(post.slug);
     });
 
     document.querySelector("#delete-post").addEventListener("click", () => {
-      if (!confirm("Delete this post from the local prototype?")) {
-        return;
-      }
-
-      const deleteLocal = () => {
-        state.posts = state.posts.filter((post) => post.slug !== state.selectedSlug);
-        persistPosts();
-        selectPost(state.posts[0]?.slug || blankPost().slug);
-      };
-
-      if (!state.apiMode) {
-        deleteLocal();
-        return;
-      }
-
-      apiRequest(`/posts/${encodeURIComponent(state.selectedSlug)}`, { method: "DELETE" })
-        .then(deleteLocal)
-        .catch((error) => alert(error.message));
+      deleteCurrentPost().catch((error) => alert(error.message));
     });
 
-    document.querySelector("#export-posts").addEventListener("click", exportPosts);
     document.querySelector("#publish-site").addEventListener("click", async () => {
       if (!state.apiMode) {
-        alert("Publish requires API mode.");
+        alert("Publishing is available after the CMS API is deployed.");
         return;
       }
-
       try {
+        await saveCurrentPost();
         await apiRequest("/deploy", { method: "POST", body: "{}" });
-        saveState.textContent = "Deploy triggered.";
+        el.saveState.textContent = "Website deploy started.";
       } catch (error) {
         alert(error.message);
       }
     });
+
     document.querySelector("#logout").addEventListener("click", () => {
       sessionStorage.removeItem(SESSION_KEY);
-      sessionStorage.removeItem(`${SESSION_KEY}-api`);
       location.reload();
     });
 
-    if (sessionStorage.getItem(SESSION_KEY) === "true") {
-      state.apiMode = sessionStorage.getItem(`${SESSION_KEY}-api`) === "true";
-      loadPosts().then((posts) => {
-        state.posts = posts;
-        showApp();
-        selectPost(posts[0]?.slug || blankPost().slug);
-      }).catch(() => {
-        state.apiMode = false;
-        sessionStorage.setItem(`${SESSION_KEY}-api`, "false");
-        return loadPosts().then((posts) => {
+    window.addEventListener("beforeunload", (event) => {
+      if (!state.dirty) return;
+      event.preventDefault();
+      event.returnValue = "";
+    });
+
+    if (sessionStorage.getItem(SESSION_KEY) === "true" && API_BASE) {
+      state.apiMode = true;
+      loadPosts()
+        .then((posts) => {
           state.posts = posts;
           showApp();
-          selectPost(posts[0]?.slug || blankPost().slug);
-        });
-      });
+          selectPost(posts[0]?.slug || "");
+        })
+        .catch(() => sessionStorage.removeItem(SESSION_KEY));
     }
   </script>
 </body>

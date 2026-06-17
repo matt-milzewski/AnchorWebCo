@@ -85,9 +85,47 @@ resource "aws_s3_bucket_public_access_block" "media" {
   bucket = aws_s3_bucket.media.id
 
   block_public_acls       = true
-  block_public_policy     = true
+  block_public_policy     = false
   ignore_public_acls      = true
-  restrict_public_buckets = true
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_cors_configuration" "media" {
+  bucket = aws_s3_bucket.media.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["PUT"]
+    allowed_origins = var.allowed_origins
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3600
+  }
+}
+
+data "aws_iam_policy_document" "media_public_read" {
+  statement {
+    sid = "PublicReadUploadedBlogMedia"
+
+    actions = [
+      "s3:GetObject"
+    ]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    resources = [
+      "${aws_s3_bucket.media.arn}/*"
+    ]
+  }
+}
+
+resource "aws_s3_bucket_policy" "media_public_read" {
+  bucket = aws_s3_bucket.media.id
+  policy = data.aws_iam_policy_document.media_public_read.json
+
+  depends_on = [aws_s3_bucket_public_access_block.media]
 }
 
 resource "aws_s3_bucket_versioning" "media" {
