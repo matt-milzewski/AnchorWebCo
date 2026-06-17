@@ -26,7 +26,7 @@ jobs:
         run: |
           set -euo pipefail
           MINUTES="${{ github.event.inputs.minutes }}"
-          START_MS="$(node -e "process.stdout.write(String(Date.now() - Number(process.env.MINUTES) * 60 * 1000))")"
+          START_MS="$(node -e "process.stdout.write(String(Date.now() - Number(process.argv[1]) * 60 * 1000))" "$MINUTES")"
           aws logs filter-log-events \
             --log-group-name "/aws/lambda/anchor-blog-manager-prod-handler" \
             --start-time "$START_MS" \
