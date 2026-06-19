@@ -24,7 +24,6 @@ jobs:
       TF_IN_AUTOMATION: "true"
       TF_INPUT: "false"
       TF_VAR_aws_region: ${{ secrets.AWS_REGION }}
-      TF_VAR_site_configs: ${{ secrets.FORM_SITE_CONFIGS_JSON }}
 
     steps:
       - name: Checkout repository
@@ -142,6 +141,13 @@ jobs:
       - name: Terraform validate
         working-directory: ${{ env.TERRAFORM_DIR }}
         run: terraform validate
+
+      - name: Write site config variables
+        working-directory: ${{ env.TERRAFORM_DIR }}
+        env:
+          FORM_SITE_CONFIGS_JSON: ${{ secrets.FORM_SITE_CONFIGS_JSON }}
+        run: |
+          node -e "const fs=require('fs'); const sites=JSON.parse(process.env.FORM_SITE_CONFIGS_JSON); fs.writeFileSync('site_configs.auto.tfvars.json', JSON.stringify({ site_configs: sites }, null, 2));"
 
       - name: Terraform plan
         working-directory: ${{ env.TERRAFORM_DIR }}
