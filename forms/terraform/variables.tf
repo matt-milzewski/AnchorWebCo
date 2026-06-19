@@ -67,7 +67,7 @@ variable "rate_limit_table_name" {
 variable "default_from_email" {
   description = "Verified SES sender used when a site does not override fromEmail"
   type        = string
-  default     = "noreply@anchorwebco.com.au"
+  default     = "info@anchorwebco.com.au"
 }
 
 variable "default_reply_to_email" {

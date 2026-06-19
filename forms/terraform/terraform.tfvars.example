@@ -5,7 +5,7 @@ allowed_origins = [
   "https://anchorwebco.com.au"
 ]
 
-default_from_email     = "noreply@anchorwebco.com.au"
+default_from_email     = "info@anchorwebco.com.au"
 default_reply_to_email = "info@anchorwebco.com.au"
 
 site_configs = [

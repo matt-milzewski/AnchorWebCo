@@ -13,7 +13,7 @@ const env = {
   submissionsTable: process.env.FORM_SUBMISSIONS_TABLE,
   rateLimitTable: process.env.FORM_RATE_LIMIT_TABLE,
   allowedOrigins: splitList(process.env.FORM_ALLOWED_ORIGINS),
-  defaultFromEmail: process.env.FORM_DEFAULT_FROM_EMAIL || "noreply@anchorwebco.com.au",
+  defaultFromEmail: process.env.FORM_DEFAULT_FROM_EMAIL || "info@anchorwebco.com.au",
   defaultReplyToEmail: process.env.FORM_DEFAULT_REPLY_TO_EMAIL || "info@anchorwebco.com.au",
   rateLimitWindowSeconds: Number(process.env.FORM_RATE_LIMIT_WINDOW_SECONDS || 3600),
   rateLimitMaxRequests: Number(process.env.FORM_RATE_LIMIT_MAX_REQUESTS || 8),

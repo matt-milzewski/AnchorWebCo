@@ -100,4 +100,4 @@ Required GitHub variable after first deploy:
 
 - `ANCHOR_FORMS_API_BASE`
 
-The sender email, for example `noreply@anchorwebco.com.au`, must be verified in SES in the target AWS region.
+The sender email, for example `info@anchorwebco.com.au`, must be verified in SES in the target AWS region.
