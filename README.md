@@ -19,7 +19,7 @@ A modern, mobile-friendly marketing website for Anchor Web Co., a boutique web-d
 - HTML5
 - CSS3 (with Tailwind CSS)
 - JavaScript (ES6+)
-- Formspree for form handling
+- Anchor Forms serverless backend for form handling
 - AWS S3 for hosting
 
 ## Project Structure
@@ -50,6 +50,17 @@ This repo now includes a complete Health Check MVP:
 
 Deployment and setup instructions are in:
 - `health-check/README.md`
+
+## Anchor Forms
+
+This repo includes a reusable Formspree-style contact form backend:
+- Frontend form: `/contact.html`
+- Backend endpoint: `POST /api/forms/{siteId}`
+- Infrastructure: Terraform under `forms/terraform`
+- Runtime: API Gateway, Lambda, DynamoDB, SSM, SES
+
+Deployment and setup instructions are in:
+- `forms/README.md`
 
 ## Deployment to AWS S3
 
