@@ -29,6 +29,13 @@ jobs:
         env:
           ANCHOR_CMS_API_BASE: ${{ vars.ANCHOR_CMS_API_BASE }}
 
+      - name: Configure forms API
+        if: ${{ vars.ANCHOR_FORMS_API_BASE != '' }}
+        run: |
+          node -e "const fs=require('fs'); const p='src/contact.html'; let html=fs.readFileSync(p,'utf8'); html=html.replace('window.ANCHOR_FORMS_API_BASE = window.ANCHOR_FORMS_API_BASE || \"\";', 'window.ANCHOR_FORMS_API_BASE = \"' + process.env.ANCHOR_FORMS_API_BASE + '\";'); fs.writeFileSync(p, html);"
+        env:
+          ANCHOR_FORMS_API_BASE: ${{ vars.ANCHOR_FORMS_API_BASE }}
+
       - name: Build site
         env:
           ANCHOR_CMS_API_BASE: ${{ vars.ANCHOR_CMS_API_BASE }}

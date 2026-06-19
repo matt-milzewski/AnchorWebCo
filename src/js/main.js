@@ -101,6 +101,11 @@ if (testimonialCarousel && testimonials.length > 0) {
 const contactForm = document.getElementById('contact-form');
 
 if (contactForm) {
+    const startedAtField = document.getElementById('form-started-at');
+    if (startedAtField) {
+        startedAtField.value = String(Date.now());
+    }
+
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -148,12 +153,12 @@ if (contactForm) {
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'conversion_event_submit_lead_form', {
                     event_callback: function () {
-                        submitFormToFormspree();
+                        submitFormToFormBackend();
                     },
                     event_timeout: 2000
                 });
             } else {
-                submitFormToFormspree();
+                submitFormToFormBackend();
             }
         } catch (error) {
             showToast('Error sending message. Please try again later.', 'error');
@@ -161,7 +166,7 @@ if (contactForm) {
             resetSubmitButton();
         }
 
-        async function submitFormToFormspree() {
+        async function submitFormToFormBackend() {
             try {
                 const formData = new FormData(contactForm);
                 const formDataObj = {};
@@ -169,7 +174,12 @@ if (contactForm) {
                     formDataObj[key] = value;
                 });
 
-                const response = await fetch('https://formspree.io/f/xdkgalak', {
+                const formsApiBase = (window.ANCHOR_FORMS_API_BASE || '').replace(/\/$/, '');
+                const endpoint = formsApiBase
+                    ? `${formsApiBase}/api/forms/anchor-web-co`
+                    : 'https://formspree.io/f/xdkgalak';
+
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

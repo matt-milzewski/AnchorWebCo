@@ -1,0 +1,29 @@
+aws_region = "ap-southeast-2"
+
+allowed_origins = [
+  "https://www.anchorwebco.com.au",
+  "https://anchorwebco.com.au"
+]
+
+default_from_email     = "noreply@anchorwebco.com.au"
+default_reply_to_email = "info@anchorwebco.com.au"
+
+site_configs = [
+  {
+    siteId         = "anchor-web-co"
+    name           = "Anchor Web Co"
+    recipientEmail = "info@anchorwebco.com.au"
+    allowedOrigins = [
+      "https://www.anchorwebco.com.au",
+      "https://anchorwebco.com.au"
+    ]
+    requiredFields  = ["name", "email", "message"]
+    honeypotFields  = ["company", "_gotcha", "website"]
+    replyToField    = "email"
+    subjectPrefix   = "[Anchor Web Co]"
+    subject         = "New website enquiry"
+    spamThreshold   = 2
+    maxLinks        = 3
+    minimumSubmitMs = 3000
+  }
+]

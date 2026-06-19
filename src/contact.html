@@ -31,6 +31,7 @@
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        window.ANCHOR_FORMS_API_BASE = window.ANCHOR_FORMS_API_BASE || "";
         tailwind.config = {
             theme: {
                 extend: {
@@ -181,6 +182,7 @@
                     <p class="body-muted" style="margin-bottom: 32px;">Share a quick overview and we'll come back with practical advice, clear next steps, and a fixed-scope recommendation where relevant.</p>
                     <form id="contact-form" class="space-y-5">
                         <input type="hidden" name="_subject" value="New Contact Submission from Anchor Web Co." />
+                        <input type="hidden" name="_startedAt" id="form-started-at" value="" />
                         <div>
                             <label for="name" class="block mb-2">Business / Your Name</label>
                             <input type="text" id="name" name="name" required autocomplete="name">
