@@ -21,7 +21,9 @@ variable "allowed_origins" {
   type        = list(string)
   default = [
     "https://www.anchorwebco.com.au",
-    "https://anchorwebco.com.au"
+    "https://anchorwebco.com.au",
+    "https://www.bannistercommunications.com",
+    "https://bannistercommunications.com"
   ]
 }
 
