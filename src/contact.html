@@ -127,7 +127,7 @@
                 </div>
                 <a href="/about.html" class="nav-link">About</a>
                 <a href="/blog/" class="nav-link">Blog</a>
-                <a href="/contact.html" class="nav-button">Get a quote</a>
+                <a href="/contact.html" class="nav-button" data-track="cta-quote" data-track-prop-button-location="header">Get a quote</a>
             </div>
         </div>
     </nav>
@@ -148,7 +148,7 @@
             </details>
             <a href="/about.html" class="nav-link">About</a>
             <a href="/blog/" class="nav-link">Blog</a>
-            <a href="/contact.html" class="nav-button mt-4">Get a quote</a>
+            <a href="/contact.html" class="nav-button mt-4" data-track="cta-quote" data-track-prop-button-location="mobile-menu">Get a quote</a>
         </nav>
     </div>
 
@@ -160,7 +160,7 @@
                 <h1 class="display" style="margin-bottom: 24px;">Contact Anchor Web Co</h1>
                 <p class="body-muted" style="font-size: 20px; max-width: 56ch; margin-bottom: 36px;">Tell us what you need help with. Personal reply from Matt, usually within one business day.</p>
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="tel:+61439499944" class="btn-primary">Call 0439 499 944</a>
+                    <a href="tel:+61439499944" class="btn-primary" data-location="contact-hero">Call 0439 499 944</a>
                     <a href="mailto:info@anchorwebco.com.au" class="btn-secondary">Email us</a>
                     <a href="https://wa.me/61439499944" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px;">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -180,9 +180,12 @@
                 <div style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: 14px; padding: 32px;">
                     <h2 class="h2" style="font-size: clamp(22px, 2vw, 28px); margin-bottom: 16px;">Tell us about your project</h2>
                     <p class="body-muted" style="margin-bottom: 32px;">Share a quick overview and we'll come back with practical advice, clear next steps, and a fixed-scope recommendation where relevant.</p>
-                    <form id="contact-form" class="space-y-5">
+                    <form id="contact-form" class="space-y-5" data-analytics-form="contact">
                         <input type="hidden" name="_subject" value="New Contact Submission from Anchor Web Co." />
                         <input type="hidden" name="_startedAt" id="form-started-at" value="" />
+                        <input type="hidden" name="analytics_form_type" value="contact" />
+                        <input type="hidden" name="source_page" value="" />
+                        <input type="hidden" name="cta" value="" />
                         <div>
                             <label for="name" class="block mb-2">Business / Your Name</label>
                             <input type="text" id="name" name="name" required autocomplete="name">
@@ -199,23 +202,23 @@
                             <label for="service" class="block mb-2">What are you looking for? <span class="text-red-500">*</span></label>
                             <select id="service" name="service" required>
                                 <option value="" disabled selected>Please select...</option>
-                                <option value="new-website">New Website</option>
-                                <option value="seo-campaign">SEO Campaign</option>
-                                <option value="both">Website + SEO</option>
-                                <option value="website-support">Website Support</option>
-                                <option value="website-rebuild">Website Rebuild</option>
-                                <option value="audit">Audit / Health Check</option>
-                                <option value="other">Something else</option>
+                                <option value="New Website">New Website</option>
+                                <option value="SEO Campaign">SEO Campaign</option>
+                                <option value="Website + SEO">Website + SEO</option>
+                                <option value="Website Support">Website Support</option>
+                                <option value="Website Rebuild">Website Rebuild</option>
+                                <option value="Audit / Health Check">Audit / Health Check</option>
+                                <option value="Something else">Something else</option>
                             </select>
                         </div>
                         <div>
                             <label for="timeline" class="block mb-2">Preferred Timeline</label>
                             <select id="timeline" name="timeline">
                                 <option value="" disabled selected>Please select (optional)...</option>
-                                <option value="asap">ASAP</option>
-                                <option value="1-3-months">1–3 months</option>
-                                <option value="3-6-months">3–6 months</option>
-                                <option value="exploring">Just exploring</option>
+                                <option value="ASAP">ASAP</option>
+                                <option value="1-3 months">1–3 months</option>
+                                <option value="3-6 months">3–6 months</option>
+                                <option value="Just exploring">Just exploring</option>
                             </select>
                         </div>
                         <div>
@@ -332,6 +335,7 @@
     </footer>
 
     <!-- JavaScript -->
+    <script src="__ANCHOR_ANALYTICS_SCRIPT_URL__" data-client-id="anchorwebco" data-endpoint="__ANCHOR_ANALYTICS_INGEST_URL__" defer></script>
     <script src="js/main.js" defer></script>
     
     <!-- Google tag (gtag.js) -->

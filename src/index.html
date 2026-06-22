@@ -164,7 +164,7 @@
                 </div>
                 <a href="/about.html" class="nav-link">About</a>
                 <a href="/blog/" class="nav-link">Blog</a>
-                <a href="/contact.html" class="nav-button">Get a quote</a>
+                <a href="/contact.html" class="nav-button" data-track="cta-quote" data-track-prop-button-location="header">Get a quote</a>
             </div>
         </div>
     </nav>
@@ -185,7 +185,7 @@
             </details>
             <a href="/about.html" class="nav-link">About</a>
             <a href="/blog/" class="nav-link">Blog</a>
-            <a href="/contact.html" class="nav-button mt-4">Get a quote</a>
+            <a href="/contact.html" class="nav-button mt-4" data-track="cta-quote" data-track-prop-button-location="mobile-menu">Get a quote</a>
         </nav>
     </div>
 
@@ -197,8 +197,8 @@
                 <h1 class="display" style="margin-bottom: 24px;">Local websites,<br>built to work.</h1>
                 <p class="body-muted" style="font-size: 20px; max-width: 56ch; margin-bottom: 36px;">Web design and SEO for Fraser Coast businesses. Fixed price. Live in weeks.</p>
                 <div class="flex flex-col sm:flex-row gap-4" style="margin-bottom: 24px;">
-                    <a href="/contact.html" class="btn-primary">Start a project</a>
-                    <a href="#work" class="btn-secondary">See our work</a>
+                    <a href="/contact.html" class="btn-primary" data-track="cta-quote" data-track-prop-button-location="hero">Start a project</a>
+                    <a href="#work" class="btn-secondary" data-track="cta-see-work">See our work</a>
                 </div>
                 <p class="hero-meta">Fixed-fee · No lock-ins · Live in 2–4 weeks</p>
             </div>
@@ -211,7 +211,7 @@
             <div class="max-w-7xl mx-auto">
                 <h2 class="h2" style="margin-bottom: 48px;">Work</h2>
                 <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-8">
-                    <a href="https://maryboroughmowerman.com.au/" target="_blank" rel="noopener noreferrer" class="work-card">
+                    <a href="https://maryboroughmowerman.com.au/" target="_blank" rel="noopener noreferrer" class="work-card" data-track="outbound-portfolio" data-track-prop-client="mowerman">
                         <div class="work-card__image" style="background: var(--surface); display: flex; align-items: center; justify-content: center;">
                             <img src="/img/favicon-mower.webp" alt="Maryborough Mowerman" style="max-height: 60%; max-width: 60%; object-fit: contain;">
                         </div>
@@ -221,7 +221,7 @@
                             <span class="text-sm font-medium" style="color: var(--accent);">Visit site →</span>
                         </div>
                     </a>
-                    <a href="https://coastwideexteriors.com.au/" target="_blank" rel="noopener noreferrer" class="work-card">
+                    <a href="https://coastwideexteriors.com.au/" target="_blank" rel="noopener noreferrer" class="work-card" data-track="outbound-portfolio" data-track-prop-client="coastwide">
                         <div class="work-card__image" style="background: var(--surface); display: flex; align-items: center; justify-content: center;">
                             <img src="/img/coastwide-exterior-cleaning.webp" alt="Coastwide Exterior Cleaning" style="max-height: 60%; max-width: 60%; object-fit: contain;">
                         </div>
@@ -231,7 +231,7 @@
                             <span class="text-sm font-medium" style="color: var(--accent);">Visit site →</span>
                         </div>
                     </a>
-                    <a href="https://royalgympie.com.au/" target="_blank" rel="noopener noreferrer" class="work-card">
+                    <a href="https://royalgympie.com.au/" target="_blank" rel="noopener noreferrer" class="work-card" data-track="outbound-portfolio" data-track-prop-client="royal">
                         <div class="work-card__image" style="background: var(--surface); display: flex; align-items: center; justify-content: center;">
                             <img src="/img/royal-hotel-gympie-logo.png" alt="The Royal Hotel Gympie" style="max-height: 66%; max-width: 72%; object-fit: contain;">
                         </div>
@@ -241,7 +241,7 @@
                             <span class="text-sm font-medium" style="color: var(--accent);">Visit site -></span>
                         </div>
                     </a>
-                    <a href="https://www.bannistercommunications.com/" target="_blank" rel="noopener noreferrer" class="work-card">
+                    <a href="https://www.bannistercommunications.com/" target="_blank" rel="noopener noreferrer" class="work-card" data-track="outbound-portfolio" data-track-prop-client="bannister">
                         <div class="work-card__image" style="background: var(--surface); display: flex; align-items: center; justify-content: center;">
                             <img src="/img/bannister-communications-logo.jpg" alt="Bannister Communications" style="max-height: 76%; max-width: 76%; object-fit: contain;">
                         </div>
@@ -389,6 +389,7 @@
     </button>
 
     <!-- JavaScript -->
+    <script src="__ANCHOR_ANALYTICS_SCRIPT_URL__" data-client-id="anchorwebco" data-endpoint="__ANCHOR_ANALYTICS_INGEST_URL__" defer></script>
     <script src="js/main.js" defer></script>
 
     <!-- Google tag (gtag.js) -->

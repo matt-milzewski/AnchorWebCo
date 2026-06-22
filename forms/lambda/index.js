@@ -210,7 +210,14 @@ async function checkRateLimit(siteId, ip) {
 }
 
 function publicFields(fields, site) {
-  const hidden = new Set([...(site.honeypotFields || ["company", "_gotcha", "website"]), "_startedAt", "formStartedAt"]);
+  const hidden = new Set([
+    ...(site.honeypotFields || ["company", "_gotcha", "website"]),
+    "_startedAt",
+    "formStartedAt",
+    "analytics_form_type",
+    "source_page",
+    "cta",
+  ]);
   return Object.fromEntries(Object.entries(fields).filter(([key]) => !hidden.has(key)));
 }
 
@@ -285,6 +292,71 @@ async function storeSubmission(item) {
   );
 }
 
+function buildAnalyticsEvent({ fields, site, siteId, event }) {
+  const analytics = site.analytics || {};
+  const clientId = analytics.clientId || site.analyticsClientId;
+  const ingestUrl = analytics.ingestUrl || site.analyticsIngestUrl || process.env.ANALYTICS_INGEST_URL;
+  if (!clientId || !ingestUrl) return null;
+
+  const formType =
+    fields.analytics_form_type ||
+    fields.analyticsFormType ||
+    analytics.formType ||
+    site.analyticsFormType ||
+    (siteId.includes("audit") ? "audit" : "contact");
+  const sourcePage = fields.source_page || fields.sourcePage || fields._source_page || fields.landing_page || event.headers?.referer || "";
+  const baseProperties = {
+    source_page: sourcePage,
+    cta: fields.cta || fields._cta || fields.last_cta || "",
+  };
+
+  if (formType === "audit") {
+    return {
+      url: ingestUrl,
+      payload: {
+        client_id: clientId,
+        type: "form-submit-audit",
+        path: "/free-website-audit-hervey-bay",
+        properties: {
+          ...baseProperties,
+          business_type: fields.business_type || fields.businessType || fields.type_of_business || fields["business-type"] || "",
+        },
+      },
+    };
+  }
+
+  return {
+    url: ingestUrl,
+    payload: {
+      client_id: clientId,
+      type: "form-submit-contact",
+      path: "/contact",
+      properties: {
+        ...baseProperties,
+        service_type: fields.service_type || fields.service || fields.what_are_you_looking_for || "",
+        timeline: fields.timeline || fields.preferred_timeline || "",
+      },
+    },
+  };
+}
+
+async function sendAnalyticsEvent({ fields, site, siteId, event }) {
+  const analyticsEvent = buildAnalyticsEvent({ fields, site, siteId, event });
+  if (!analyticsEvent) return;
+  try {
+    await fetch(analyticsEvent.url, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        origin: (site.allowedOrigins || [])[0] || event.headers?.origin || "",
+      },
+      body: JSON.stringify(analyticsEvent.payload),
+    });
+  } catch (error) {
+    console.error("analytics-submit-failed", error);
+  }
+}
+
 async function handleSubmit(event, siteId) {
   const site = await getSite(siteId);
   const fields = normalizeFields(parseBody(event));
@@ -323,6 +395,7 @@ async function handleSubmit(event, siteId) {
 
   await sendLeadEmail({ fields, site, siteId, submissionId, ip, origin });
   await storeSubmission({ ...baseItem, status: "sent" });
+  await sendAnalyticsEvent({ fields, site, siteId, event });
   return json(event, 200, { ok: true, submissionId });
 }
 
@@ -346,6 +419,7 @@ exports.handler = async function handler(event) {
 exports._private = {
   assessSubmission,
   buildEmail,
+  buildAnalyticsEvent,
   humanizeKey,
   normalizeFields,
   parseRoute,

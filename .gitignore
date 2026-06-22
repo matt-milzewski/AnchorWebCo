@@ -1,4 +1,6 @@
 _site/
 node_modules/
+analytics/cdk.out/
+analytics/dist/
 .DS_Store
 .claude/

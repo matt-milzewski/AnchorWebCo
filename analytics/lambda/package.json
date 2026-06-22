@@ -1,0 +1,15 @@
+{
+  "name": "anchor-analytics-lambda",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "lint": "node -e \"const fs=require('fs'); const files=[...fs.readdirSync('.').filter(f=>f.endsWith('.js')), ...fs.readdirSync('shared').filter(f=>f.endsWith('.js')).map(f=>'shared/'+f)]; for (const file of files) require('child_process').execFileSync(process.execPath, ['--check', file], {stdio:'inherit'});\"",
+    "test": "node --test ../test/*.test.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.918.0",
+    "@aws-sdk/client-sesv2": "^3.918.0",
+    "@aws-sdk/lib-dynamodb": "^3.918.0"
+  }
+}

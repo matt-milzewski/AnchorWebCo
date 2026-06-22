@@ -1,0 +1,21 @@
+{
+  "name": "anchor-analytics",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test test/*.test.js",
+    "cdk:synth": "npm run build && cdk synth",
+    "cdk:deploy": "npm run build && cdk deploy --require-approval never"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.202.0",
+    "constructs": "^10.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "aws-cdk": "^2.1024.0",
+    "typescript": "^5.8.3"
+  }
+}

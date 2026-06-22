@@ -1,0 +1,24 @@
+{
+  "client_id": "bannister",
+  "display_name": "Bannister Communications",
+  "domains": [
+    "https://bannistercommunications.com.au",
+    "https://www.bannistercommunications.com.au",
+    "http://localhost:4178"
+  ],
+  "reporting_enabled": false,
+  "report_recipients": ["info@anchorwebco.com.au"],
+  "plan_tier": "trial",
+  "created_at": "2026-06-22T00:00:00.000Z",
+  "funnels": [
+    { "name": "Blog enquiry", "steps": [
+      { "match": "pageview", "path_prefix": "/blog" },
+      { "match": "event", "type": "cta-quote" },
+      { "match": "event", "type": "form-submit-contact" }
+    ] },
+    { "name": "Call conversion", "steps": [
+      { "match": "pageview" },
+      { "match": "event", "type": "click-call" }
+    ] }
+  ]
+}

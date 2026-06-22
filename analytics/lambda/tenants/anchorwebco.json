@@ -1,0 +1,16 @@
+{
+  "client_id": "anchorwebco",
+  "display_name": "Anchor Web Co",
+  "domains": ["https://anchorwebco.com.au", "https://www.anchorwebco.com.au", "http://localhost:8080", "http://localhost:4177"],
+  "reporting_enabled": true,
+  "report_recipients": ["info@anchorwebco.com.au"],
+  "plan_tier": "internal",
+  "created_at": "2026-06-22T00:00:00.000Z",
+  "funnels": [
+    { "name": "Quote", "steps": [{ "match": "pageview", "path": "/contact" }, { "match": "event", "type": "form-start-contact" }, { "match": "event", "type": "form-submit-contact" }] },
+    { "name": "Audit", "steps": [{ "match": "pageview", "path": "/free-website-audit-hervey-bay" }, { "match": "event", "type": "form-start-audit" }, { "match": "event", "type": "form-submit-audit" }] },
+    { "name": "Care plan", "steps": [{ "match": "pageview", "path": "/website-care-plans" }, { "match": "event", "type": "cta-quote" }, { "match": "event", "type": "form-submit-contact" }] },
+    { "name": "Call conversion", "steps": [{ "match": "pageview" }, { "match": "event", "type": "click-call" }] },
+    { "name": "Service to enquiry", "steps": [{ "match": "pageview", "path_prefix": "/web-design" }, { "match": "event", "type": "form-submit-contact" }] }
+  ]
+}

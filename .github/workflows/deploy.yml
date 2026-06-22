@@ -36,6 +36,13 @@ jobs:
         env:
           ANCHOR_FORMS_API_BASE: ${{ vars.ANCHOR_FORMS_API_BASE }}
 
+      - name: Configure analytics
+        run: |
+          node -e "const fs=require('fs'); const files=['src/_includes/footer.njk','src/index.html','src/contact.html','src/free-website-audit-hervey-bay.html','src/website-care-plans.html','src/about.html','src/health-check.html','src/thank-you.html','src/web-design-hervey-bay.html','src/web-design-maryborough.html','src/seo-hervey-bay.html','src/seo-maryborough.html']; for (const p of files) { let html=fs.readFileSync(p,'utf8'); if (process.env.ANCHOR_ANALYTICS_SCRIPT_URL && process.env.ANCHOR_ANALYTICS_INGEST_URL) { html=html.replaceAll('__ANCHOR_ANALYTICS_SCRIPT_URL__', process.env.ANCHOR_ANALYTICS_SCRIPT_URL).replaceAll('__ANCHOR_ANALYTICS_INGEST_URL__', process.env.ANCHOR_ANALYTICS_INGEST_URL); } else { html=html.replace(/\\s*<script src=\"__ANCHOR_ANALYTICS_SCRIPT_URL__\"[^>]*><\\/script>/g, ''); } fs.writeFileSync(p, html); }"
+        env:
+          ANCHOR_ANALYTICS_SCRIPT_URL: ${{ vars.ANCHOR_ANALYTICS_SCRIPT_URL }}
+          ANCHOR_ANALYTICS_INGEST_URL: ${{ vars.ANCHOR_ANALYTICS_INGEST_URL }}
+
       - name: Build site
         env:
           ANCHOR_CMS_API_BASE: ${{ vars.ANCHOR_CMS_API_BASE }}

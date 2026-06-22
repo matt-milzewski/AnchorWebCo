@@ -105,7 +105,7 @@
                 </div>
                 <a href="/about.html" class="nav-link">About</a>
                 <a href="/blog/" class="nav-link">Blog</a>
-                <a href="/contact.html" class="nav-button">Get a quote</a>
+                <a href="/contact.html" class="nav-button" data-track="cta-quote" data-track-prop-button-location="header">Get a quote</a>
             </div>
         </div>
     </nav>
@@ -126,7 +126,7 @@
             </details>
             <a href="/about.html" class="nav-link">About</a>
             <a href="/blog/" class="nav-link">Blog</a>
-            <a href="/contact.html" class="nav-button mt-4">Get a quote</a>
+            <a href="/contact.html" class="nav-button mt-4" data-track="cta-quote" data-track-prop-button-location="mobile-menu">Get a quote</a>
         </nav>
     </div>
 
@@ -139,7 +139,7 @@
                         <p class="eyebrow">Free · Hervey Bay</p>
                         <h1 class="display" style="margin-bottom: 24px;">Free Website Audit for Hervey Bay Businesses</h1>
                         <p class="body-muted" style="font-size: 20px; max-width: 56ch; margin-bottom: 36px;">We review 10 key areas of your site and send a personalised report within 48 hours. No fluff, no sales pitch.</p>
-                        <a href="#audit-form" class="btn-primary">Claim your free audit</a>
+                        <a href="#audit-form" class="btn-primary" data-track="cta-quote" data-track-prop-button-location="audit-hero">Claim your free audit</a>
                         <p class="hero-meta">No obligation · 48-hour turnaround</p>
                     </div>
                     <div style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: 14px; padding: 32px;">
@@ -276,8 +276,11 @@
                         <h2 class="h2" style="margin-bottom: 16px;">Request Your Free Website Audit</h2>
                         <p>Takes 60 seconds. Delivered within 48 hours. No obligation.</p>
                     </div>
-                    <form id="contact-form" class="bg-white rounded-2xl shadow-lg p-8 space-y-4">
+                    <form id="contact-form" class="bg-white rounded-2xl shadow-lg p-8 space-y-4" data-analytics-form="audit">
                         <input type="hidden" name="_subject" value="Free Website Audit Request from Anchor Web Co." />
+                        <input type="hidden" name="analytics_form_type" value="audit" />
+                        <input type="hidden" name="source_page" value="" />
+                        <input type="hidden" name="cta" value="" />
                         <div>
                             <label for="name" class="block mb-2 font-medium">Your Name <span class="text-red-500">*</span></label>
                             <input type="text" id="name" name="name" required class="w-full p-3 border rounded-lg" autocomplete="name" placeholder="Jane Smith">
@@ -383,6 +386,7 @@
     </button>
 
     <!-- JavaScript -->
+    <script src="__ANCHOR_ANALYTICS_SCRIPT_URL__" data-client-id="anchorwebco" data-endpoint="__ANCHOR_ANALYTICS_INGEST_URL__" defer></script>
     <script src="js/main.js" defer></script>
 
     <!-- Google tag (gtag.js) -->

@@ -146,8 +146,9 @@ jobs:
         working-directory: ${{ env.TERRAFORM_DIR }}
         env:
           FORM_SITE_CONFIGS_JSON: ${{ secrets.FORM_SITE_CONFIGS_JSON }}
+          ANCHOR_ANALYTICS_INGEST_URL: ${{ vars.ANCHOR_ANALYTICS_INGEST_URL }}
         run: |
-          node -e "const fs=require('fs'); const sites=JSON.parse(process.env.FORM_SITE_CONFIGS_JSON); fs.writeFileSync('site_configs.auto.tfvars.json', JSON.stringify({ site_configs: sites }, null, 2));"
+          node -e "const fs=require('fs'); const sites=JSON.parse(process.env.FORM_SITE_CONFIGS_JSON); const ingest=process.env.ANCHOR_ANALYTICS_INGEST_URL || ''; for (const site of sites) { if (site.siteId === 'anchor-web-co' && ingest) site.analytics = { ...(site.analytics || {}), clientId: 'anchorwebco', ingestUrl: ingest }; } fs.writeFileSync('site_configs.auto.tfvars.json', JSON.stringify({ site_configs: sites }, null, 2));"
 
       - name: Terraform plan
         working-directory: ${{ env.TERRAFORM_DIR }}
