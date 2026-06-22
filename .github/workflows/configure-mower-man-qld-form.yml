@@ -1,0 +1,100 @@
+name: Configure Mower Man QLD form
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION || 'ap-southeast-2' }}
+  FORM_SITES_CONFIG_PARAMETER: /anchor-forms/sites-config
+  FORM_LAMBDA_NAME: anchor-forms-prod-handler
+  FORM_API_ID: jp5by1qc4d
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Merge Mower Man QLD site config
+        run: |
+          aws ssm get-parameter \
+            --name "$FORM_SITES_CONFIG_PARAMETER" \
+            --with-decryption \
+            --query "Parameter.Value" \
+            --output text > current-sites.json
+
+          node <<'NODE'
+          const fs = require("fs");
+          const config = JSON.parse(fs.readFileSync("current-sites.json", "utf8"));
+          const site = {
+            siteId: "mower-man-qld",
+            name: "Mower Man QLD",
+            recipientEmail: "Admin@maryboroughmowerman.com.au",
+            allowedOrigins: [
+              "https://mowermanqld.com.au",
+              "https://www.mowermanqld.com.au"
+            ],
+            requiredFields: ["name", "email", "phone", "suburb", "service", "message"],
+            honeypotFields: ["company", "_gotcha", "website"],
+            replyToField: "email",
+            subjectPrefix: "[Mower Man QLD]",
+            spamThreshold: 2,
+            maxLinks: 3,
+            minimumSubmitMs: 3000
+          };
+          const sites = Array.isArray(config.sites) ? config.sites : [];
+          const nextSites = sites.filter((item) => item.siteId !== site.siteId);
+          nextSites.push(site);
+          fs.writeFileSync("updated-sites.json", JSON.stringify({ ...config, sites: nextSites }, null, 2));
+          NODE
+
+          aws ssm put-parameter \
+            --name "$FORM_SITES_CONFIG_PARAMETER" \
+            --type SecureString \
+            --overwrite \
+            --value "$(cat updated-sites.json)"
+
+      - name: Update Lambda and API CORS origins
+        run: |
+          aws lambda get-function-configuration \
+            --function-name "$FORM_LAMBDA_NAME" \
+            --query "Environment.Variables" \
+            --output json > lambda-env.json
+
+          node <<'NODE'
+          const fs = require("fs");
+          const env = JSON.parse(fs.readFileSync("lambda-env.json", "utf8"));
+          const newOrigins = ["https://mowermanqld.com.au", "https://www.mowermanqld.com.au"];
+          const existing = String(env.FORM_ALLOWED_ORIGINS || "")
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean);
+          const origins = [...new Set([...existing, ...newOrigins])];
+          env.FORM_ALLOWED_ORIGINS = origins.join(",");
+          fs.writeFileSync("lambda-environment.json", JSON.stringify({ Variables: env }, null, 2));
+          fs.writeFileSync("cors.json", JSON.stringify({
+            AllowOrigins: origins,
+            AllowMethods: ["POST", "OPTIONS"],
+            AllowHeaders: ["content-type"],
+            MaxAge: 3600
+          }, null, 2));
+          NODE
+
+          aws lambda update-function-configuration \
+            --function-name "$FORM_LAMBDA_NAME" \
+            --environment file://lambda-environment.json
+
+          aws lambda wait function-updated --function-name "$FORM_LAMBDA_NAME"
+
+          aws apigatewayv2 update-api \
+            --api-id "$FORM_API_ID" \
+            --cors-configuration file://cors.json
