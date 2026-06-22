@@ -62,7 +62,14 @@ jobs:
           echo "script_url=$SCRIPT_URL" >> "$GITHUB_OUTPUT"
           echo "dashboard_url=$DASHBOARD_URL" >> "$GITHUB_OUTPUT"
 
+      - name: Upload analytics outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: analytics-outputs
+          path: analytics/outputs.json
+
       - name: Update repository variables
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           INGEST_URL: ${{ steps.deploy.outputs.ingest_url }}
