@@ -82,7 +82,7 @@ export class AnchorAnalyticsStack extends cdk.Stack {
       authType: lambda.FunctionUrlAuthType.NONE,
       cors: {
         allowedOrigins: ["*"],
-        allowedMethods: [lambda.HttpMethod.POST, lambda.HttpMethod.OPTIONS],
+        allowedMethods: [lambda.HttpMethod.POST],
         allowedHeaders: ["content-type"],
         maxAge: cdk.Duration.hours(1)
       }
@@ -135,7 +135,7 @@ export class AnchorAnalyticsStack extends cdk.Stack {
       authType: lambda.FunctionUrlAuthType.NONE,
       cors: {
         allowedOrigins: ["*"],
-        allowedMethods: [lambda.HttpMethod.GET, lambda.HttpMethod.OPTIONS],
+        allowedMethods: [lambda.HttpMethod.GET],
         allowedHeaders: ["content-type"],
         maxAge: cdk.Duration.hours(1)
       }
