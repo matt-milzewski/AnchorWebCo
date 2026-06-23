@@ -279,6 +279,46 @@ test('continues when one PageSpeed strategy fails', { concurrency: false }, asyn
     clearTestEnv();
 });
 
+test('retries PageSpeed without key when configured key is blocked', { concurrency: false }, async () => {
+    applyBaseEnv();
+    healthCheck.__testing.resetRuntimeDependenciesForTests();
+
+    const keyUsage = [];
+    const { deps } = createMockDeps({
+        sesAccount: {
+            ProductionAccessEnabled: true
+        },
+        fetchFn: async (url, options = {}) => {
+            const requestUrl = new URL(url);
+            if (requestUrl.hostname === 'www.googleapis.com') {
+                const key = requestUrl.searchParams.get('key') || '';
+                keyUsage.push(key ? 'with-key' : 'without-key');
+                if (key) {
+                    return makeJsonResponse({
+                        error: {
+                            message: 'Requests to this API are blocked.',
+                            details: [{ reason: 'API_KEY_SERVICE_BLOCKED' }]
+                        }
+                    }, 403);
+                }
+            }
+            return createDefaultFetchMock()(url, options);
+        }
+    });
+    healthCheck.__testing.setRuntimeDependenciesForTests(deps);
+
+    const response = await healthCheck.handler(buildEvent('prospect@example.com'));
+    const payload = parsePayload(response);
+
+    assert.equal(response.statusCode, 200);
+    assert.equal(payload.overall_score, 85);
+    assert.ok(keyUsage.includes('with-key'));
+    assert.ok(keyUsage.includes('without-key'));
+
+    healthCheck.__testing.resetRuntimeDependenciesForTests();
+    clearTestEnv();
+});
+
 test('sends a fallback report when PageSpeed returns upstream errors', { concurrency: false }, async () => {
     applyBaseEnv();
     healthCheck.__testing.resetRuntimeDependenciesForTests();

@@ -398,10 +398,28 @@ async function getPageSpeedApiKey() {
 }
 
 async function runPageSpeed(targetUrl, strategy, apiKey) {
+    try {
+        return await runPageSpeedRequest(targetUrl, strategy, apiKey);
+    } catch (error) {
+        if (apiKey && isPageSpeedApiKeyServiceBlocked(error)) {
+            console.warn('PageSpeed API key is blocked for the service, retrying without an API key.', {
+                strategy,
+                upstreamStatus: error.upstreamStatus
+            });
+            return runPageSpeedRequest(targetUrl, strategy, '');
+        }
+
+        throw error;
+    }
+}
+
+async function runPageSpeedRequest(targetUrl, strategy, apiKey) {
     const url = new URL('https://www.googleapis.com/pagespeedonline/v5/runPagespeed');
     url.searchParams.set('url', targetUrl);
     url.searchParams.set('strategy', strategy);
-    url.searchParams.set('key', apiKey);
+    if (apiKey) {
+        url.searchParams.set('key', apiKey);
+    }
 
     ['performance', 'seo', 'best-practices', 'accessibility'].forEach((category) => {
         url.searchParams.append('category', category);
@@ -429,6 +447,10 @@ async function runPageSpeed(targetUrl, strategy, apiKey) {
     }
 
     return payload;
+}
+
+function isPageSpeedApiKeyServiceBlocked(error) {
+    return error?.upstreamStatus === 403 && /API_KEY_SERVICE_BLOCKED|blocked/i.test(error?.upstreamBody || '');
 }
 
 async function runPageSpeedChecks(targetUrl, apiKey) {
