@@ -82,6 +82,8 @@ aws ssm put-parameter \
   --overwrite
 ```
 
+The Google Cloud project behind this key must have the PageSpeed Insights API enabled for `pagespeedonline.googleapis.com`. If Google returns `API_KEY_SERVICE_BLOCKED`, enable that API for the key's project or replace `PAGESPEED_API_KEY` with a key from a project where PageSpeed Insights is enabled. The Lambda now retries once without the key and sends a fallback report if PageSpeed remains unavailable, but full scoring needs a working PageSpeed API key.
+
 ### 5.5 Wire frontend to API endpoint
 
 Use the Terraform output `health_check_endpoint`.
@@ -195,7 +197,7 @@ npm run lint
 npm test
 ```
 
-If you get `502` with `Google PageSpeed request failed...`, verify the SSM key value:
+If the report succeeds but shows PageSpeed warnings and `0` scores, check the Lambda logs. `API_KEY_SERVICE_BLOCKED` means the Google Cloud project for the key has not enabled the PageSpeed Insights API. Fix the Google project/API key, then update SSM:
 
 ```bash
 aws ssm put-parameter \
