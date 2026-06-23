@@ -129,22 +129,29 @@ exports.handler = async (event) => {
 
         const apiKey = await getPageSpeedApiKey();
 
-        const [mobileResult, desktopResult, extraChecks] = await Promise.all([
-            runPageSpeed(normalizedUrl.toString(), 'mobile', apiKey),
-            runPageSpeed(normalizedUrl.toString(), 'desktop', apiKey),
+        const [pageSpeedChecks, extraChecks] = await Promise.all([
+            runPageSpeedChecks(normalizedUrl.toString(), apiKey),
             runExtraChecks(normalizedUrl)
         ]);
 
-        const mobileCategoryScores = extractCategoryScores(mobileResult?.lighthouseResult);
-        const desktopCategoryScores = extractCategoryScores(desktopResult?.lighthouseResult);
+        const mobileResult = pageSpeedChecks.mobile;
+        const desktopResult = pageSpeedChecks.desktop;
+        const pageSpeedStrategyResults = [
+            mobileResult ? { strategy: 'mobile', lighthouseResult: mobileResult?.lighthouseResult } : null,
+            desktopResult ? { strategy: 'desktop', lighthouseResult: desktopResult?.lighthouseResult } : null
+        ].filter(Boolean);
 
-        const categoryScores = averageCategoryScores(mobileCategoryScores, desktopCategoryScores);
+        const mobileCategoryScores = mobileResult ? extractCategoryScores(mobileResult?.lighthouseResult) : emptyCategoryScores();
+        const desktopCategoryScores = desktopResult ? extractCategoryScores(desktopResult?.lighthouseResult) : emptyCategoryScores();
+
+        const categoryScores = averageCategoryScoreSet(
+            [mobileResult ? mobileCategoryScores : null, desktopResult ? desktopCategoryScores : null].filter(Boolean)
+        );
         const overallScore = computeOverallScore(categoryScores);
         const coreWebVitals = extractCoreWebVitals(mobileResult, desktopResult);
-        const topFixes = generateTopFixes([
-            { strategy: 'mobile', lighthouseResult: mobileResult?.lighthouseResult },
-            { strategy: 'desktop', lighthouseResult: desktopResult?.lighthouseResult }
-        ]);
+        const topFixes = pageSpeedStrategyResults.length > 0
+            ? generateTopFixes(pageSpeedStrategyResults)
+            : FALLBACK_FIXES.slice(0, 5);
 
         const runId = runtimeDeps.randomUUIDFn();
         const createdAt = new Date().toISOString();
@@ -167,8 +174,12 @@ exports.handler = async (event) => {
             email_sent: false,
             lead_notification_sent: false,
             saved: false,
-            warnings: []
+            warnings: [...pageSpeedChecks.warnings]
         };
+
+        if (pageSpeedStrategyResults.length === 0) {
+            reportPayload.warnings.push('Google PageSpeed was temporarily unavailable, so this report uses the fallback technical checks only.');
+        }
 
         reportPayload.saved = await saveRun(reportPayload, email);
 
@@ -405,7 +416,10 @@ async function runPageSpeed(targetUrl, strategy, apiKey) {
     }, timeoutMs);
 
     if (!response.ok) {
-        throw httpError(502, `Google PageSpeed request failed for ${strategy}.`);
+        const error = httpError(502, `Google PageSpeed request failed for ${strategy}.`);
+        error.upstreamStatus = response.status;
+        error.upstreamBody = await readLimitedResponseText(response, 1200);
+        throw error;
     }
 
     const payload = await response.json();
@@ -415,6 +429,47 @@ async function runPageSpeed(targetUrl, strategy, apiKey) {
     }
 
     return payload;
+}
+
+async function runPageSpeedChecks(targetUrl, apiKey) {
+    const checks = await Promise.allSettled([
+        runPageSpeed(targetUrl, 'mobile', apiKey),
+        runPageSpeed(targetUrl, 'desktop', apiKey)
+    ]);
+
+    const result = {
+        mobile: null,
+        desktop: null,
+        warnings: []
+    };
+
+    const strategies = ['mobile', 'desktop'];
+    checks.forEach((check, index) => {
+        const strategy = strategies[index];
+
+        if (check.status === 'fulfilled') {
+            result[strategy] = check.value;
+            return;
+        }
+
+        const error = check.reason;
+        console.warn('PageSpeed check failed:', {
+            strategy,
+            message: error?.message,
+            upstreamStatus: error?.upstreamStatus,
+            upstreamBody: error?.upstreamBody
+        });
+        result.warnings.push(`Google PageSpeed ${strategy} data was unavailable for this run.`);
+    });
+
+    const failures = checks.filter((check) => check.status === 'rejected');
+    const successes = checks.length - failures.length;
+    const allTimedOut = failures.length === checks.length && failures.every((check) => check.reason?.name === 'AbortError');
+    if (successes === 0 && allTimedOut) {
+        throw failures[0].reason;
+    }
+
+    return result;
 }
 
 function extractCategoryScores(lighthouseResult) {
@@ -428,6 +483,15 @@ function extractCategoryScores(lighthouseResult) {
     };
 }
 
+function emptyCategoryScores() {
+    return {
+        performance: 0,
+        seo: 0,
+        best_practices: 0,
+        accessibility: 0
+    };
+}
+
 function scoreToHundred(value) {
     if (typeof value !== 'number' || Number.isNaN(value)) {
         return 0;
@@ -436,17 +500,29 @@ function scoreToHundred(value) {
     return Math.max(0, Math.min(100, Math.round(value * 100)));
 }
 
-function averageCategoryScores(mobileScores, desktopScores) {
+function averageCategoryScoreSet(scoreSet) {
+    if (!scoreSet.length) {
+        return emptyCategoryScores();
+    }
+
     return {
-        performance: averageTwo(mobileScores.performance, desktopScores.performance),
-        seo: averageTwo(mobileScores.seo, desktopScores.seo),
-        best_practices: averageTwo(mobileScores.best_practices, desktopScores.best_practices),
-        accessibility: averageTwo(mobileScores.accessibility, desktopScores.accessibility)
+        performance: averageMany(scoreSet.map((scores) => scores.performance)),
+        seo: averageMany(scoreSet.map((scores) => scores.seo)),
+        best_practices: averageMany(scoreSet.map((scores) => scores.best_practices)),
+        accessibility: averageMany(scoreSet.map((scores) => scores.accessibility))
     };
 }
 
-function averageTwo(a, b) {
-    return Math.round((Number(a || 0) + Number(b || 0)) / 2);
+function averageMany(values) {
+    const numericValues = values
+        .map((value) => Number(value || 0))
+        .filter((value) => Number.isFinite(value));
+
+    if (!numericValues.length) {
+        return 0;
+    }
+
+    return Math.round(numericValues.reduce((sum, value) => sum + value, 0) / numericValues.length);
 }
 
 function computeOverallScore(categoryScores) {
@@ -1172,6 +1248,15 @@ async function fetchWithTimeout(url, options, timeoutMs) {
         return response;
     } finally {
         clearTimeout(timeout);
+    }
+}
+
+async function readLimitedResponseText(response, limit) {
+    try {
+        const text = await response.text();
+        return text.slice(0, limit);
+    } catch (error) {
+        return '';
     }
 }
 

@@ -246,6 +246,70 @@ test('returns 200 and sends both emails for a valid request', { concurrency: fal
     clearTestEnv();
 });
 
+test('continues when one PageSpeed strategy fails', { concurrency: false }, async () => {
+    applyBaseEnv();
+    healthCheck.__testing.resetRuntimeDependenciesForTests();
+
+    const { deps, calls } = createMockDeps({
+        sesAccount: {
+            ProductionAccessEnabled: true
+        },
+        fetchFn: async (url, options = {}) => {
+            const requestUrl = new URL(url);
+            if (requestUrl.hostname === 'www.googleapis.com' && requestUrl.searchParams.get('strategy') === 'mobile') {
+                return makeJsonResponse({ error: { message: 'quota exceeded' } }, 429);
+            }
+            return createDefaultFetchMock()(url, options);
+        }
+    });
+    healthCheck.__testing.setRuntimeDependenciesForTests(deps);
+
+    const response = await healthCheck.handler(buildEvent('prospect@example.com'));
+    const payload = parsePayload(response);
+
+    assert.equal(response.statusCode, 200);
+    assert.equal(payload.email_sent, true);
+    assert.equal(payload.category_scores.performance, 88);
+    assert.equal(payload.mobile_score, 0);
+    assert.equal(payload.desktop_score, 88);
+    assert.match(payload.warnings.join(' '), /mobile data was unavailable/i);
+    assert.equal(calls.ses.filter((name) => name === 'SendEmailCommand').length, 2);
+
+    healthCheck.__testing.resetRuntimeDependenciesForTests();
+    clearTestEnv();
+});
+
+test('sends a fallback report when PageSpeed returns upstream errors', { concurrency: false }, async () => {
+    applyBaseEnv();
+    healthCheck.__testing.resetRuntimeDependenciesForTests();
+
+    const { deps, calls } = createMockDeps({
+        sesAccount: {
+            ProductionAccessEnabled: true
+        },
+        fetchFn: async (url, options = {}) => {
+            const requestUrl = new URL(url);
+            if (requestUrl.hostname === 'www.googleapis.com') {
+                return makeJsonResponse({ error: { message: 'quota exceeded' } }, 429);
+            }
+            return createDefaultFetchMock()(url, options);
+        }
+    });
+    healthCheck.__testing.setRuntimeDependenciesForTests(deps);
+
+    const response = await healthCheck.handler(buildEvent('prospect@example.com'));
+    const payload = parsePayload(response);
+
+    assert.equal(response.statusCode, 200);
+    assert.equal(payload.email_sent, true);
+    assert.equal(payload.overall_score, 0);
+    assert.match(payload.warnings.join(' '), /fallback technical checks/i);
+    assert.equal(calls.ses.filter((name) => name === 'SendEmailCommand').length, 2);
+
+    healthCheck.__testing.resetRuntimeDependenciesForTests();
+    clearTestEnv();
+});
+
 test('fails fast for unverified recipients when SES is in sandbox', { concurrency: false }, async () => {
     applyBaseEnv();
     healthCheck.__testing.resetRuntimeDependenciesForTests();
