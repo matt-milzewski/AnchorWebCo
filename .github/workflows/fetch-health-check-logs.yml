@@ -1,0 +1,34 @@
+name: Fetch Health Check Logs
+
+on:
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: Minutes of recent logs to fetch
+        required: true
+        default: "30"
+
+jobs:
+  fetch-health-check-logs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Fetch recent health-check logs
+        run: |
+          set -euo pipefail
+          MINUTES="${{ github.event.inputs.minutes }}"
+          START_MS="$(node -e "process.stdout.write(String(Date.now() - Number(process.argv[1]) * 60 * 1000))" "$MINUTES")"
+          aws logs filter-log-events \
+            --log-group-name "/aws/lambda/anchor-health-check-prod-handler" \
+            --start-time "$START_MS" \
+            --output text \
+            --query 'events[].message'
