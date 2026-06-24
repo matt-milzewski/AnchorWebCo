@@ -342,8 +342,9 @@ test('sends a fallback report when PageSpeed returns upstream errors', { concurr
 
     assert.equal(response.statusCode, 200);
     assert.equal(payload.email_sent, true);
-    assert.equal(payload.overall_score, 0);
-    assert.match(payload.warnings.join(' '), /fallback technical checks/i);
+    assert.equal(payload.overall_score, 85);
+    assert.equal(payload.score_source, 'anchor-fallback');
+    assert.match(payload.warnings.join(' '), /fallback scoring/i);
     assert.equal(calls.ses.filter((name) => name === 'SendEmailCommand').length, 2);
 
     healthCheck.__testing.resetRuntimeDependenciesForTests();

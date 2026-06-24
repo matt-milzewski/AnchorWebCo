@@ -140,18 +140,26 @@ exports.handler = async (event) => {
             mobileResult ? { strategy: 'mobile', lighthouseResult: mobileResult?.lighthouseResult } : null,
             desktopResult ? { strategy: 'desktop', lighthouseResult: desktopResult?.lighthouseResult } : null
         ].filter(Boolean);
+        const useFallbackScores = pageSpeedStrategyResults.length === 0;
+        const fallbackCategoryScores = useFallbackScores ? computeFallbackCategoryScores(extraChecks) : null;
 
-        const mobileCategoryScores = mobileResult ? extractCategoryScores(mobileResult?.lighthouseResult) : emptyCategoryScores();
-        const desktopCategoryScores = desktopResult ? extractCategoryScores(desktopResult?.lighthouseResult) : emptyCategoryScores();
+        const mobileCategoryScores = useFallbackScores
+            ? fallbackCategoryScores
+            : (mobileResult ? extractCategoryScores(mobileResult?.lighthouseResult) : emptyCategoryScores());
+        const desktopCategoryScores = useFallbackScores
+            ? fallbackCategoryScores
+            : (desktopResult ? extractCategoryScores(desktopResult?.lighthouseResult) : emptyCategoryScores());
 
-        const categoryScores = averageCategoryScoreSet(
-            [mobileResult ? mobileCategoryScores : null, desktopResult ? desktopCategoryScores : null].filter(Boolean)
-        );
+        const categoryScores = useFallbackScores
+            ? fallbackCategoryScores
+            : averageCategoryScoreSet(
+                [mobileResult ? mobileCategoryScores : null, desktopResult ? desktopCategoryScores : null].filter(Boolean)
+            );
         const overallScore = computeOverallScore(categoryScores);
         const coreWebVitals = extractCoreWebVitals(mobileResult, desktopResult);
         const topFixes = pageSpeedStrategyResults.length > 0
             ? generateTopFixes(pageSpeedStrategyResults)
-            : FALLBACK_FIXES.slice(0, 5);
+            : generateTopFixesFromExtraChecks(extraChecks);
 
         const runId = runtimeDeps.randomUUIDFn();
         const createdAt = new Date().toISOString();
@@ -171,14 +179,15 @@ exports.handler = async (event) => {
             core_web_vitals: coreWebVitals,
             top_fixes: topFixes,
             extra_checks: extraChecks,
+            score_source: useFallbackScores ? 'anchor-fallback' : 'pagespeed',
             email_sent: false,
             lead_notification_sent: false,
             saved: false,
             warnings: [...pageSpeedChecks.warnings]
         };
 
-        if (pageSpeedStrategyResults.length === 0) {
-            reportPayload.warnings.push('Google PageSpeed was temporarily unavailable, so this report uses the fallback technical checks only.');
+        if (useFallbackScores) {
+            reportPayload.warnings.push('Google PageSpeed was temporarily unavailable, so this report uses Anchor Web Co fallback scoring from server-side technical checks.');
         }
 
         reportPayload.saved = await saveRun(reportPayload, email);
@@ -547,6 +556,35 @@ function averageMany(values) {
     return Math.round(numericValues.reduce((sum, value) => sum + value, 0) / numericValues.length);
 }
 
+function computeFallbackCategoryScores(extraChecks) {
+    const categories = ['performance', 'seo', 'best_practices', 'accessibility'];
+    const scores = {};
+
+    categories.forEach((category) => {
+        const checks = (extraChecks || []).filter((check) => check.category === category);
+        const totalWeight = checks.reduce((sum, check) => sum + Number(check.weight || 1), 0);
+        const passedWeight = checks.reduce((sum, check) => sum + (check.passed ? Number(check.weight || 1) : 0), 0);
+        scores[category] = totalWeight > 0 ? Math.round((passedWeight / totalWeight) * 100) : 0;
+    });
+
+    return scores;
+}
+
+function generateTopFixesFromExtraChecks(extraChecks) {
+    const fixes = (extraChecks || [])
+        .filter((check) => !check.passed && check.recommendation)
+        .sort((a, b) => Number(b.weight || 1) - Number(a.weight || 1))
+        .map((check) => check.recommendation);
+
+    FALLBACK_FIXES.forEach((fallback) => {
+        if (fixes.length < 5 && !fixes.includes(fallback)) {
+            fixes.push(fallback);
+        }
+    });
+
+    return fixes.slice(0, 5);
+}
+
 function computeOverallScore(categoryScores) {
     const weightedScore =
         (categoryScores.performance * SCORE_WEIGHTS.performance) +
@@ -741,12 +779,24 @@ async function runExtraChecks(normalizedUrl) {
 
     const titlePresent = homepageHtml.success ? hasTitle(homepageHtml.html) : false;
     const metaDescriptionPresent = homepageHtml.success ? hasMetaDescription(homepageHtml.html) : false;
+    const viewportPresent = homepageHtml.success ? hasViewportMeta(homepageHtml.html) : false;
+    const canonicalPresent = homepageHtml.success ? hasCanonicalLink(homepageHtml.html) : false;
+    const h1Present = homepageHtml.success ? hasH1(homepageHtml.html) : false;
+    const langPresent = homepageHtml.success ? hasHtmlLang(homepageHtml.html) : false;
+    const imageAltCoverage = homepageHtml.success ? getImageAltCoverage(homepageHtml.html) : { total: 0, withAlt: 0, passed: true };
+    const htmlSizeBytes = homepageHtml.html_size_bytes || 0;
+    const htmlSizeReasonable = homepageHtml.success && htmlSizeBytes > 0 && htmlSizeBytes <= 200000;
+    const responseFast = homepageHtml.success && homepageHtml.duration_ms <= 1500;
+    const textHtml = homepageHtml.success && /^text\/html\b/i.test(homepageHtml.content_type || '');
+    const compressionPresent = homepageHtml.compressed === true || htmlSizeBytes <= 75000;
     const httpsPresent = normalizedUrl.protocol === 'https:';
 
     return [
         {
             id: 'https_present',
             label: 'HTTPS is enabled',
+            category: 'best_practices',
+            weight: 2,
             passed: httpsPresent,
             recommendation: httpsPresent
                 ? 'HTTPS is enabled.'
@@ -755,14 +805,48 @@ async function runExtraChecks(normalizedUrl) {
         {
             id: 'http_redirects_to_https',
             label: 'HTTP redirects to HTTPS',
+            category: 'best_practices',
+            weight: 1,
             passed: httpRedirectCheck.passed,
             recommendation: httpRedirectCheck.passed
                 ? 'HTTP requests are redirected to HTTPS.'
                 : 'Add a 301 redirect from HTTP to HTTPS for all paths.'
         },
         {
+            id: 'homepage_response_fast',
+            label: 'Homepage responds quickly',
+            category: 'performance',
+            weight: 2,
+            passed: responseFast,
+            recommendation: responseFast
+                ? `Homepage responded in ${homepageHtml.duration_ms}ms.`
+                : 'Improve hosting, caching, or upstream redirects so the homepage responds faster.'
+        },
+        {
+            id: 'html_size_reasonable',
+            label: 'Homepage HTML weight is reasonable',
+            category: 'performance',
+            weight: 1,
+            passed: htmlSizeReasonable,
+            recommendation: htmlSizeReasonable
+                ? `Homepage HTML is ${formatBytes(htmlSizeBytes)}.`
+                : 'Reduce heavy inline HTML, scripts, and embedded content on the homepage.'
+        },
+        {
+            id: 'text_compression_or_small_html',
+            label: 'HTML is compressed or lightweight',
+            category: 'performance',
+            weight: 1,
+            passed: compressionPresent,
+            recommendation: compressionPresent
+                ? 'HTML response is compressed or already lightweight.'
+                : 'Enable Brotli/Gzip compression for text responses.'
+        },
+        {
             id: 'title_tag_present',
             label: 'Homepage has a title tag',
+            category: 'seo',
+            weight: 2,
             passed: titlePresent,
             recommendation: titlePresent
                 ? 'Homepage title tag is present.'
@@ -771,14 +855,78 @@ async function runExtraChecks(normalizedUrl) {
         {
             id: 'meta_description_present',
             label: 'Homepage has a meta description',
+            category: 'seo',
+            weight: 1,
             passed: metaDescriptionPresent,
             recommendation: metaDescriptionPresent
                 ? 'Homepage meta description is present.'
                 : 'Add a concise homepage meta description for better search snippets.'
         },
         {
+            id: 'viewport_meta_present',
+            label: 'Mobile viewport tag is present',
+            category: 'accessibility',
+            weight: 2,
+            passed: viewportPresent,
+            recommendation: viewportPresent
+                ? 'Mobile viewport tag is present.'
+                : 'Add a viewport meta tag so mobile browsers render the page correctly.'
+        },
+        {
+            id: 'canonical_link_present',
+            label: 'Canonical URL is present',
+            category: 'seo',
+            weight: 1,
+            passed: canonicalPresent,
+            recommendation: canonicalPresent
+                ? 'Canonical URL is present.'
+                : 'Add a canonical link to help search engines understand the preferred homepage URL.'
+        },
+        {
+            id: 'h1_present',
+            label: 'Homepage has an H1',
+            category: 'seo',
+            weight: 1,
+            passed: h1Present,
+            recommendation: h1Present
+                ? 'Homepage H1 is present.'
+                : 'Add one clear H1 that explains the business and primary service.'
+        },
+        {
+            id: 'html_lang_present',
+            label: 'HTML language is declared',
+            category: 'accessibility',
+            weight: 1,
+            passed: langPresent,
+            recommendation: langPresent
+                ? 'HTML language is declared.'
+                : 'Add a lang attribute to the html tag for accessibility and translation tools.'
+        },
+        {
+            id: 'image_alt_coverage',
+            label: 'Images have alt text',
+            category: 'accessibility',
+            weight: 1,
+            passed: imageAltCoverage.passed,
+            recommendation: imageAltCoverage.passed
+                ? `${imageAltCoverage.withAlt}/${imageAltCoverage.total} images have alt text or no image alt issues were found.`
+                : `Add alt text to important images. ${imageAltCoverage.withAlt}/${imageAltCoverage.total} images currently have alt text.`
+        },
+        {
+            id: 'homepage_serves_html',
+            label: 'Homepage serves HTML correctly',
+            category: 'best_practices',
+            weight: 1,
+            passed: textHtml,
+            recommendation: textHtml
+                ? 'Homepage serves a text/html response.'
+                : 'Ensure the homepage returns a normal text/html response.'
+        },
+        {
             id: 'sitemap_exists',
             label: '/sitemap.xml is reachable',
+            category: 'seo',
+            weight: 1,
             passed: sitemapCheck.passed,
             recommendation: sitemapCheck.passed
                 ? '/sitemap.xml is reachable.'
@@ -787,6 +935,8 @@ async function runExtraChecks(normalizedUrl) {
         {
             id: 'robots_exists',
             label: '/robots.txt is reachable',
+            category: 'seo',
+            weight: 1,
             passed: robotsCheck.passed,
             recommendation: robotsCheck.passed
                 ? '/robots.txt is reachable.'
@@ -825,6 +975,7 @@ async function checkHttpRedirectToHttps(normalizedUrl) {
 
 async function fetchHomepageHtml(url) {
     try {
+        const startedAt = Date.now();
         const response = await fetchWithTimeout(url, {
             method: 'GET',
             redirect: 'follow',
@@ -832,15 +983,41 @@ async function fetchHomepageHtml(url) {
                 'User-Agent': 'AnchorWebCoHealthCheck/1.0'
             }
         }, 10000);
+        const durationMs = Date.now() - startedAt;
 
         if (!response.ok) {
-            return { success: false, html: '' };
+            return {
+                success: false,
+                html: '',
+                duration_ms: durationMs,
+                status: response.status,
+                content_type: response.headers.get('content-type') || '',
+                compressed: false,
+                html_size_bytes: 0
+            };
         }
 
         const html = await response.text();
-        return { success: true, html: html.slice(0, 300000) };
+        const contentEncoding = response.headers.get('content-encoding') || '';
+        return {
+            success: true,
+            html: html.slice(0, 300000),
+            duration_ms: durationMs,
+            status: response.status,
+            content_type: response.headers.get('content-type') || '',
+            compressed: Boolean(contentEncoding),
+            html_size_bytes: Buffer.byteLength(html, 'utf8')
+        };
     } catch (error) {
-        return { success: false, html: '' };
+        return {
+            success: false,
+            html: '',
+            duration_ms: null,
+            status: null,
+            content_type: '',
+            compressed: false,
+            html_size_bytes: 0
+        };
     }
 }
 
@@ -861,6 +1038,57 @@ function hasMetaDescription(html) {
         const contentMatch = tag.match(/content\s*=\s*['\"]([^'\"]+)['\"]/i);
         return Boolean(contentMatch && contentMatch[1] && contentMatch[1].trim());
     });
+}
+
+function hasViewportMeta(html) {
+    const metaTags = html.match(/<meta[^>]*>/gi) || [];
+    return metaTags.some((tag) => /name\s*=\s*['"]viewport['"]/i.test(tag));
+}
+
+function hasCanonicalLink(html) {
+    const linkTags = html.match(/<link[^>]*>/gi) || [];
+    return linkTags.some((tag) => /rel\s*=\s*['"]canonical['"]/i.test(tag) && /href\s*=/i.test(tag));
+}
+
+function hasH1(html) {
+    return /<h1\b[^>]*>[\s\S]*?<\/h1>/i.test(html);
+}
+
+function hasHtmlLang(html) {
+    const htmlTag = html.match(/<html[^>]*>/i);
+    return Boolean(htmlTag && /\slang\s*=\s*['"][^'"]+['"]/i.test(htmlTag[0]));
+}
+
+function getImageAltCoverage(html) {
+    const imageTags = html.match(/<img\b[^>]*>/gi) || [];
+    if (!imageTags.length) {
+        return {
+            total: 0,
+            withAlt: 0,
+            passed: true
+        };
+    }
+
+    const withAlt = imageTags.filter((tag) => /\salt\s*=\s*['"][^'"]*['"]/i.test(tag)).length;
+    const coverage = withAlt / imageTags.length;
+
+    return {
+        total: imageTags.length,
+        withAlt,
+        passed: coverage >= 0.9
+    };
+}
+
+function formatBytes(bytes) {
+    if (!Number.isFinite(bytes) || bytes <= 0) {
+        return '0 KB';
+    }
+
+    if (bytes < 1024) {
+        return `${bytes} B`;
+    }
+
+    return `${Math.round(bytes / 1024)} KB`;
 }
 
 async function checkPathExists(origin, path) {
@@ -942,6 +1170,7 @@ async function saveRun(reportPayload, email) {
         strategy_scores: reportPayload.strategy_scores,
         mobile_score: reportPayload.mobile_score,
         desktop_score: reportPayload.desktop_score,
+        score_source: reportPayload.score_source,
         core_web_vitals: summarizeCoreWebVitals(reportPayload.core_web_vitals),
         top_fixes: reportPayload.top_fixes,
         extra_checks: reportPayload.extra_checks.map((check) => ({
@@ -1077,6 +1306,10 @@ async function sendLeadNotificationEmail(prospectEmail, reportPayload) {
 function buildEmailHtml(reportPayload) {
     const category = reportPayload.category_scores || {};
     const fixes = (reportPayload.top_fixes || []).map((fix) => `<li>${escapeHtml(fix)}</li>`).join('');
+    const scoreSource = getScoreSourceLabel(reportPayload.score_source);
+    const warnings = (reportPayload.warnings || [])
+        .map((warning) => `<li>${escapeHtml(warning)}</li>`)
+        .join('');
 
     return `
 <!doctype html>
@@ -1096,6 +1329,8 @@ function buildEmailHtml(reportPayload) {
     <tr>
       <td style="padding:20px 24px;">
         <p style="margin:0 0 16px 0;font-size:16px;"><strong>Overall Score:</strong> ${reportPayload.overall_score}/100</p>
+        <p style="margin:0 0 16px 0;font-size:13px;color:#64748b;"><strong>Score source:</strong> ${escapeHtml(scoreSource)}</p>
+        ${warnings ? `<div style="margin:0 0 16px 0;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;color:#9a3412;font-size:13px;"><strong>Notes:</strong><ul style="margin:8px 0 0 18px;padding:0;">${warnings}</ul></div>` : ''}
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;border-collapse:collapse;">
           <tr>
             <td style="padding:8px;border-bottom:1px solid #e2e8f0;">Performance</td>
@@ -1131,12 +1366,15 @@ function buildEmailHtml(reportPayload) {
 function buildEmailText(reportPayload) {
     const category = reportPayload.category_scores || {};
     const fixes = (reportPayload.top_fixes || []).map((fix, index) => `${index + 1}. ${fix}`).join('\n');
+    const warnings = (reportPayload.warnings || []).map((warning) => `- ${warning}`).join('\n');
 
     return [
         'Your Website Health Check Report',
         '',
         `Website: ${reportPayload.website_url}`,
         `Overall Score: ${reportPayload.overall_score}/100`,
+        `Score source: ${getScoreSourceLabel(reportPayload.score_source)}`,
+        warnings ? `Notes:\n${warnings}` : '',
         '',
         `Performance: ${category.performance || 0}/100`,
         `SEO: ${category.seo || 0}/100`,
@@ -1154,6 +1392,9 @@ function buildEmailText(reportPayload) {
 function buildLeadNotificationHtml(prospectEmail, reportPayload) {
     const category = reportPayload.category_scores || {};
     const fixes = (reportPayload.top_fixes || []).map((fix) => `<li>${escapeHtml(fix)}</li>`).join('');
+    const warnings = (reportPayload.warnings || [])
+        .map((warning) => `<li>${escapeHtml(warning)}</li>`)
+        .join('');
     const extraChecks = (reportPayload.extra_checks || [])
         .map((check) => `<li>${escapeHtml(check.label)}: <strong>${check.passed ? 'Pass' : 'Needs work'}</strong></li>`)
         .join('');
@@ -1178,6 +1419,8 @@ function buildLeadNotificationHtml(prospectEmail, reportPayload) {
         <p style="margin:0 0 8px 0;"><strong>Lead Email:</strong> ${escapeHtml(prospectEmail)}</p>
         <p style="margin:0 0 8px 0;"><strong>Website:</strong> ${escapeHtml(reportPayload.website_url)}</p>
         <p style="margin:0 0 16px 0;"><strong>Overall Score:</strong> ${reportPayload.overall_score}/100</p>
+        <p style="margin:0 0 16px 0;"><strong>Score Source:</strong> ${escapeHtml(getScoreSourceLabel(reportPayload.score_source))}</p>
+        ${warnings ? `<h2 style="font-size:18px;margin:24px 0 8px 0;">Warnings</h2><ul style="padding-left:20px;margin:0;color:#9a3412;">${warnings}</ul>` : ''}
 
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;border-collapse:collapse;">
           <tr>
@@ -1214,6 +1457,7 @@ function buildLeadNotificationHtml(prospectEmail, reportPayload) {
 function buildLeadNotificationText(prospectEmail, reportPayload) {
     const category = reportPayload.category_scores || {};
     const fixes = (reportPayload.top_fixes || []).map((fix, index) => `${index + 1}. ${fix}`).join('\n');
+    const warnings = (reportPayload.warnings || []).map((warning) => `- ${warning}`).join('\n');
     const extraChecks = (reportPayload.extra_checks || [])
         .map((check) => `- ${check.label}: ${check.passed ? 'Pass' : 'Needs work'}`)
         .join('\n');
@@ -1224,6 +1468,8 @@ function buildLeadNotificationText(prospectEmail, reportPayload) {
         `Lead Email: ${prospectEmail}`,
         `Website: ${reportPayload.website_url}`,
         `Overall Score: ${reportPayload.overall_score}/100`,
+        `Score Source: ${getScoreSourceLabel(reportPayload.score_source)}`,
+        warnings ? `Warnings:\n${warnings}` : '',
         '',
         `Performance: ${category.performance || 0}/100`,
         `SEO: ${category.seo || 0}/100`,
@@ -1236,6 +1482,14 @@ function buildLeadNotificationText(prospectEmail, reportPayload) {
         'Extra Checks:',
         extraChecks
     ].join('\n');
+}
+
+function getScoreSourceLabel(scoreSource) {
+    if (scoreSource === 'anchor-fallback') {
+        return 'Anchor Web Co fallback checks';
+    }
+
+    return 'Google PageSpeed Insights';
 }
 
 function escapeHtml(value) {

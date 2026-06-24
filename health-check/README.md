@@ -82,7 +82,9 @@ aws ssm put-parameter \
   --overwrite
 ```
 
-The Google Cloud project behind this key must have the PageSpeed Insights API enabled for `pagespeedonline.googleapis.com`. If Google returns `API_KEY_SERVICE_BLOCKED`, enable that API for the key's project or replace `PAGESPEED_API_KEY` with a key from a project where PageSpeed Insights is enabled. The Lambda now retries once without the key and sends a fallback report if PageSpeed remains unavailable, but full scoring needs a working PageSpeed API key.
+The Google Cloud project behind this key must have the PageSpeed Insights API enabled for `pagespeedonline.googleapis.com`. If Google returns `API_KEY_SERVICE_BLOCKED`, enable that API for the key's project or replace `PAGESPEED_API_KEY` with a key from a project where PageSpeed Insights is enabled.
+
+If PageSpeed is unavailable, the Lambda retries once without the key. If Google still refuses the request, the service now falls back to Anchor Web Co scoring from server-side checks: response speed, HTML weight, compression/lightweight HTML, HTTPS, HTTP-to-HTTPS redirect, title, meta description, canonical URL, H1, mobile viewport, HTML language, image alt coverage, sitemap, robots, and HTML content type. The report is still sent, saved, and marked with `score_source = anchor-fallback`.
 
 ### 5.5 Wire frontend to API endpoint
 
@@ -197,7 +199,7 @@ npm run lint
 npm test
 ```
 
-If the report succeeds but shows PageSpeed warnings and `0` scores, check the Lambda logs. `API_KEY_SERVICE_BLOCKED` means the Google Cloud project for the key has not enabled the PageSpeed Insights API. Fix the Google project/API key, then update SSM:
+If the report succeeds but shows PageSpeed warnings and `score_source = anchor-fallback`, check the Lambda logs. `API_KEY_SERVICE_BLOCKED` means the Google Cloud project for the key has not enabled the PageSpeed Insights API. Fix the Google project/API key, then update SSM:
 
 ```bash
 aws ssm put-parameter \
