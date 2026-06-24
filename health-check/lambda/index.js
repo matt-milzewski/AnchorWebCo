@@ -36,12 +36,27 @@ const SCORE_WEIGHTS = {
     accessibility: 0.1
 };
 
+const FALLBACK_SCORE_CAPS = {
+    performance: 85,
+    seo: 100,
+    best_practices: 95,
+    accessibility: 90
+};
+
 const FALLBACK_FIXES = [
     'Compress large images and serve next-gen formats such as WebP or AVIF.',
     'Reduce unused JavaScript and CSS so pages render faster.',
     'Set explicit width and height for media to prevent layout shifts.',
     'Improve above-the-fold content loading to lower LCP.',
     'Tighten metadata and heading structure for stronger SEO signals.'
+];
+
+const FALLBACK_PASSING_NEXT_STEPS = [
+    'Connect a working PageSpeed Insights API key when available to restore Lighthouse and Core Web Vitals scoring.',
+    'Keep monitoring the site after adding new images, scripts, booking tools, or tracking tags.',
+    'Review the main conversion path manually to confirm visitors can quickly call, email, or submit an enquiry.',
+    'Check Google Search Console for search queries and indexing issues that are not visible in a server-side audit.',
+    'Run the audit again after any major content, SEO, or design change.'
 ];
 
 const FIX_BY_AUDIT_ID = {
@@ -188,6 +203,7 @@ exports.handler = async (event) => {
 
         if (useFallbackScores) {
             reportPayload.warnings.push('Google PageSpeed was temporarily unavailable, so this report uses Anchor Web Co fallback scoring from server-side technical checks.');
+            reportPayload.warnings.push('Fallback scores are capped because server-side checks cannot fully measure Lighthouse lab performance or Core Web Vitals.');
         }
 
         reportPayload.saved = await saveRun(reportPayload, email);
@@ -564,7 +580,8 @@ function computeFallbackCategoryScores(extraChecks) {
         const checks = (extraChecks || []).filter((check) => check.category === category);
         const totalWeight = checks.reduce((sum, check) => sum + Number(check.weight || 1), 0);
         const passedWeight = checks.reduce((sum, check) => sum + (check.passed ? Number(check.weight || 1) : 0), 0);
-        scores[category] = totalWeight > 0 ? Math.round((passedWeight / totalWeight) * 100) : 0;
+        const rawScore = totalWeight > 0 ? Math.round((passedWeight / totalWeight) * 100) : 0;
+        scores[category] = Math.min(rawScore, FALLBACK_SCORE_CAPS[category] || 100);
     });
 
     return scores;
@@ -575,6 +592,10 @@ function generateTopFixesFromExtraChecks(extraChecks) {
         .filter((check) => !check.passed && check.recommendation)
         .sort((a, b) => Number(b.weight || 1) - Number(a.weight || 1))
         .map((check) => check.recommendation);
+
+    if (!fixes.length) {
+        return FALLBACK_PASSING_NEXT_STEPS.slice(0, 5);
+    }
 
     FALLBACK_FIXES.forEach((fallback) => {
         if (fixes.length < 5 && !fixes.includes(fallback)) {

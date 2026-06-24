@@ -84,7 +84,7 @@ aws ssm put-parameter \
 
 The Google Cloud project behind this key must have the PageSpeed Insights API enabled for `pagespeedonline.googleapis.com`. If Google returns `API_KEY_SERVICE_BLOCKED`, enable that API for the key's project or replace `PAGESPEED_API_KEY` with a key from a project where PageSpeed Insights is enabled.
 
-If PageSpeed is unavailable, the Lambda retries once without the key. If Google still refuses the request, the service now falls back to Anchor Web Co scoring from server-side checks: response speed, HTML weight, compression/lightweight HTML, HTTPS, HTTP-to-HTTPS redirect, title, meta description, canonical URL, H1, mobile viewport, HTML language, image alt coverage, sitemap, robots, and HTML content type. The report is still sent, saved, and marked with `score_source = anchor-fallback`.
+If PageSpeed is unavailable, the Lambda retries once without the key. If Google still refuses the request, the service now falls back to Anchor Web Co scoring from server-side checks: response speed, HTML weight, compression/lightweight HTML, HTTPS, HTTP-to-HTTPS redirect, title, meta description, canonical URL, H1, mobile viewport, HTML language, image alt coverage, sitemap, robots, and HTML content type. Fallback scores are capped because they cannot fully replace Lighthouse lab data. The report is still sent, saved, and marked with `score_source = anchor-fallback`.
 
 ### 5.5 Wire frontend to API endpoint
 
