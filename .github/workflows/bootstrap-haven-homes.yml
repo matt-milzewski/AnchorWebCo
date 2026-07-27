@@ -1,0 +1,112 @@
+name: Bootstrap Haven Homes
+
+on:
+  workflow_dispatch:
+    inputs:
+      cloudfront_origin:
+        description: Optional full CloudFront origin, for example https://d123.cloudfront.net
+        required: false
+        type: string
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ secrets.CMS_GITHUB_TOKEN }}
+      TARGET_REPO: matt-milzewski/haven-homes-co
+      AWS_ACCESS_KEY_ID_VALUE: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY_VALUE: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION_VALUE: ${{ secrets.AWS_REGION }}
+      FORMS_API_BASE: ${{ vars.ANCHOR_FORMS_API_BASE }}
+
+    steps:
+      - name: Validate source configuration
+        run: |
+          missing=0
+          for var in GH_TOKEN AWS_ACCESS_KEY_ID_VALUE AWS_SECRET_ACCESS_KEY_VALUE AWS_REGION_VALUE FORMS_API_BASE; do
+            if [ -z "${!var}" ]; then
+              echo "Missing required Anchor configuration: $var"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Create repository if needed
+        run: |
+          if gh repo view "$TARGET_REPO" >/dev/null 2>&1; then
+            echo "Repository already exists: $TARGET_REPO"
+          else
+            gh repo create "$TARGET_REPO" \
+              --public \
+              --add-readme \
+              --description "Premium home care and cleaning website for Brisbane's inner west."
+          fi
+
+      - name: Configure deployment secrets and variables
+        run: |
+          gh secret set AWS_ACCESS_KEY_ID \
+            --repo "$TARGET_REPO" \
+            --body "$AWS_ACCESS_KEY_ID_VALUE"
+          gh secret set AWS_SECRET_ACCESS_KEY \
+            --repo "$TARGET_REPO" \
+            --body "$AWS_SECRET_ACCESS_KEY_VALUE"
+          gh variable set AWS_REGION \
+            --repo "$TARGET_REPO" \
+            --body "$AWS_REGION_VALUE"
+          gh variable set ANCHOR_FORMS_API_BASE \
+            --repo "$TARGET_REPO" \
+            --body "$FORMS_API_BASE"
+
+      - name: Register Haven with the shared forms service
+        if: ${{ inputs.cloudfront_origin != '' }}
+        env:
+          CLOUDFRONT_ORIGIN: ${{ inputs.cloudfront_origin }}
+        run: |
+          if [[ ! "$CLOUDFRONT_ORIGIN" =~ ^https://[a-z0-9.-]+\.cloudfront\.net$ ]]; then
+            echo "cloudfront_origin must be a full https://*.cloudfront.net origin"
+            exit 1
+          fi
+
+          config="$(jq -cn \
+            --arg origin "$CLOUDFRONT_ORIGIN" \
+            '{
+              siteId: "haven-homes-co",
+              name: "Haven Homes Co.",
+              recipientEmail: "mattmilzewski@gmail.com",
+              allowedOrigins: [$origin],
+              requiredFields: ["name", "address", "phone", "email", "service"],
+              honeypotFields: ["company", "_gotcha", "website"],
+              replyToField: "email",
+              subjectPrefix: "[Haven Homes Co.]",
+              subject: "New website quote enquiry",
+              spamThreshold: 2,
+              maxLinks: 2,
+              minimumSubmitMs: 3000
+            }')"
+
+          gh variable set HAVEN_FORM_SITE_CONFIG_JSON \
+            --repo "matt-milzewski/AnchorWebCo" \
+            --body "$config"
+
+          gh workflow run deploy-forms.yml \
+            --repo "matt-milzewski/AnchorWebCo" \
+            --ref main \
+            -f terraform_action=apply
+
+      - name: Summary
+        run: |
+          {
+            echo "## Haven Homes bootstrap complete"
+            echo
+            echo "- Repository: https://github.com/$TARGET_REPO"
+            echo "- AWS deployment secrets copied from Anchor Web Co."
+            echo "- Shared form API variable configured."
+            if [ -n "${{ inputs.cloudfront_origin }}" ]; then
+              echo "- Haven form configuration registered for ${{ inputs.cloudfront_origin }}."
+              echo "- Anchor forms deployment dispatched."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
