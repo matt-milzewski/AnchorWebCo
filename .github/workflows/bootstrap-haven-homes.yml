@@ -25,6 +25,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY_VALUE: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION_VALUE: ${{ secrets.AWS_REGION }}
       FORMS_API_BASE: ${{ vars.ANCHOR_FORMS_API_BASE }}
+      CLOUDFRONT_ORIGIN: ${{ inputs.cloudfront_origin || 'https://dl4dzzrd6411l.cloudfront.net' }}
 
     steps:
       - name: Validate source configuration
@@ -67,9 +68,6 @@ jobs:
             --body "$FORMS_API_BASE"
 
       - name: Register Haven with the shared forms service
-        if: ${{ inputs.cloudfront_origin != '' }}
-        env:
-          CLOUDFRONT_ORIGIN: ${{ inputs.cloudfront_origin }}
         run: |
           if [[ ! "$CLOUDFRONT_ORIGIN" =~ ^https://[a-z0-9.-]+\.cloudfront\.net$ ]]; then
             echo "cloudfront_origin must be a full https://*.cloudfront.net origin"
@@ -110,8 +108,8 @@ jobs:
             echo "- Repository: https://github.com/$TARGET_REPO"
             echo "- AWS deployment secrets copied from Anchor Web Co."
             echo "- Shared form API variable configured."
-            if [ -n "${{ inputs.cloudfront_origin }}" ]; then
-              echo "- Haven form configuration registered for ${{ inputs.cloudfront_origin }}."
+            if [ -n "$CLOUDFRONT_ORIGIN" ]; then
+              echo "- Haven form configuration registered for $CLOUDFRONT_ORIGIN."
               echo "- Anchor forms deployment dispatched."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
