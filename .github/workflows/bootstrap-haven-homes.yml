@@ -1,6 +1,11 @@
 name: Bootstrap Haven Homes
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/bootstrap-haven-homes.yml
   workflow_dispatch:
     inputs:
       cloudfront_origin:
