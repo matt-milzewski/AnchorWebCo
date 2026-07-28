@@ -81,6 +81,11 @@ for (const file of htmlFiles) {
   }
 
   assert.doesNotMatch(html, /Hervey Bay|Fraser Coast|Sunshine Coast/i, `${relative}: retired regional positioning`);
+  assert.doesNotMatch(
+    html,
+    /Primary area|Supporting area|Later expansion|first SEO priority|minimum has been lifted|Brisbane’s inner west is the market|launch structure targets/i,
+    `${relative}: internal business-planning language`,
+  );
   if (!["index.html", "work.html"].includes(relative)) {
     assert.doesNotMatch(html, /Maryborough/i, `${relative}: retired regional positioning`);
   }
