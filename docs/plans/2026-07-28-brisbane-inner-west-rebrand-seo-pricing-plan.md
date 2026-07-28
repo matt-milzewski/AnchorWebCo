@@ -46,21 +46,21 @@ Do not launch ten near-duplicate suburb pages. Launch one strong inner-west serv
 - Monthly plans should be profitable with little routine human effort.
 - Prices below are recommended public prices in AUD. Confirm whether public prices should be labelled as including GST before publication and apply that treatment consistently.
 
-## What the repo currently says and why it must change
+## What the repo said before implementation and why it had to change
 
-The live site and source are still strongly attached to Maryborough, Hervey Bay and the Fraser Coast:
+Before this rebrand, the live site and source were strongly attached to Maryborough, Hervey Bay and the Fraser Coast:
 
-- “Maryborough” appears across 33 reviewed source/document files and hundreds of source/data occurrences.
-- “Hervey Bay” appears across 33 reviewed files and hundreds of occurrences.
-- “Fraser Coast” appears across 32 reviewed files.
-- The homepage title, description, hero, LocalBusiness schema, Organization schema, review copy, footer and FAQs all use the old region.
-- Navigation links to four Maryborough/Hervey Bay web design and SEO pages.
-- The contact page displays Maryborough QLD 4650 and embeds a Maryborough map.
-- The global site data in `src/_data/site.json` declares Maryborough as the location.
-- The care-plan page is written around WordPress plugins and recurring manual SEO even though Anchor's own sites are primarily static and low maintenance.
-- The deploy workflow contains a hard-coded list of the old geographically named pages.
-- Analytics funnels and the forms Lambda hard-code `/free-website-audit-hervey-bay`.
-- The crawl test, robots file, CloudFront redirects, Netlify redirects and saved/CMS blog content preserve old URLs and regional terms.
+- “Maryborough” appeared across 33 reviewed source/document files and hundreds of source/data occurrences.
+- “Hervey Bay” appeared across 33 reviewed files and hundreds of occurrences.
+- “Fraser Coast” appeared across 32 reviewed files.
+- The homepage title, description, hero, LocalBusiness schema, Organization schema, review copy, footer and FAQs all used the old region.
+- Navigation linked to four Maryborough/Hervey Bay web design and SEO pages.
+- The contact page displayed Maryborough QLD 4650 and embedded a Maryborough map.
+- The global site data in `src/_data/site.json` declared Maryborough as the location.
+- The care-plan page was written around WordPress plugins and recurring manual SEO even though Anchor's own sites are primarily static and low maintenance.
+- The deploy workflow contained a hard-coded list of the old geographically named pages.
+- Analytics funnels and the forms Lambda hard-coded `/free-website-audit-hervey-bay`.
+- The crawl test, robots file, CloudFront redirects, Netlify redirects and saved/CMS blog content preserved old URLs and regional terms.
 
 The implementation also has a maintenance problem: most marketing pages contain their own duplicated header, footer, metadata and schema, while the Eleventy includes are mainly used by the blog. A global location change therefore requires edits across many files. The rebrand should include a template consolidation before or alongside the copy migration.
 
