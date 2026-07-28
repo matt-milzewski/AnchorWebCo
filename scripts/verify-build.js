@@ -93,10 +93,23 @@ for (const file of htmlFiles) {
     /Primary area|Supporting area|Later expansion|first SEO priority|minimum has been lifted|Brisbane’s inner west is the market|launch structure targets/i,
     `${relative}: internal business-planning language`,
   );
+  assert.doesNotMatch(
+    html,
+    /Ongoing care is optional|Optional care starts/i,
+    `${relative}: disconnected optional-care positioning`,
+  );
   if (!["index.html", "work.html"].includes(relative)) {
     assert.doesNotMatch(html, /Maryborough/i, `${relative}: retired regional positioning`);
   }
 }
+
+const pricingHtml = fs.readFileSync(path.join(outputRoot, "pricing.html"), "utf8");
+assert.match(pricingHtml, /Step 1 · One-off build/, "pricing.html: build step");
+assert.match(pricingHtml, /Step 2 · Ongoing hosting &amp; care/, "pricing.html: hosting and care step");
+assert.match(pricingHtml, /Every new Anchor-built website is paired with a hosting and care plan/, "pricing.html: connected offer");
+
+const contactHtml = fs.readFileSync(path.join(outputRoot, "contact.html"), "utf8");
+assert.match(contactHtml, /name="care_plan"/, "contact.html: separate hosting and care selection");
 
 console.log(
   `Verified ${htmlFiles.length} public HTML files with unique metadata, valid JSON-LD, and working internal targets.`,

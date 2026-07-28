@@ -2,15 +2,15 @@
 layout: layouts/marketing-page.njk
 title: Contact
 seoTitle: Contact Anchor Web Co | Brisbane Inner West Web Design
-description: Tell Anchor Web Co about your website, SEO or care requirements. Get practical next steps and a fixed-price recommendation from Matt in Red Hill.
+description: Choose a website build and managed hosting and care plan with Anchor Web Co. Get practical next steps and connected pricing from Matt in Red Hill.
 permalink: /contact.html
 ---
 <section class="section-pad local-hero">
     <div class="container">
         <div class="prose-narrow" style="max-width:900px;">
             <p class="eyebrow">Contact · Red Hill, Brisbane</p>
-            <h1 class="display" style="margin-bottom:24px;">Tell me what the website needs to do.</h1>
-            <p class="body-muted" style="font-size:20px;max-width:62ch;">Share the business, current website and goal. I’ll reply personally with practical next steps and the best-fit fixed-price scope.</p>
+            <h1 class="display" style="margin-bottom:24px;">Choose what you need built—and how you want it looked after.</h1>
+            <p class="body-muted" style="font-size:20px;max-width:62ch;">Share the business and goal. I’ll reply personally with a connected recommendation covering the one-off website build and ongoing hosting and care.</p>
         </div>
     </div>
 </section>
@@ -43,23 +43,21 @@ permalink: /contact.html
                     </div>
                     <div class="grid md:grid-cols-2 gap-5">
                         <div>
-                            <label for="service" class="block mb-2">What do you need? *</label>
+                            <label for="service" class="block mb-2">Step 1 · Website build or service *</label>
                             <select id="service" name="service" required>
-                                <option value="" disabled selected>Select one</option>
+                                <option value="" disabled selected>Select a build or service</option>
                                 <option value="one-page">One-Page Launch — $1,970</option>
                                 <option value="local-business">Local Business Site — $3,850</option>
                                 <option value="growth">Growth Website — from $5,950</option>
                                 <option value="website-rebuild">Website rebuild</option>
                                 <option value="seo-foundation">Fixed-scope local SEO foundation</option>
-                                <option value="site-care">Site Care — $69/month</option>
-                                <option value="care-insights">Care + Insights — $129/month</option>
-                                <option value="visibility-monitor">Local Visibility Monitor — $229/month</option>
+                                <option value="existing-site-care">Hosting and care for an existing site</option>
                                 <option value="health-check">Health check or audit</option>
                                 <option value="other">Something else</option>
                             </select>
                         </div>
                         <div>
-                            <label for="budget" class="block mb-2">Likely build budget</label>
+                            <label for="budget" class="block mb-2">Likely one-off build budget</label>
                             <select id="budget" name="budget">
                                 <option value="" selected>Not sure yet</option>
                                 <option>$1,970–$3,000</option>
@@ -68,6 +66,18 @@ permalink: /contact.html
                                 <option>$8,000+</option>
                             </select>
                         </div>
+                    </div>
+                    <div>
+                        <label for="care-plan" class="block mb-2">Step 2 · Hosting &amp; care after launch *</label>
+                        <select id="care-plan" name="care_plan" required>
+                            <option value="help-me-choose" selected>Help me choose the right plan</option>
+                            <option value="site-care">Site Care — $69/month</option>
+                            <option value="care-insights">Care + Insights — $129/month</option>
+                            <option value="visibility-monitor">Local Visibility Monitor — $229/month</option>
+                            <option value="specialist-hosting">Specialist hosting to be scoped</option>
+                            <option value="not-applicable">Not a new website build</option>
+                        </select>
+                        <p class="body-muted" style="font-size:14px;margin-top:8px;">New Anchor-built websites pair the one-off build with an ongoing hosting and care plan that starts at launch.</p>
                     </div>
                     <div class="grid md:grid-cols-2 gap-5">
                         <div>
@@ -106,7 +116,7 @@ permalink: /contact.html
                         <textarea id="message" name="message" required rows="7" placeholder="Tell me about the business, priority services, customer area and what is not working now."></textarea>
                     </div>
                     <div class="hidden" aria-hidden="true"><label for="company">Company</label><input id="company" type="text" name="company" tabindex="-1" autocomplete="off"></div>
-                    <button type="submit" class="contact-submit-btn">Request my website plan</button>
+                    <button type="submit" class="contact-submit-btn">Request my build + care recommendation</button>
                 </form>
             </div>
             <aside class="space-y-6">
@@ -124,6 +134,7 @@ permalink: /contact.html
                         <li>Priority services or products</li>
                         <li>Main customer suburbs</li>
                         <li>Examples of sites you like</li>
+                        <li>Preferred hosting and care level</li>
                         <li>Any deadline or launch constraint</li>
                     </ul>
                 </div>

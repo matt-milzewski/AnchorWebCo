@@ -111,10 +111,20 @@ if (contactForm) {
     const serviceField = document.getElementById('service');
     if (serviceField) {
         const query = new URLSearchParams(window.location.search);
-        const requestedService = query.get('package') || query.get('care') || query.get('service');
+        const requestedService = query.get('package') || query.get('service');
         const matchingOption = Array.from(serviceField.options).some((option) => option.value === requestedService);
         if (requestedService && matchingOption) {
             serviceField.value = requestedService;
+        }
+    }
+
+    const careField = document.getElementById('care-plan');
+    if (careField) {
+        const query = new URLSearchParams(window.location.search);
+        const requestedCare = query.get('care');
+        const matchingCareOption = Array.from(careField.options).some((option) => option.value === requestedCare);
+        if (requestedCare && matchingCareOption) {
+            careField.value = requestedCare;
         }
     }
 
