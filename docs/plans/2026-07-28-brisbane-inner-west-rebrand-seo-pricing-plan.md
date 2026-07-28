@@ -12,7 +12,7 @@ The repository work in this plan has now been implemented:
 - Shared templates now control the marketing metadata, navigation, footer and schema.
 - The new Red Hill, inner-west web design, local SEO, pricing, care-plan and audit pages are in place.
 - The public build prices are $1,970, $3,850 and from $5,950.
-- Care plans are deliberately automation-led at $69, $129 and $229 per month.
+- Care plans are deliberately automation-led at $79, $129 and $229 per month.
 - Current local imagery, source credits, local blog content, sitemaps and one-hop migration redirects are included in the repo.
 
 The Google Business Profile, directory/citation updates, Search Console indexing requests, review collection and local partnerships described later in this document remain business-account actions outside the repository.
@@ -225,7 +225,7 @@ Public plans should be limited to sites built and hosted by Anchor Web Co. Third
 
 ### Plan 1: Site Care
 
-**$69/month or $690/year**
+**$79/month or $790/year**
 
 Mostly automated:
 

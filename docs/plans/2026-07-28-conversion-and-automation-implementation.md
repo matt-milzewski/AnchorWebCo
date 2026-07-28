@@ -67,7 +67,7 @@ Current public care pricing:
 
 | Care plan | Monthly | Annual |
 | --- | ---: | ---: |
-| Site Care | $69 | $690 |
+| Site Care | $79 | $790 |
 | Care + Insights | $129 | $1,290 |
 | Lead Monitor | $229 | $2,290 |
 
@@ -77,9 +77,9 @@ The default combinations shown publicly are:
 
 | Combination | First year |
 | --- | ---: |
-| One-Page Launch + annual Site Care | $2,660 |
-| Local Business Site + annual Site Care | $4,540 |
-| Growth Website + annual Site Care | From $6,640 |
+| One-Page Launch + annual Site Care | $2,760 |
+| Local Business Site + annual Site Care | $4,640 |
+| Growth Website + annual Site Care | From $6,740 |
 
 Prices are in Australian dollars. The site states that GST is added only if it legally applies and will be shown before proposal acceptance.
 
@@ -192,7 +192,7 @@ The optional endpoint check confirms that the forms Lambda can load the selected
 
 The public plans now match automation that exists in this repository.
 
-### Site Care — $69/month or $690/year
+### Site Care — $79/month or $790/year
 
 - managed static hosting and CDN;
 - automated uptime checks;

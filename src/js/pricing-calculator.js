@@ -16,7 +16,7 @@
         growth: { price: 5950, label: 'From $5,950', from: true }
     };
     var care = {
-        'site-care': { monthly: 69, annual: 690 },
+        'site-care': { monthly: 79, annual: 790 },
         'care-insights': { monthly: 129, annual: 1290 },
         'lead-monitor': { monthly: 229, annual: 2290 }
     };

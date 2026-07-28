@@ -118,7 +118,7 @@ assert.match(pricingHtml, /Step 1 · One-off build/, "pricing.html: build step")
 assert.match(pricingHtml, /Step 2 · Ongoing hosting &amp; care/, "pricing.html: hosting and care step");
 assert.match(pricingHtml, /Every new Anchor-built website is paired with a hosting and care plan/, "pricing.html: connected offer");
 assert.match(pricingHtml, /id="price-calculator"/, "pricing.html: connected price calculator");
-assert.match(pricingHtml, /\$4,540/, "pricing.html: first-year Local Business total");
+assert.match(pricingHtml, /\$4,640/, "pricing.html: first-year Local Business total");
 
 const contactHtml = fs.readFileSync(path.join(outputRoot, "contact.html"), "utf8");
 assert.match(contactHtml, /name="recommended_package"/, "contact.html: saved build recommendation");

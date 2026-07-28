@@ -30,9 +30,9 @@
         essential: {
             id: 'site-care',
             name: 'Site Care',
-            monthly: 69,
-            annual: 690,
-            label: '$69/month or $690/year'
+            monthly: 79,
+            annual: 790,
+            label: '$79/month or $790/year'
         },
         insights: {
             id: 'care-insights',
