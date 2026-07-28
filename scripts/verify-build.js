@@ -35,6 +35,12 @@ const htmlFiles = walk(outputRoot)
   .filter((file) => file.endsWith(".html"))
   .filter((file) => !file.includes(`${path.sep}admin${path.sep}`));
 
+assert.equal(
+  walk(outputRoot).some((file) => /bh[-_]?lock|bhlocksandsecurity/i.test(path.basename(file))),
+  false,
+  "Legacy BH Lock assets must not be present in the public build.",
+);
+
 const titles = new Map();
 
 for (const file of htmlFiles) {
@@ -81,6 +87,7 @@ for (const file of htmlFiles) {
   }
 
   assert.doesNotMatch(html, /Hervey Bay|Fraser Coast|Sunshine Coast/i, `${relative}: retired regional positioning`);
+  assert.doesNotMatch(html, /BH Lock|bhlocks|bh-lock/i, `${relative}: retired BH Lock portfolio reference`);
   assert.doesNotMatch(
     html,
     /Primary area|Supporting area|Later expansion|first SEO priority|minimum has been lifted|Brisbane’s inner west is the market|launch structure targets/i,
