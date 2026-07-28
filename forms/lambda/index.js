@@ -316,7 +316,7 @@ function buildAnalyticsEvent({ fields, site, siteId, event }) {
       payload: {
         client_id: clientId,
         type: "form-submit-audit",
-        path: "/free-website-audit-hervey-bay",
+        path: "/free-website-audit-brisbane",
         properties: {
           ...baseProperties,
           business_type: fields.business_type || fields.businessType || fields.type_of_business || fields["business-type"] || "",
@@ -335,6 +335,9 @@ function buildAnalyticsEvent({ fields, site, siteId, event }) {
         ...baseProperties,
         service_type: fields.service_type || fields.service || fields.what_are_you_looking_for || "",
         timeline: fields.timeline || fields.preferred_timeline || "",
+        budget: fields.budget || fields.budget_band || "",
+        business_suburb: fields.business_suburb || fields.suburb || "",
+        lead_source: fields.lead_source || fields.how_did_you_find_us || "",
       },
     },
   };

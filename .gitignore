@@ -1,5 +1,6 @@
 _site/
 node_modules/
+src/css/tailwind-build.css
 analytics/cdk.out/
 analytics/dist/
 .DS_Store

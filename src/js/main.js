@@ -19,11 +19,13 @@ if (mobileMenu && mobileMenuButton && mobileMenuClose) {
     function openMobileMenu() {
         mobileMenu.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
+        mobileMenuButton.setAttribute('aria-expanded', 'true');
     }
 
     function closeMobileMenu() {
         mobileMenu.classList.add('hidden');
         document.body.style.overflow = '';
+        mobileMenuButton.setAttribute('aria-expanded', 'false');
     }
 
     mobileMenuButton.addEventListener('click', openMobileMenu);
@@ -104,6 +106,16 @@ if (contactForm) {
     const startedAtField = document.getElementById('form-started-at');
     if (startedAtField) {
         startedAtField.value = String(Date.now());
+    }
+
+    const serviceField = document.getElementById('service');
+    if (serviceField) {
+        const query = new URLSearchParams(window.location.search);
+        const requestedService = query.get('package') || query.get('care') || query.get('service');
+        const matchingOption = Array.from(serviceField.options).some((option) => option.value === requestedService);
+        if (requestedService && matchingOption) {
+            serviceField.value = requestedService;
+        }
     }
 
     contactForm.addEventListener('submit', async (e) => {

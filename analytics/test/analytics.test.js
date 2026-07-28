@@ -31,6 +31,7 @@ test("visitor hashing is stable within a day and rotates the next day", () => {
 
 test("region derivation distinguishes Brisbane inner-west and Fraser Coast", () => {
   assert.equal(deriveRegion({ "cloudfront-viewer-city": "Toowong", "cloudfront-viewer-country-region-name": "Queensland" }), "Brisbane inner-west");
+  assert.equal(deriveRegion({ "cloudfront-viewer-city": "Red%20Hill", "cloudfront-viewer-country-region-name": "Queensland" }), "Brisbane inner-west");
   assert.equal(deriveRegion({ "cloudfront-viewer-city": "Hervey%20Bay", "cloudfront-viewer-country-region-name": "Queensland" }), "Fraser Coast");
 });
 
@@ -61,6 +62,27 @@ test("aggregate keys count non-form conversions as enquiries", () => {
   };
   const keys = aggregateKeysForEvent(event, anchorTenant);
   assert.ok(keys.includes("AGG#2026-06#enquiries#channel#call"));
+});
+
+test("contact demand fields are available to automated reporting", () => {
+  const event = {
+    type: "form-submit-contact",
+    path: "/contact",
+    received_at: "2026-07-28T03:00:00.000Z",
+    properties: {
+      service_type: "local-business",
+      timeline: "1-3 months",
+      budget: "$3,000–$5,000",
+      business_suburb: "Red Hill",
+      lead_source: "google-search"
+    },
+    device: "desktop",
+    region: "Brisbane inner-west"
+  };
+  const keys = aggregateKeysForEvent(event, anchorTenant);
+  assert.ok(keys.includes("AGG#2026-07#budget#value#$3,000–$5,000"));
+  assert.ok(keys.includes("AGG#2026-07#business_suburb#value#red-hill"));
+  assert.ok(keys.includes("AGG#2026-07#lead_source#value#google-search"));
 });
 
 test("total enquiries sums form, call, whatsapp and email channels", () => {

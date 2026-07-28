@@ -39,6 +39,9 @@ function aggregateKeysForEvent(event, tenant) {
   if (event.type === "form-submit-contact") {
     if (props.service_type) keys.push(aggregateSk(month, "service_type", "value", props.service_type));
     if (props.timeline) keys.push(aggregateSk(month, "timeline", "value", props.timeline));
+    if (props.budget) keys.push(aggregateSk(month, "budget", "value", props.budget));
+    if (props.business_suburb) keys.push(aggregateSk(month, "business_suburb", "value", props.business_suburb));
+    if (props.lead_source) keys.push(aggregateSk(month, "lead_source", "value", props.lead_source));
   }
 
   if (event.type === "form-submit-audit" && props.business_type) {

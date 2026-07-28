@@ -17,7 +17,7 @@ function deriveRegion(headers = {}) {
   const city = cloudfrontRegion ? decodeURIComponent(String(cloudfrontRegion).replace(/\+/g, " ")) : "";
 
   const combined = [city, region, country].filter(Boolean).join(", ");
-  if (/brisbane|indooroopilly|toowong|kenmore|taringa|st lucia|chapel hill|fig tree pocket/i.test(combined)) {
+  if (/brisbane|red hill|paddington|bardon|ashgrove|kelvin grove|milton|auchenflower|petrie terrace|newmarket|alderley|the gap|indooroopilly|toowong|kenmore|taringa|st lucia|chapel hill|fig tree pocket/i.test(combined)) {
     return "Brisbane inner-west";
   }
   if (/maryborough|hervey|fraser coast|tinana|pialba|urangan|eli waters/i.test(combined)) {

@@ -18,7 +18,7 @@
       { "match": "event", "type": "form-submit-contact" }
     ] },
     { "name": "Audit", "steps": [
-      { "match": "pageview", "path": "/free-website-audit-hervey-bay" },
+      { "match": "pageview", "path": "/free-website-audit-brisbane" },
       { "match": "event", "type": "form-start-audit" },
       { "match": "event", "type": "form-submit-audit" }
     ] },

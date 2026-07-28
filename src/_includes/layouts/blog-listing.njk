@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-AU">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,16 +11,20 @@
     {% set pageDescription = description or site.description %}
 
     <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_AU">
+    <meta property="og:site_name" content="{{ site.name }}">
     <meta property="og:url" content="{{ site.url ~ page.url }}">
     <meta property="og:title" content="{{ pageTitle }}">
     <meta property="og:description" content="{{ pageDescription }}">
     <meta property="og:image" content="{{ site.url ~ site.defaultOgImage }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Anchor Web Co — web design for Brisbane's inner west">
 
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="{{ site.url ~ page.url }}">
-    <meta property="twitter:title" content="{{ pageTitle }}">
-    <meta property="twitter:description" content="{{ pageDescription }}">
-    <meta property="twitter:image" content="{{ site.url ~ site.defaultOgImage }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ pageTitle }}">
+    <meta name="twitter:description" content="{{ pageDescription }}">
+    <meta name="twitter:image" content="{{ site.url ~ site.defaultOgImage }}">
 
     <title>{{ pageTitle }}</title>
 
@@ -28,28 +32,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&amp;family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'ink': '#0A0A0A',
-                        'surface': '#FAFAF7',
-                        'surface-alt': '#FFFFFF',
-                        'accent': '#38bdf8',
-                        'muted': '#6B7280',
-                        'line': '#E7E5E0',
-                        /* legacy names mapped to new palette */
-                        'anchor-navy': '#0A0A0A',
-                        'coast-sky': '#38bdf8',
-                        'sand-beige': '#FAFAF7',
-                        'dark-text': '#0A0A0A'
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="/css/tailwind-build.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/blog.css">
     <script src="https://unpkg.com/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js"></script>

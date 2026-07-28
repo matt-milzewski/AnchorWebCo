@@ -1,28 +1,29 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
+const publicPages = [
+  "index.html",
+  "web-design-brisbane-inner-west.html",
+  "web-design-red-hill.html",
+  "local-seo-brisbane-inner-west.html",
+  "pricing.html",
+  "website-care-plans.html",
+  "work.html",
+  "free-website-audit-brisbane.html",
+  "health-check.html",
+  "about.html",
+  "contact.html",
+];
+
 module.exports = function () {
-  const srcDirectory = path.join(process.cwd(), "src");
+  return publicPages.map((fileName) => {
+    const absolutePath = path.join(process.cwd(), "src", fileName);
+    const stats = fs.statSync(absolutePath);
 
-  return fs.readdirSync(srcDirectory)
-    .filter((fileName) => fileName.endsWith(".html"))
-    .filter((fileName) => {
-      const contents = fs.readFileSync(path.join(srcDirectory, fileName), "utf8");
-      const metaTags = contents.match(/<meta\s+[^>]*>/gi) || [];
-
-      return !metaTags.some((tag) => {
-        return /name=["']robots["']/i.test(tag) && /content=["'][^"']*noindex/i.test(tag);
-      });
-    })
-    .sort((left, right) => left.localeCompare(right))
-    .map((fileName) => {
-      const absolutePath = path.join(srcDirectory, fileName);
-      const stats = fs.statSync(absolutePath);
-
-      return {
-        fileName,
-        url: fileName === "index.html" ? "/" : `/${fileName}`,
-        lastmod: stats.mtime.toISOString(),
-      };
-    });
+    return {
+      fileName,
+      url: fileName === "index.html" ? "/" : `/${fileName}`,
+      lastmod: stats.mtime.toISOString(),
+    };
+  });
 };

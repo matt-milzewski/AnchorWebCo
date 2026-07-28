@@ -70,6 +70,9 @@ test("buildAnalyticsEvent maps contact demand fields", () => {
     fields: {
       service: "Website + SEO",
       timeline: "1-3 months",
+      budget: "$3,000–$5,000",
+      business_suburb: "Red Hill",
+      lead_source: "google-search",
       source_page: "/website-care-plans",
       cta: "cta-quote",
       analytics_form_type: "contact",
@@ -88,6 +91,9 @@ test("buildAnalyticsEvent maps contact demand fields", () => {
   assert.equal(event.payload.type, "form-submit-contact");
   assert.equal(event.payload.properties.service_type, "Website + SEO");
   assert.equal(event.payload.properties.timeline, "1-3 months");
+  assert.equal(event.payload.properties.budget, "$3,000–$5,000");
+  assert.equal(event.payload.properties.business_suburb, "Red Hill");
+  assert.equal(event.payload.properties.lead_source, "google-search");
   assert.equal(event.payload.properties.source_page, "/website-care-plans");
   assert.equal(event.payload.properties.cta, "cta-quote");
 });
@@ -96,7 +102,7 @@ test("buildAnalyticsEvent maps audit business type", () => {
   const event = _private.buildAnalyticsEvent({
     fields: {
       business_type: "Builder",
-      source_page: "/free-website-audit-hervey-bay",
+      source_page: "/free-website-audit-brisbane",
       analytics_form_type: "audit",
     },
     site: {
@@ -111,5 +117,5 @@ test("buildAnalyticsEvent maps audit business type", () => {
 
   assert.equal(event.payload.type, "form-submit-audit");
   assert.equal(event.payload.properties.business_type, "Builder");
-  assert.equal(event.payload.properties.source_page, "/free-website-audit-hervey-bay");
+  assert.equal(event.payload.properties.source_page, "/free-website-audit-brisbane");
 });

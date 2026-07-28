@@ -1,50 +1,55 @@
 <header>
-    <nav class="fixed w-full bg-white z-50" style="border-bottom: 1px solid var(--line);">
+    <nav class="fixed w-full bg-white z-50 site-nav" style="border-bottom: 1px solid var(--line);">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="/" class="text-xl font-poppins font-bold" style="color: var(--ink);">Anchor Web Co.</a>
-            <button id="mobile-menu-button" class="xl:hidden" aria-label="Toggle menu">
+            <a href="/" class="text-xl font-poppins font-bold brand-lockup" style="color: var(--ink);">
+                <span>Anchor Web Co.</span>
+                <small>Red Hill · Brisbane</small>
+            </a>
+            <button id="mobile-menu-button" class="xl:hidden menu-toggle" aria-label="Open navigation" aria-controls="mobile-menu" aria-expanded="false">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
             <div class="hidden xl:flex items-center gap-8 text-sm">
-                <a href="/#work" class="nav-link">Work</a>
+                <a href="/work.html" class="nav-link">Work</a>
                 <div class="has-dropdown">
-                    <a href="#" class="nav-link" aria-haspopup="true" aria-expanded="false">Services</a>
+                    <button type="button" class="nav-link nav-dropdown-trigger" aria-haspopup="true">Services</button>
                     <div class="dropdown-menu" role="menu">
-                        <a href="/web-design-hervey-bay.html">Web Design — Hervey Bay</a>
-                        <a href="/web-design-maryborough.html">Web Design — Maryborough</a>
-                        <a href="/seo-hervey-bay.html">SEO — Hervey Bay</a>
-                        <a href="/seo-maryborough.html">SEO — Maryborough</a>
+                        <a href="/web-design-brisbane-inner-west.html">Web Design — Inner West</a>
+                        <a href="/web-design-red-hill.html">Web Design — Red Hill</a>
+                        <a href="/local-seo-brisbane-inner-west.html">Local SEO — Inner West</a>
                         <hr class="divider" style="margin: 6px 8px;">
+                        <a href="/pricing.html">Website Pricing</a>
                         <a href="/website-care-plans.html">Website Care Plans</a>
-                        <a href="/free-website-audit-hervey-bay.html">Free Website Audit</a>
+                        <a href="/free-website-audit-brisbane.html">Free Website Audit</a>
                     </div>
                 </div>
+                <a href="/pricing.html" class="nav-link">Pricing</a>
                 <a href="/about.html" class="nav-link">About</a>
-                <a href="/blog/" class="nav-link" style="color: var(--accent);">Blog</a>
-                <a href="/contact.html" class="nav-button" data-track="cta-quote" data-track-prop-button-location="header">Get a quote</a>
+                <a href="/blog/" class="nav-link">Blog</a>
+                <a href="/contact.html" class="nav-button" data-track="cta-quote" data-track-prop-button-location="header">Get a fixed-price plan</a>
             </div>
         </div>
     </nav>
     <div id="mobile-menu" class="fixed inset-0 z-50 bg-white flex-col items-center justify-center space-y-6 text-xl font-poppins font-bold hidden transition-all duration-300">
         <button id="mobile-menu-close" class="absolute top-6 right-6 text-4xl" style="color: var(--ink);" aria-label="Close menu">&times;</button>
         <nav class="flex flex-col items-center space-y-4 mt-12 w-full px-6">
-            <a href="/#work" class="nav-link">Work</a>
+            <a href="/work.html" class="nav-link">Work</a>
             <details class="w-full text-center">
                 <summary class="nav-link cursor-pointer list-none">Services</summary>
                 <div class="flex flex-col items-center gap-3 mt-3 text-base font-normal">
-                    <a href="/web-design-hervey-bay.html" class="nav-link">Web Design — Hervey Bay</a>
-                    <a href="/web-design-maryborough.html" class="nav-link">Web Design — Maryborough</a>
-                    <a href="/seo-hervey-bay.html" class="nav-link">SEO — Hervey Bay</a>
-                    <a href="/seo-maryborough.html" class="nav-link">SEO — Maryborough</a>
+                    <a href="/web-design-brisbane-inner-west.html" class="nav-link">Web Design — Inner West</a>
+                    <a href="/web-design-red-hill.html" class="nav-link">Web Design — Red Hill</a>
+                    <a href="/local-seo-brisbane-inner-west.html" class="nav-link">Local SEO — Inner West</a>
+                    <a href="/pricing.html" class="nav-link">Website Pricing</a>
                     <a href="/website-care-plans.html" class="nav-link">Website Care Plans</a>
-                    <a href="/free-website-audit-hervey-bay.html" class="nav-link">Free Website Audit</a>
+                    <a href="/free-website-audit-brisbane.html" class="nav-link">Free Website Audit</a>
                 </div>
             </details>
+            <a href="/pricing.html" class="nav-link">Pricing</a>
             <a href="/about.html" class="nav-link">About</a>
             <a href="/blog/" class="nav-link">Blog</a>
-            <a href="/contact.html" class="nav-button mt-4" data-track="cta-quote" data-track-prop-button-location="mobile-menu">Get a quote</a>
+            <a href="/contact.html" class="nav-button mt-4" data-track="cta-quote" data-track-prop-button-location="mobile-menu">Get a fixed-price plan</a>
         </nav>
     </div>
 </header>

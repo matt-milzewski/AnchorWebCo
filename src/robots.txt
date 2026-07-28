@@ -9,11 +9,13 @@ Allow: /about
 Allow: /blog/
 Allow: /contact
 Allow: /health-check
-Allow: /free-website-audit-hervey-bay
-Allow: /web-design-hervey-bay
-Allow: /web-design-maryborough
-Allow: /seo-hervey-bay
-Allow: /seo-maryborough
+Allow: /free-website-audit-brisbane
+Allow: /web-design-brisbane-inner-west
+Allow: /web-design-red-hill
+Allow: /local-seo-brisbane-inner-west
+Allow: /pricing
+Allow: /website-care-plans
+Allow: /work
 
 # Allow crawling of assets
 Allow: /css/

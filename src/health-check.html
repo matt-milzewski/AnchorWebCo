@@ -1,282 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Get a quick assessment of your website's performance, mobile usability, and local SEO foundations. Free for Fraser Coast businesses.">
-    <link rel="canonical" href="https://www.anchorwebco.com.au/health-check.html" />
-    <link rel="icon" type="image/png" sizes="180x180" href="icons/favicon-180.png">
-
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.anchorwebco.com.au/health-check.html">
-    <meta property="og:title" content="Free Website Health Check | Anchor Web Co">
-    <meta property="og:description" content="Get a quick assessment of your website's performance, mobile usability, and local SEO foundations. Free for Fraser Coast businesses.">
-    <meta property="og:image" content="https://www.anchorwebco.com.au/img/og-image.webp">
-
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://www.anchorwebco.com.au/health-check.html">
-    <meta property="twitter:title" content="Free Website Health Check | Anchor Web Co">
-    <meta property="twitter:description" content="Get a quick assessment of your website's performance, mobile usability, and local SEO foundations. Free for Fraser Coast businesses.">
-    <meta property="twitter:image" content="https://www.anchorwebco.com.au/img/og-image.webp">
-
-    <title>Free Website Health Check | Anchor Web Co</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&amp;family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'ink': '#0A0A0A',
-                        'surface': '#FAFAF7',
-                        'surface-alt': '#FFFFFF',
-                        'accent': '#38bdf8',
-                        'muted': '#6B7280',
-                        'line': '#E7E5E0',
-                        /* legacy names mapped to new palette */
-                        'anchor-navy': '#0A0A0A',
-                        'coast-sky': '#38bdf8',
-                        'sand-beige': '#FAFAF7',
-                        'dark-text': '#0A0A0A'
-                    }
-                }
-            }
-        }
-    </script>
-
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="https://unpkg.com/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js"></script>
-</head>
-<body class="bg-sand-beige text-dark-text font-roboto">
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-anchor-navy focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg">Skip to main content</a>
-
-    <nav class="fixed w-full bg-white z-50" style="border-bottom: 1px solid var(--line);">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="/" class="text-xl font-poppins font-bold" style="color: var(--ink);">Anchor Web Co.</a>
-            <button id="mobile-menu-button" class="xl:hidden" aria-label="Toggle menu">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
-            <div class="hidden xl:flex items-center gap-8 text-sm">
-                <a href="/#work" class="nav-link">Work</a>
-                <div class="has-dropdown">
-                    <a href="#" class="nav-link" aria-haspopup="true" aria-expanded="false">Services</a>
-                    <div class="dropdown-menu" role="menu">
-                        <a href="/web-design-hervey-bay.html">Web Design — Hervey Bay</a>
-                        <a href="/web-design-maryborough.html">Web Design — Maryborough</a>
-                        <a href="/seo-hervey-bay.html">SEO — Hervey Bay</a>
-                        <a href="/seo-maryborough.html">SEO — Maryborough</a>
-                        <hr class="divider" style="margin: 6px 8px;">
-                        <a href="/website-care-plans.html">Website Care Plans</a>
-                        <a href="/free-website-audit-hervey-bay.html">Free Website Audit</a>
-                    </div>
-                </div>
-                <a href="/about.html" class="nav-link">About</a>
-                <a href="/blog/" class="nav-link">Blog</a>
-                <a href="/contact.html" class="nav-button">Get a quote</a>
-            </div>
+---
+layout: layouts/marketing-page.njk
+title: Free Website Health Check
+seoTitle: Free Website Health Check | Anchor Web Co.
+description: Run a free automated website health check covering performance, mobile usability and SEO foundations, with the report sent to your email.
+healthCheck: true
+permalink: /health-check.html
+---
+<section class="section-pad local-hero">
+    <div class="container">
+        <div class="prose-narrow" style="max-width:900px;">
+            <p class="eyebrow">Instant report · Free</p>
+            <h1 class="display" style="margin-bottom:24px;">Free Website Health Check</h1>
+            <p class="body-muted" style="font-size:20px;max-width:62ch;">Enter your website and business email. The automated check reviews performance, mobile usability and search foundations, then sends the report to you.</p>
         </div>
-    </nav>
-    <div id="mobile-menu" class="fixed inset-0 z-50 bg-white flex-col items-center justify-center space-y-6 text-xl font-poppins font-bold hidden transition-all duration-300">
-        <button id="mobile-menu-close" class="absolute top-6 right-6 text-4xl" style="color: var(--ink);" aria-label="Close menu">&times;</button>
-        <nav class="flex flex-col items-center space-y-4 mt-12 w-full px-6">
-            <a href="/#work" class="nav-link">Work</a>
-            <details class="w-full text-center">
-                <summary class="nav-link cursor-pointer list-none">Services</summary>
-                <div class="flex flex-col items-center gap-3 mt-3 text-base font-normal">
-                    <a href="/web-design-hervey-bay.html" class="nav-link">Web Design — Hervey Bay</a>
-                    <a href="/web-design-maryborough.html" class="nav-link">Web Design — Maryborough</a>
-                    <a href="/seo-hervey-bay.html" class="nav-link">SEO — Hervey Bay</a>
-                    <a href="/seo-maryborough.html" class="nav-link">SEO — Maryborough</a>
-                    <a href="/website-care-plans.html" class="nav-link">Website Care Plans</a>
-                    <a href="/free-website-audit-hervey-bay.html" class="nav-link">Free Website Audit</a>
-                </div>
-            </details>
-            <a href="/about.html" class="nav-link">About</a>
-            <a href="/blog/" class="nav-link">Blog</a>
-            <a href="/contact.html" class="nav-button mt-4">Get a quote</a>
-        </nav>
     </div>
+</section>
 
-    <main id="main-content">
-        <section class="section-pad hero-gradient" style="padding-top: 140px;">
-            <div class="container mx-auto px-4">
-                <div class="prose-narrow" style="max-width: 880px;">
-                    <p class="eyebrow">Instant report · Free</p>
-                    <h1 class="display" style="margin-bottom: 24px;">Free Website Health Check</h1>
-                    <p class="body-muted" style="font-size: 20px; max-width: 56ch; margin-bottom: 24px;">Enter your URL and business email. We run the audit and send your report directly — covering speed, SEO basics, and usability.</p>
-                </div>
-
-                <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-blue-100 p-6 md:p-8 mb-10">
-                    <form id="health-check-form" class="space-y-5" novalidate>
-                        <div>
-                            <label for="website-url" class="block text-sm font-semibold text-anchor-navy mb-2">Website URL</label>
-                            <input
-                                id="website-url"
-                                name="website-url"
-                                type="url"
-                                required
-                                placeholder="https://example.com"
-                                autocomplete="url"
-                                aria-describedby="website-url-help"
-                            >
-                            <p id="website-url-help" class="text-sm text-slate-600 mt-2">Enter a full website URL. We support http and https.</p>
-                        </div>
-
-                        <div>
-                            <label for="health-email" class="block text-sm font-semibold text-anchor-navy mb-2">Email</label>
-                            <input
-                                id="health-email"
-                                name="health-email"
-                                type="email"
-                                required
-                                placeholder="you@business.com"
-                                autocomplete="email"
-                            >
-                            <p class="text-sm text-slate-600 mt-2">We will send your full report to this email.</p>
-                        </div>
-
-                        <div id="email-consent-wrap" class="hidden rounded-lg border border-blue-200 bg-blue-50 px-4 py-3">
-                            <label class="flex items-start gap-3 text-sm text-slate-700 cursor-pointer">
-                                <input id="email-consent" type="checkbox" class="mt-0.5 h-4 w-4" />
-                                <span>Email me the report</span>
-                            </label>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
-                            <button id="run-health-check-btn" type="submit" class="btn-primary" data-default-label="Run Health Check">Run Health Check</button>
-                            <p id="health-check-progress" class="text-sm text-slate-700 min-h-[1.25rem]" role="status" aria-live="polite"></p>
-                        </div>
-
-                        <p id="health-check-error" class="hidden text-sm text-red-700 rounded-lg bg-red-50 border border-red-200 px-3 py-2" role="alert"></p>
-                        <p id="health-check-success" class="hidden text-sm text-green-800 rounded-lg bg-green-50 border border-green-200 px-3 py-2" role="status" aria-live="polite"></p>
-                    </form>
-                </div>
-
-                <div class="max-w-5xl mx-auto mb-12">
-                    <div class="max-w-3xl mb-8">
-                        <h2 class="text-3xl font-poppins font-bold text-anchor-navy mb-4">What your website health report covers</h2>
-                        <p class="text-slate-700">The report is designed to give you a practical snapshot of the issues most likely to affect rankings, usability, and conversion performance.</p>
+<section class="section-pad" style="background:var(--surface-alt);padding-top:0;">
+    <div class="container">
+        <div class="prose-narrow" style="max-width:900px;">
+            <div class="form-shell">
+                <form id="health-check-form" class="space-y-5" novalidate>
+                    <div>
+                        <label for="website-url" class="block mb-2">Website URL</label>
+                        <input id="website-url" name="website-url" type="url" required placeholder="https://example.com" autocomplete="url" aria-describedby="website-url-help">
+                        <p id="website-url-help" class="text-sm text-slate-600 mt-2">Enter a full http or https website URL.</p>
                     </div>
-                    <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
-                    <div class="bg-white rounded-2xl border border-blue-100 shadow-md p-6">
-                        <h3 class="text-xl font-poppins font-bold mb-3">Speed</h3>
-                        <p class="text-slate-700">See whether slow load times, oversized assets, or weak mobile performance are hurting your first impression.</p>
+                    <div>
+                        <label for="health-email" class="block mb-2">Business email</label>
+                        <input id="health-email" name="health-email" type="email" required placeholder="you@business.com" autocomplete="email">
+                        <p class="text-sm text-slate-600 mt-2">The report will be sent to this address.</p>
                     </div>
-                    <div class="bg-white rounded-2xl border border-blue-100 shadow-md p-6">
-                        <h3 class="text-xl font-poppins font-bold mb-3">SEO Basics</h3>
-                        <p class="text-slate-700">Check the foundations that affect how search engines understand your pages, headings, metadata, and indexing signals.</p>
+                    <div id="email-consent-wrap" class="hidden rounded-lg border border-blue-200 bg-blue-50 px-4 py-3">
+                        <label class="flex items-start gap-3 text-sm text-slate-700 cursor-pointer">
+                            <input id="email-consent" type="checkbox" class="mt-0.5 h-4 w-4">
+                            <span>Email me the report</span>
+                        </label>
                     </div>
-                    <div class="bg-white rounded-2xl border border-blue-100 shadow-md p-6">
-                        <h3 class="text-xl font-poppins font-bold mb-3">Usability</h3>
-                        <p class="text-slate-700">Spot friction points that make it harder for mobile visitors to trust the site and take action.</p>
+                    <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
+                        <button id="run-health-check-btn" type="submit" class="btn-primary" data-default-label="Run Health Check">Run Health Check</button>
+                        <p id="health-check-progress" class="text-sm text-slate-700 min-h-[1.25rem]" role="status" aria-live="polite"></p>
                     </div>
-                    <div class="bg-white rounded-2xl border border-blue-100 shadow-md p-6">
-                        <h3 class="text-xl font-poppins font-bold mb-3">Next Steps</h3>
-                        <p class="text-slate-700">Get a practical summary you can use to decide whether you need a few fixes, a rebuild, or a proper SEO plan.</p>
-                    </div>
-                </div>
-                </div>
-
-                <div class="max-w-5xl mx-auto grid lg:grid-cols-2 gap-8 mb-12">
-                    <div class="bg-white rounded-2xl border border-blue-100 shadow-md p-6 md:p-8">
-                        <h2 class="text-2xl font-poppins font-bold text-anchor-navy mb-4">Who this is for</h2>
-                        <ul class="space-y-3 text-slate-700 list-disc list-inside">
-                            <li>Businesses with an existing website that feels slow, outdated, or underwhelming.</li>
-                            <li>Owners comparing whether they need a rebuild, better local SEO, or both.</li>
-                            <li>Teams that want a quick diagnostic before committing to a bigger website or SEO project.</li>
-                        </ul>
-                    </div>
-                    <div class="bg-white rounded-2xl border border-blue-100 shadow-md p-6 md:p-8">
-                        <h2 class="text-2xl font-poppins font-bold text-anchor-navy mb-4">What happens after you submit</h2>
-                        <ul class="space-y-3 text-slate-700 list-disc list-inside">
-                            <li>We run the audit and send the report to the email you provide.</li>
-                            <li>You can use the report as a self-serve checklist or bring it to us for hands-on help.</li>
-                            <li>If the site needs broader work, we can point you toward the right next step for web design, SEO, or support.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="max-w-5xl mx-auto bg-anchor-navy text-white rounded-2xl p-8 md:p-10 shadow-xl">
-                    <p class="text-sm uppercase tracking-wide text-coast-sky mb-3">Need Hands-On Help Instead?</p>
-                    <h2 class="h2" style="margin-bottom: 16px;">Use the health check as the starting point, not the finish line</h2>
-                    <p class="text-gray-200 mb-8">If your report shows deeper issues, you can continue into a free audit, a website rebuild discussion, or a local SEO plan for Maryborough and Hervey Bay.</p>
-                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <a href="free-website-audit-hervey-bay.html" class="btn-primary">Get Your Free Site Audit</a>
-                        <a href="contact.html" class="btn-outline">Contact Us</a>
-                        <a href="web-design-maryborough.html" class="btn-outline">Web Design Maryborough</a>
-                        <a href="web-design-hervey-bay.html" class="btn-outline">Web Design Hervey Bay</a>
-                        <a href="seo-maryborough.html" class="btn-outline">SEO Maryborough</a>
-                        <a href="seo-hervey-bay.html" class="btn-outline">SEO Hervey Bay</a>
-                    </div>
-                </div>
+                    <p id="health-check-error" class="hidden text-sm text-red-700 rounded-lg bg-red-50 border border-red-200 px-3 py-2" role="alert"></p>
+                    <p id="health-check-success" class="hidden text-sm text-green-800 rounded-lg bg-green-50 border border-green-200 px-3 py-2" role="status" aria-live="polite"></p>
+                </form>
             </div>
-        </section>
-    </main>
-
-    <footer class="section-pad" style="background: var(--ink); color: #fff;">
-        <div class="container mx-auto px-4">
-            <div class="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
-                <div>
-                    <h3 class="text-xl font-poppins font-bold mb-4">Anchor Web Co.</h3>
-                    <p style="color: rgba(255,255,255,0.7); font-size: 15px; line-height: 1.6;">Local web design and SEO. Maryborough, QLD.</p>
-                </div>
-                <div>
-                    <h3 class="text-sm font-poppins font-bold mb-4" style="text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);">Services</h3>
-                    <ul class="space-y-2" style="font-size: 15px;">
-                        <li><a href="/web-design-hervey-bay.html" class="text-white hover:text-coast-sky">Web Design Hervey Bay</a></li>
-                        <li><a href="/web-design-maryborough.html" class="text-white hover:text-coast-sky">Web Design Maryborough</a></li>
-                        <li><a href="/seo-hervey-bay.html" class="text-white hover:text-coast-sky">SEO Hervey Bay</a></li>
-                        <li><a href="/seo-maryborough.html" class="text-white hover:text-coast-sky">SEO Maryborough</a></li>
-                        <li><a href="/website-care-plans.html" class="text-white hover:text-coast-sky">Website Care Plans</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-sm font-poppins font-bold mb-4" style="text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);">Get in touch</h3>
-                    <ul class="space-y-2" style="font-size: 15px;">
-                        <li><a href="tel:+61439499944" class="text-white hover:text-coast-sky">0439 499 944</a></li>
-                        <li><a href="mailto:info@anchorwebco.com.au" class="text-white hover:text-coast-sky">info@anchorwebco.com.au</a></li>
-                        <li style="color: rgba(255,255,255,0.7);">Maryborough, QLD 4650</li>
-                        <li><a href="/free-website-audit-hervey-bay.html" class="text-white hover:text-coast-sky">Free Website Audit</a></li>
-                        <li><a href="/health-check.html" class="text-white hover:text-coast-sky">Website Health Check</a></li>
-                        <li><a href="/about.html" class="text-white hover:text-coast-sky">About</a></li>
-                        <li><a href="/blog/" class="text-white hover:text-coast-sky">Blog</a></li>
-                    </ul>
-                </div>
-            </div>
-            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 48px 0 24px;">
-            <p class="text-sm text-center" style="color: rgba(255,255,255,0.5);">&copy; <span class="copyright-year">2026</span> Anchor Web Co.</p>
         </div>
-    </footer>
+    </div>
+</section>
 
-    <button id="scroll-top" class="fixed bottom-4 right-4 bg-anchor-navy text-white p-3 rounded-full hidden" aria-label="Scroll to top">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
-        </svg>
-    </button>
+<section class="section-pad">
+    <div class="container">
+        <div class="prose-narrow">
+            <p class="eyebrow">What it covers</p>
+            <h2 class="h2" style="margin-bottom:40px;">A useful technical snapshot.</h2>
+            <div class="content-grid">
+                <article class="content-card"><h3>Performance</h3><p>Signals that point to slow load times, oversized assets and weak mobile delivery.</p></article>
+                <article class="content-card"><h3>SEO basics</h3><p>Page structure, headings, metadata and indexing signals that help search engines understand the site.</p></article>
+                <article class="content-card"><h3>Usability</h3><p>Common friction that can make a mobile site harder to read, trust or act on.</p></article>
+            </div>
+            <div class="notice" style="margin-top:30px;">Automated checks have limits. They cannot judge the full business strategy, the quality of your offer or every technical condition. Use the report as a starting point.</div>
+        </div>
+    </div>
+</section>
 
-    <script src="__ANCHOR_ANALYTICS_SCRIPT_URL__" data-client-id="anchorwebco" data-endpoint="__ANCHOR_ANALYTICS_INGEST_URL__" defer></script>
-    <script src="js/main.js" defer></script>
-    <script src="js/health-check.js?v=20260301b" defer></script>
+<section class="section-pad cta-band">
+    <div class="container">
+        <div class="prose-narrow text-center" style="max-width:720px;">
+            <p class="eyebrow">Need human context?</p>
+            <h2 class="h2" style="margin-bottom:18px;">Turn the snapshot into priorities.</h2>
+            <p style="margin-bottom:30px;">Request a concise manual audit or send the report with your project enquiry.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/free-website-audit-brisbane.html" class="btn-primary" style="background:var(--accent);color:var(--ink);">Request a free audit</a>
+                <a href="/contact.html" class="btn-outline">Contact Matt</a>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": "Free Website Health Check",
-      "url": "https://www.anchorwebco.com.au/health-check.html",
-      "description": "Get a free website health check covering performance, SEO, usability, and best-practice issues.",
-      "isPartOf": {
-        "@type": "WebSite",
-        "name": "Anchor Web Co.",
-        "url": "https://www.anchorwebco.com.au/"
-      }
-    }
-    </script>
-</body>
-</html>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebApplication",
+  "name":"Anchor Web Co Website Health Check",
+  "url":"{{ site.url }}/health-check.html",
+  "applicationCategory":"BusinessApplication",
+  "offers":{"@type":"Offer","price":"0","priceCurrency":"AUD"}
+}
+</script>

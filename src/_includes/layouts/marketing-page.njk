@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ description or site.description }}">
+    {% if robots %}<meta name="robots" content="{{ robots }}">{% endif %}
+    {% set canonicalUrl = site.url ~ (canonicalPath or page.url) %}
+    {% set fullTitle = seoTitle or (title ~ " | " ~ site.name) %}
+    {% set socialImage = site.url ~ (ogImage or site.defaultOgImage) %}
+    <link rel="canonical" href="{{ canonicalUrl }}">
+    <link rel="icon" type="image/png" sizes="180x180" href="/icons/favicon-180.png">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_AU">
+    <meta property="og:site_name" content="{{ site.name }}">
+    <meta property="og:url" content="{{ canonicalUrl }}">
+    <meta property="og:title" content="{{ fullTitle }}">
+    <meta property="og:description" content="{{ description or site.description }}">
+    <meta property="og:image" content="{{ socialImage }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Anchor Web Co — web design for Brisbane's inner west">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ fullTitle }}">
+    <meta name="twitter:description" content="{{ description or site.description }}">
+    <meta name="twitter:image" content="{{ socialImage }}">
+    <title>{{ fullTitle }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&amp;family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/tailwind-build.css">
+    <script>
+        window.ANCHOR_FORMS_API_BASE = window.ANCHOR_FORMS_API_BASE || "";
+    </script>
+    <link rel="stylesheet" href="/css/styles.css">
+    {% if blogStyles %}<link rel="stylesheet" href="/css/blog.css">{% endif %}
+    <script src="https://unpkg.com/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js"></script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "@id": "{{ site.url }}/#business",
+      "name": {{ site.name | jsonStringify | safe }},
+      "url": {{ (site.url ~ "/") | jsonStringify | safe }},
+      "image": {{ socialImage | jsonStringify | safe }},
+      "email": {{ site.email | jsonStringify | safe }},
+      "telephone": {{ site.phoneHref | jsonStringify | safe }},
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Red Hill",
+        "addressRegion": "QLD",
+        "postalCode": "4059",
+        "addressCountry": "AU"
+      },
+      "areaServed": [
+        "Red Hill", "Paddington", "Bardon", "Ashgrove", "Kelvin Grove",
+        "Milton", "Auchenflower", "Petrie Terrace", "Toowong", "Newmarket"
+      ],
+      "description": {{ site.description | jsonStringify | safe }}
+    }
+    </script>
+</head>
+<body class="bg-sand-beige text-dark-text font-roboto">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-anchor-navy focus:text-white focus:px-4 focus:py-2 focus:rounded-lg">Skip to main content</a>
+    {% include "header.njk" %}
+    <main id="main-content">
+        {{ content | safe }}
+    </main>
+    {% include "footer.njk" %}
+    <button id="scroll-top" class="fixed bottom-4 right-4 bg-anchor-navy text-white p-3 rounded-full hidden" aria-label="Scroll to top">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+        </svg>
+    </button>
+    <script src="/js/main.js" defer></script>
+    {% if healthCheck %}<script src="/js/health-check.js?v=20260728" defer></script>{% endif %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16766129889"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'AW-16766129889');
+    </script>
+</body>
+</html>

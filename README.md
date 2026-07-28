@@ -1,6 +1,6 @@
 # Anchor Web Co. Website
 
-A modern, mobile-friendly marketing website for Anchor Web Co., a boutique web-design studio on Queensland's Fraser Coast.
+A modern, mobile-friendly marketing website for Anchor Web Co., an independent web-design studio based in Red Hill and serving Brisbane's inner west.
 
 ## Features
 

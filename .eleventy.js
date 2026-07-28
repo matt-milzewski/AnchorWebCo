@@ -45,7 +45,7 @@ module.exports = function (eleventyConfig) {
 
   fs.readdirSync(INPUT_DIR, { withFileTypes: true })
     .filter((entry) => {
-      return entry.isFile() && [".html", ".txt", ".xml"].includes(path.extname(entry.name));
+      return entry.isFile() && [".txt", ".xml"].includes(path.extname(entry.name));
     })
     .forEach((entry) => {
       eleventyConfig.addPassthroughCopy(path.join(INPUT_DIR, entry.name));
@@ -65,6 +65,7 @@ module.exports = function (eleventyConfig) {
   });
 
   eleventyConfig.addFilter("slugify", slugify);
+  eleventyConfig.addFilter("jsonStringify", (value) => JSON.stringify(value));
 
   eleventyConfig.addCollection("blog", (collectionApi) => {
     return collectionApi.getFilteredByGlob("src/blog/posts/**/*.md").sort((left, right) => {
@@ -79,9 +80,9 @@ module.exports = function (eleventyConfig) {
       data: "_data",
       output: "_site",
     },
-    templateFormats: ["md", "njk"],
+    templateFormats: ["md", "njk", "html"],
     markdownTemplateEngine: "njk",
-    htmlTemplateEngine: false,
+    htmlTemplateEngine: "njk",
     dataTemplateEngine: "njk",
   };
 };

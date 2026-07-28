@@ -82,7 +82,7 @@ function renderMonthlyReport({ tenant, month, events, aggregates }) {
 <h1>${tenant.display_name} analytics report, ${month}</h1>
 <p><strong>Total enquiries:</strong> ${totalEnquiries}</p>
 <h2>Enquiries by channel</h2>${list(bySk("enquiries"))}
-<h2>Demand mix</h2>${list([...bySk("service_type"), ...bySk("timeline"), ...bySk("business_type")])}
+<h2>Demand mix</h2>${list([...bySk("service_type"), ...bySk("timeline"), ...bySk("budget"), ...bySk("business_suburb"), ...bySk("lead_source"), ...bySk("business_type")])}
 <h2>Funnels</h2>${list(funnels.map((funnel) => `${funnel.name}: ${funnel.steps.map((step) => `step ${step.index} ${step.count} (${step.drop_off_percent}% drop-off)`).join(", ")}${funnel.worst_field ? `. Worst field: ${funnel.worst_field}` : ""}`))}
 <h2>Top entry pages and conversion rate</h2>${list(entryPages.map((page) => `${page.path}: ${page.conversions}/${page.visits} (${page.conversion_rate}%)`))}
 <h2>Traffic by source and region</h2>${list([...bySk("source"), ...bySk("region")])}<p>Brisbane inner-west traffic is broken out where server-side region data allows it. Search engines hide most query data, so this report complements Google Search Console rather than replacing it.</p>

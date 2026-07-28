@@ -1,324 +1,116 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Website support plans for Fraser Coast businesses. Choose simple hosting or managed website support from Anchor Web Co.">
-    <link rel="canonical" href="https://www.anchorwebco.com.au/website-care-plans.html" />
-    <link rel="icon" type="image/png" sizes="180x180" href="icons/favicon-180.png">
-
-    <!-- Open Graph -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.anchorwebco.com.au/website-care-plans.html">
-    <meta property="og:title" content="Website Support Plans | Anchor Web Co.">
-    <meta property="og:description" content="Simple website support plans for Fraser Coast businesses, from hosting-only coverage to managed support with SEO oversight.">
-    <meta property="og:image" content="https://www.anchorwebco.com.au/img/og-image.webp">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://www.anchorwebco.com.au/website-care-plans.html">
-    <meta property="twitter:title" content="Website Support Plans | Anchor Web Co.">
-    <meta property="twitter:description" content="Simple website support plans for Fraser Coast businesses, from hosting-only coverage to managed support with SEO oversight.">
-    <meta property="twitter:image" content="https://www.anchorwebco.com.au/img/og-image.webp">
-
-    <title>Website Support Plans | Anchor Web Co.</title>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&amp;family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
-
-    <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'ink': '#0A0A0A',
-                        'surface': '#FAFAF7',
-                        'surface-alt': '#FFFFFF',
-                        'accent': '#38bdf8',
-                        'muted': '#6B7280',
-                        'line': '#E7E5E0',
-                        /* legacy names mapped to new palette */
-                        'anchor-navy': '#0A0A0A',
-                        'coast-sky': '#38bdf8',
-                        'sand-beige': '#FAFAF7',
-                        'dark-text': '#0A0A0A'
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/styles.css">
-
-    <!-- Schema -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Service",
-      "serviceType": "Website Support Plans",
-      "provider": {
-        "@type": "LocalBusiness",
-        "name": "Anchor Web Co.",
-        "telephone": "+61-439-499-944",
-        "url": "https://www.anchorwebco.com.au/",
-        "areaServed": {"@type": "AdministrativeArea", "name": "Fraser Coast"}
-      },
-      "description": "Website support plans for Fraser Coast businesses, including hosting and managed support options for websites that need ongoing oversight.",
-      "url": "https://www.anchorwebco.com.au/website-care-plans.html"
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is a website care plan?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "A website care plan is ongoing support for your website so it stays online, supported, and easier to manage as your business grows."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Do I need a care plan if my site was just built?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Even new websites need ongoing maintenance. Plugins and platforms update regularly, and an unpatched site can be hacked or break without warning, often right before your peak season."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I cancel anytime?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Our website support plans have no lock-in contract. You can cancel or change your plan at any time with 30 days notice."
-          }
-        }
-      ]
-    }
-    </script>
-</head>
-<body class="bg-sand-beige text-dark-text font-roboto">
-<a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-anchor-navy focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg">Skip to main content</a>
-
-    <!-- Navigation -->
-    <nav class="fixed w-full bg-white z-50" style="border-bottom: 1px solid var(--line);">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="/" class="text-xl font-poppins font-bold" style="color: var(--ink);">Anchor Web Co.</a>
-            <button id="mobile-menu-button" class="xl:hidden" aria-label="Toggle menu">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
-            <div class="hidden xl:flex items-center gap-8 text-sm">
-                <a href="/#work" class="nav-link">Work</a>
-                <div class="has-dropdown">
-                    <a href="#" class="nav-link" aria-haspopup="true" aria-expanded="false">Services</a>
-                    <div class="dropdown-menu" role="menu">
-                        <a href="/web-design-hervey-bay.html">Web Design — Hervey Bay</a>
-                        <a href="/web-design-maryborough.html">Web Design — Maryborough</a>
-                        <a href="/seo-hervey-bay.html">SEO — Hervey Bay</a>
-                        <a href="/seo-maryborough.html">SEO — Maryborough</a>
-                        <hr class="divider" style="margin: 6px 8px;">
-                        <a href="/website-care-plans.html" style="color: var(--accent);">Website Care Plans</a>
-                        <a href="/free-website-audit-hervey-bay.html">Free Website Audit</a>
-                    </div>
-                </div>
-                <a href="/about.html" class="nav-link">About</a>
-                <a href="/blog/" class="nav-link">Blog</a>
-                <a href="/contact.html" class="nav-button" data-track="cta-quote" data-track-prop-button-location="header">Get a quote</a>
-            </div>
+---
+layout: layouts/marketing-page.njk
+title: Website Care Plans
+seoTitle: Website Care Plans Brisbane | From $69/mo
+description: Low-maintenance website care plans for Brisbane businesses from $69/month, centred on automated monitoring, backups, reporting and clearly limited manual support.
+permalink: /website-care-plans.html
+---
+<section class="section-pad local-hero">
+    <div class="container">
+        <div class="prose-narrow" style="max-width: 900px;">
+            <p class="eyebrow">Website care · Mostly automated</p>
+            <h1 class="display" style="margin-bottom: 24px;">Quiet maintenance that does not create busywork.</h1>
+            <p class="body-muted" style="font-size: 20px; max-width: 62ch;">Monitoring, backups, certificate checks and reports run automatically. Human time is reserved for alerts, exceptions and the small amount of work explicitly included in your plan.</p>
         </div>
-    </nav>
-    <div id="mobile-menu" class="fixed inset-0 z-50 bg-white flex-col items-center justify-center space-y-6 text-xl font-poppins font-bold hidden transition-all duration-300">
-        <button id="mobile-menu-close" class="absolute top-6 right-6 text-4xl" style="color: var(--ink);" aria-label="Close menu">&times;</button>
-        <nav class="flex flex-col items-center space-y-4 mt-12 w-full px-6">
-            <a href="/#work" class="nav-link">Work</a>
-            <details class="w-full text-center">
-                <summary class="nav-link cursor-pointer list-none">Services</summary>
-                <div class="flex flex-col items-center gap-3 mt-3 text-base font-normal">
-                    <a href="/web-design-hervey-bay.html" class="nav-link">Web Design — Hervey Bay</a>
-                    <a href="/web-design-maryborough.html" class="nav-link">Web Design — Maryborough</a>
-                    <a href="/seo-hervey-bay.html" class="nav-link">SEO — Hervey Bay</a>
-                    <a href="/seo-maryborough.html" class="nav-link">SEO — Maryborough</a>
-                    <a href="/website-care-plans.html" class="nav-link">Website Care Plans</a>
-                    <a href="/free-website-audit-hervey-bay.html" class="nav-link">Free Website Audit</a>
-                </div>
-            </details>
-            <a href="/about.html" class="nav-link">About</a>
-            <a href="/blog/" class="nav-link">Blog</a>
-            <a href="/contact.html" class="nav-button mt-4" data-track="cta-quote" data-track-prop-button-location="mobile-menu">Get a quote</a>
-        </nav>
     </div>
+</section>
 
-    <main id="main-content">
-        <!-- Hero -->
-        <section class="section-pad hero-gradient" style="padding-top: 140px;">
-            <div class="container mx-auto px-4">
-                <div class="prose-narrow" style="max-width: 880px;">
-                    <p class="eyebrow">Website Support · Fraser Coast</p>
-                    <h1 class="display" style="margin-bottom: 24px;">Website Care Plans</h1>
-                    <p class="body-muted" style="font-size: 20px; max-width: 56ch; margin-bottom: 36px;">Hosting only or fully managed support. No lock-in contracts. Cancel anytime.</p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="/contact.html" class="btn-primary" data-track="cta-quote" data-track-prop-button-location="care-plan-hero">Get a quote</a>
-                        <a href="#plans" class="btn-secondary" data-track="cta-see-plans">See plans</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Problem Section -->
-        <section class="section-pad" style="background: var(--surface-alt);">
-            <div class="container mx-auto px-4">
-                <div class="prose-narrow" style="max-width: 920px;">
-                    <h2 class="h2" style="margin-bottom: 24px;">What happens to an unmanaged website</h2>
-                    <p class="body-lg" style="margin-bottom: 20px;">Most Fraser Coast business owners build their website and then never look at it again. That's understandable — you're busy. But websites need ongoing attention to stay healthy.</p>
-                    <p class="body-lg" style="margin-bottom: 32px;">Plugins go out of date. Security vulnerabilities are discovered. Google's ranking requirements change. Hosting and SSL certificates lapse. The result is a slow, broken, or hacked site right before your peak season.</p>
-                    <h3 class="h2" style="font-size: clamp(22px, 2vw, 28px); margin-bottom: 16px;">The most common problems we fix</h3>
-                    <ul class="space-y-3 body-lg" style="list-style: disc; padding-left: 1.25rem;">
-                        <li>Site goes down and the owner finds out from a customer.</li>
-                        <li>Outdated plugins cause forms to stop working.</li>
-                        <li>Site gets hacked and Google marks it as dangerous.</li>
-                        <li>No backups, and a single mistake wipes weeks of content.</li>
-                        <li>Page speed drops as files accumulate and nothing is cleaned up.</li>
+<section class="section-pad" style="background: var(--surface-alt);">
+    <div class="container">
+        <div class="prose-narrow">
+            <div class="pricing-grid">
+                <article class="pricing-card">
+                    <p class="pricing-card__label">Essential protection</p>
+                    <h2 class="pricing-card__title">Site Care</h2>
+                    <p class="pricing-card__price">$69<span style="font-size:18px;">/mo</span></p>
+                    <p class="pricing-card__term">$690/year when paid annually</p>
+                    <ul class="check-list">
+                        <li>Managed static hosting and CDN for eligible Anchor-built sites</li>
+                        <li>Automated uptime monitoring</li>
+                        <li>SSL certificate expiry monitoring</li>
+                        <li>Automated core-page and form endpoint checks</li>
+                        <li>Monthly automated health summary</li>
+                        <li>Alert triage for hosting-related incidents</li>
                     </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- Pricing Plans -->
-        <section id="plans" class="section-pad">
-            <div class="container mx-auto px-4">
-                <div class="prose-narrow" style="max-width: 920px;">
-                    <h2 class="h2" style="margin-bottom: 16px;">Choose your support plan</h2>
-                    <p class="body-muted" style="margin-bottom: 48px;">Two clear options depending on how much support you want from us.</p>
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <!-- Starter -->
-                        <div style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: 14px; padding: 32px; display: flex; flex-direction: column;">
-                            <p class="eyebrow" style="margin-bottom: 8px;">Starter</p>
-                            <p class="step-card__title" style="margin-bottom: 4px;">Hosting only</p>
-                            <p class="body-muted" style="font-size: 14px; margin-bottom: 24px;">Flexible monthly plan. Cancel anytime.</p>
-                            <ul class="space-y-3 body-lg" style="flex-grow: 1; margin-bottom: 32px;">
-                                <li style="display: flex; gap: 8px; align-items: start;"><span style="color: var(--accent); font-weight: 700;">✓</span> Website hosting</li>
-                                <li style="display: flex; gap: 8px; align-items: start;"><span style="color: var(--accent); font-weight: 700;">✓</span> 0 email addresses included</li>
-                                <li style="display: flex; gap: 8px; align-items: start; color: var(--muted);"><span>—</span> Managed SEO work</li>
-                                <li style="display: flex; gap: 8px; align-items: start; color: var(--muted);"><span>—</span> Monthly reporting</li>
-                            </ul>
-                            <a href="/contact.html" class="btn-secondary" data-track="cta-quote" data-track-prop-button-location="care-plan-card">Get a quote</a>
-                        </div>
-                        <!-- Business -->
-                        <div style="background: var(--ink); color: #fff; border-radius: 14px; padding: 32px; display: flex; flex-direction: column; position: relative;">
-                            <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--ink); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 14px; border-radius: 9999px;">Most popular</div>
-                            <p class="eyebrow" style="margin-bottom: 8px; color: rgba(255,255,255,0.7);">Business</p>
-                            <p class="step-card__title" style="color: #fff; margin-bottom: 4px;">Managed support</p>
-                            <p style="color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 24px;">Flexible monthly plan. Cancel anytime.</p>
-                            <ul class="space-y-3" style="flex-grow: 1; margin-bottom: 32px; font-size: 17px; line-height: 1.65; color: rgba(255,255,255,0.85);">
-                                <li style="display: flex; gap: 8px; align-items: start;"><span style="color: var(--accent); font-weight: 700;">✓</span> Managed website hosting and setup</li>
-                                <li style="display: flex; gap: 8px; align-items: start;"><span style="color: var(--accent); font-weight: 700;">✓</span> SEO optimisation</li>
-                                <li style="display: flex; gap: 8px; align-items: start;"><span style="color: var(--accent); font-weight: 700;">✓</span> Up to 4 email addresses</li>
-                                <li style="display: flex; gap: 8px; align-items: start;"><span style="color: var(--accent); font-weight: 700;">✓</span> Monthly website work to improve SEO</li>
-                                <li style="display: flex; gap: 8px; align-items: start;"><span style="color: var(--accent); font-weight: 700;">✓</span> Custom SEO reports</li>
-                            </ul>
-                            <a href="/contact.html" class="btn-outline" data-track="cta-quote" data-track-prop-button-location="care-plan-card">Get a quote</a>
-                        </div>
-                    </div>
-                    <p class="body-muted" style="text-align: center; font-size: 14px; margin-top: 32px;">Plans are tailored to your site and support needs. <a href="/contact.html" style="color: var(--ink); text-decoration: underline;">Contact us</a> to discuss the best option for your business.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- FAQs -->
-        <section class="section-pad" style="background: var(--surface-alt);">
-            <div class="container mx-auto px-4">
-                <div class="prose-narrow" style="max-width: 720px;">
-                    <h2 class="h2" style="margin-bottom: 32px;">Care plan FAQs</h2>
-                    <details class="step-card">
-                        <summary class="step-card__title cursor-pointer" style="list-style: none;">What is a website care plan?</summary>
-                        <p class="step-card__body" style="margin-top: 12px;">A website care plan is ongoing support for your website so it stays online, supported, and easier to manage as your business grows.</p>
-                    </details>
-                    <details class="step-card">
-                        <summary class="step-card__title cursor-pointer" style="list-style: none;">Do I need a care plan if my site was just built?</summary>
-                        <p class="step-card__body" style="margin-top: 12px;">Yes. Even brand-new websites need ongoing attention. Platforms and plugins update constantly, and an unpatched site can break or be compromised. A care plan means you never get caught out right before a busy period.</p>
-                    </details>
-                    <details class="step-card">
-                        <summary class="step-card__title cursor-pointer" style="list-style: none;">Can you maintain a site you didn't build?</summary>
-                        <p class="step-card__body" style="margin-top: 12px;">Yes. We can take over the care and maintenance of your existing website regardless of who built it. We'll do an initial audit and onboarding to get familiar with your setup.</p>
-                    </details>
-                    <details class="step-card" style="border-bottom: 1px solid var(--line);">
-                        <summary class="step-card__title cursor-pointer" style="list-style: none;">Can I cancel anytime?</summary>
-                        <p class="step-card__body" style="margin-top: 12px;">Absolutely. Our website support plans have no lock-in contract. Cancel or change your plan at any time with 30 days notice.</p>
-                    </details>
-                </div>
-            </div>
-        </section>
-
-        <!-- Final CTA -->
-        <section class="section-pad" style="background: var(--surface);">
-            <div class="container mx-auto px-4">
-                <div class="prose-narrow" style="max-width: 720px; text-align: center;">
-                    <h2 class="h2" style="margin-bottom: 32px;">Stop worrying about your website</h2>
-                    <a href="/contact.html" class="btn-primary">Get a project quote</a>
-                    <p class="hero-meta" style="margin-top: 32px;">Maryborough, QLD · <a href="tel:+61439499944" style="color: var(--ink); text-decoration: underline;">0439 499 944</a></p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="py-16" style="background: var(--ink); color: #fff;">
-        <div class="container mx-auto px-4">
-            <div class="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
-                <div>
-                    <h3 class="text-xl font-poppins font-bold mb-4">Anchor Web Co.</h3>
-                    <p style="color: rgba(255,255,255,0.7); font-size: 15px; line-height: 1.6;">Local web design and SEO. Maryborough, QLD.</p>
-                </div>
-                <div>
-                    <h3 class="text-sm font-poppins font-bold mb-4" style="text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);">Services</h3>
-                    <ul class="space-y-2" style="font-size: 15px;">
-                        <li><a href="/web-design-hervey-bay.html" class="text-white hover:text-coast-sky">Web Design Hervey Bay</a></li>
-                        <li><a href="/web-design-maryborough.html" class="text-white hover:text-coast-sky">Web Design Maryborough</a></li>
-                        <li><a href="/seo-hervey-bay.html" class="text-white hover:text-coast-sky">SEO Hervey Bay</a></li>
-                        <li><a href="/seo-maryborough.html" class="text-white hover:text-coast-sky">SEO Maryborough</a></li>
-                        <li><a href="/website-care-plans.html" class="text-white hover:text-coast-sky">Website Care Plans</a></li>
+                    <a href="/contact.html?care=site-care" class="btn-secondary">Choose Site Care</a>
+                </article>
+                <article class="pricing-card pricing-card--featured">
+                    <p class="pricing-card__label">Useful visibility</p>
+                    <h2 class="pricing-card__title">Care + Insights</h2>
+                    <p class="pricing-card__price">$129<span style="font-size:18px;">/mo</span></p>
+                    <p class="pricing-card__term">$1,290/year when paid annually</p>
+                    <ul class="check-list">
+                        <li>Everything in Site Care</li>
+                        <li>Automated traffic and enquiry summary</li>
+                        <li>Automated broken-link checks</li>
+                        <li>Automated Search Console and performance trends</li>
+                        <li>One minor content edit each quarter, capped at 15 minutes</li>
                     </ul>
-                </div>
-                <div>
-                    <h3 class="text-sm font-poppins font-bold mb-4" style="text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);">Get in touch</h3>
-                    <ul class="space-y-2" style="font-size: 15px;">
-                        <li><a href="tel:+61439499944" class="text-white hover:text-coast-sky">0439 499 944</a></li>
-                        <li><a href="mailto:info@anchorwebco.com.au" class="text-white hover:text-coast-sky">info@anchorwebco.com.au</a></li>
-                        <li style="color: rgba(255,255,255,0.7);">Maryborough, QLD 4650</li>
-                        <li><a href="/free-website-audit-hervey-bay.html" class="text-white hover:text-coast-sky">Free Website Audit</a></li>
-                        <li><a href="/health-check.html" class="text-white hover:text-coast-sky">Website Health Check</a></li>
-                        <li><a href="/about.html" class="text-white hover:text-coast-sky">About</a></li>
-                        <li><a href="/blog/" class="text-white hover:text-coast-sky">Blog</a></li>
+                    <a href="/contact.html?care=care-insights" class="btn-primary">Choose Care + Insights</a>
+                </article>
+                <article class="pricing-card">
+                    <p class="pricing-card__label">Search monitoring</p>
+                    <h2 class="pricing-card__title">Local Visibility Monitor</h2>
+                    <p class="pricing-card__price">$229<span style="font-size:18px;">/mo</span></p>
+                    <p class="pricing-card__term">$2,290/year when paid annually</p>
+                    <ul class="check-list">
+                        <li>Everything in Care + Insights</li>
+                        <li>Automated local keyword tracking</li>
+                        <li>Search Console trend summary</li>
+                        <li>Google Business Profile performance summary where access allows</li>
+                        <li>Quarterly 30-minute review and priority list</li>
                     </ul>
-                </div>
+                    <a href="/contact.html?care=visibility-monitor" class="btn-secondary">Choose Visibility Monitor</a>
+                </article>
             </div>
-            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 48px 0 24px;">
-            <p class="text-sm text-center" style="color: rgba(255,255,255,0.5);">&copy; <span class="copyright-year">2026</span> Anchor Web Co.</p>
         </div>
-    </footer>
+    </div>
+</section>
 
-    <!-- JavaScript -->
-    <script src="__ANCHOR_ANALYTICS_SCRIPT_URL__" data-client-id="anchorwebco" data-endpoint="__ANCHOR_ANALYTICS_INGEST_URL__" defer></script>
-    <script src="js/main.js" defer></script>
+<section class="section-pad">
+    <div class="container">
+        <div class="prose-narrow media-split">
+            <div>
+                <p class="eyebrow">Designed to stay lean</p>
+                <h2 class="h2" style="margin-bottom: 20px;">What the plans deliberately avoid.</h2>
+                <p class="body-muted">These are care and monitoring products, not open-ended retainers. They do not include a standing obligation to create content, manage campaigns or make unlimited changes.</p>
+            </div>
+            <div class="content-card">
+                <ul class="check-list" style="margin:0;">
+                    <li>No unlimited edits</li>
+                    <li>No monthly blog writing</li>
+                    <li>No ongoing backlink outreach</li>
+                    <li>No paid advertising management</li>
+                    <li>No inbox, email-account or IT support</li>
+                    <li>No manual monthly “SEO activity” without a defined project</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16766129889"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'AW-16766129889');
-    </script>
-</body>
-</html>
+<section class="section-pad" style="background: var(--surface-alt);">
+    <div class="container">
+        <div class="prose-narrow" style="max-width: 820px;">
+            <p class="eyebrow">Scope rules</p>
+            <h2 class="h2" style="margin-bottom: 24px;">Small plans need clear boundaries.</h2>
+            <div class="space-y-0">
+                <details class="step-card"><summary class="step-card__title cursor-pointer">What counts as a minor edit?</summary><p class="step-card__body">A text, link, image or business-detail change on an existing page that fits within the quarterly 15-minute allowance. Unused time expires each quarter and does not roll over.</p></details>
+                <details class="step-card"><summary class="step-card__title cursor-pointer">What happens after an alert?</summary><p class="step-card__body">I confirm whether the issue is real, check the hosting or deployment state and tell you the next action. Repairs outside the plan are quoted or billed at $165/hour with approval.</p></details>
+                <details class="step-card"><summary class="step-card__title cursor-pointer">Can you care for a site you did not build?</summary><p class="step-card__body">Usually, after a paid technical review confirms the hosting, platform and access are supportable. Remediation may be required first.</p></details>
+                <details class="step-card" style="border-bottom:1px solid var(--line);"><summary class="step-card__title cursor-pointer">Can I cancel?</summary><p class="step-card__body">Monthly plans can be cancelled before the next billing date. Annual plans are discounted and run for the prepaid term.</p></details>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-pad cta-band">
+    <div class="container">
+        <div class="prose-narrow text-center" style="max-width: 720px;">
+            <p class="eyebrow">Keep the site dependable</p>
+            <h2 class="h2" style="margin-bottom: 18px;">Choose the lightest plan that covers the risk.</h2>
+            <p style="margin-bottom:30px;">I’ll confirm platform compatibility and the monitoring setup before the plan begins.</p>
+            <a href="/contact.html" class="btn-primary" style="background:var(--accent);color:var(--ink);">Ask about website care</a>
+        </div>
+    </div>
+</section>

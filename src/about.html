@@ -1,304 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Meet Anchor Web Co, a Maryborough-based web design and SEO specialist helping Fraser Coast businesses build faster websites, stronger local visibility, and better enquiry flow.">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://www.anchorwebco.com.au/about.html" />
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="180x180" href="icons/favicon-180.png">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.anchorwebco.com.au/about.html">
-    <meta property="og:title" content="About Anchor Web Co | Maryborough Web Design &amp; SEO Specialist">
-    <meta property="og:description" content="Meet Anchor Web Co, a Maryborough-based web design and SEO specialist helping Fraser Coast businesses build faster websites, stronger local visibility, and better enquiry flow.">
-    <meta property="og:image" content="https://www.anchorwebco.com.au/img/og-image.webp">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://www.anchorwebco.com.au/about.html">
-    <meta property="twitter:title" content="About Anchor Web Co | Maryborough Web Design &amp; SEO Specialist">
-    <meta property="twitter:description" content="Meet Anchor Web Co, a Maryborough-based web design and SEO specialist helping Fraser Coast businesses build faster websites, stronger local visibility, and better enquiry flow.">
-    <meta property="twitter:image" content="https://www.anchorwebco.com.au/img/og-image.webp">
-
-    <title>About Anchor Web Co | Maryborough Web Design &amp; SEO Specialist</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&amp;family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'ink': '#0A0A0A',
-                        'surface': '#FAFAF7',
-                        'surface-alt': '#FFFFFF',
-                        'accent': '#38bdf8',
-                        'muted': '#6B7280',
-                        'line': '#E7E5E0',
-                        /* legacy names mapped to new palette */
-                        'anchor-navy': '#0A0A0A',
-                        'coast-sky': '#38bdf8',
-                        'sand-beige': '#FAFAF7',
-                        'dark-text': '#0A0A0A'
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/styles.css">
-    
-    <!-- Smooth Scroll Polyfill -->
-    <script src="https://unpkg.com/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js"></script>
-</head>
-<body class="bg-sand-beige text-dark-text font-roboto">
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-anchor-navy focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg">Skip to main content</a>
-    <!-- Navigation -->
-    <nav class="fixed w-full bg-white z-50" style="border-bottom: 1px solid var(--line);">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="/" class="text-xl font-poppins font-bold" style="color: var(--ink);">Anchor Web Co.</a>
-            <button id="mobile-menu-button" class="xl:hidden" aria-label="Toggle menu">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
-            <div class="hidden xl:flex items-center gap-8 text-sm">
-                <a href="/#work" class="nav-link">Work</a>
-                <div class="has-dropdown">
-                    <a href="#" class="nav-link" aria-haspopup="true" aria-expanded="false">Services</a>
-                    <div class="dropdown-menu" role="menu">
-                        <a href="/web-design-hervey-bay.html">Web Design — Hervey Bay</a>
-                        <a href="/web-design-maryborough.html">Web Design — Maryborough</a>
-                        <a href="/seo-hervey-bay.html">SEO — Hervey Bay</a>
-                        <a href="/seo-maryborough.html">SEO — Maryborough</a>
-                        <hr class="divider" style="margin: 6px 8px;">
-                        <a href="/website-care-plans.html">Website Care Plans</a>
-                        <a href="/free-website-audit-hervey-bay.html">Free Website Audit</a>
-                    </div>
-                </div>
-                <a href="/about.html" class="nav-link" style="color: var(--accent);">About</a>
-                <a href="/blog/" class="nav-link">Blog</a>
-                <a href="/contact.html" class="nav-button">Get a quote</a>
+---
+layout: layouts/marketing-page.njk
+title: About
+seoTitle: About Anchor Web Co | Red Hill Web Designer
+description: Anchor Web Co is Matt Milzewski, an independent web designer and developer based in Red Hill and focused on Brisbane inner-west businesses.
+permalink: /about.html
+---
+<section class="section-pad local-hero">
+    <div class="container">
+        <div class="local-hero__grid">
+            <div class="local-hero__copy">
+                <p class="eyebrow">About · Anchor Web Co.</p>
+                <h1 class="display" style="margin-bottom:24px;">A small web studio with a clear local focus.</h1>
+                <p class="body-muted" style="font-size:20px;max-width:58ch;">I’m Matt Milzewski, the designer and developer behind Anchor Web Co. I work directly with business owners from Red Hill, without handing strategy, design or implementation between departments.</p>
+                <a href="/contact.html" class="btn-primary" style="margin-top:28px;">Tell me about your project</a>
             </div>
+            <figure class="local-hero__media">
+                <img class="local-hero__image" src="/img/brisbane-inner-west/red-hill-city-view.webp" alt="View from Red Hill toward Brisbane city" width="1600" height="1236" fetchpriority="high">
+                <figcaption class="local-hero__caption">Red Hill: home base and the centre of the new service area.</figcaption>
+            </figure>
         </div>
-    </nav>
-    <div id="mobile-menu" class="fixed inset-0 z-50 bg-white flex-col items-center justify-center space-y-6 text-xl font-poppins font-bold hidden transition-all duration-300">
-        <button id="mobile-menu-close" class="absolute top-6 right-6 text-4xl" style="color: var(--ink);" aria-label="Close menu">&times;</button>
-        <nav class="flex flex-col items-center space-y-4 mt-12 w-full px-6">
-            <a href="/#work" class="nav-link">Work</a>
-            <details class="w-full text-center">
-                <summary class="nav-link cursor-pointer list-none">Services</summary>
-                <div class="flex flex-col items-center gap-3 mt-3 text-base font-normal">
-                    <a href="/web-design-hervey-bay.html" class="nav-link">Web Design — Hervey Bay</a>
-                    <a href="/web-design-maryborough.html" class="nav-link">Web Design — Maryborough</a>
-                    <a href="/seo-hervey-bay.html" class="nav-link">SEO — Hervey Bay</a>
-                    <a href="/seo-maryborough.html" class="nav-link">SEO — Maryborough</a>
-                    <a href="/website-care-plans.html" class="nav-link">Website Care Plans</a>
-                    <a href="/free-website-audit-hervey-bay.html" class="nav-link">Free Website Audit</a>
-                </div>
-            </details>
-            <a href="/about.html" class="nav-link">About</a>
-            <a href="/blog/" class="nav-link">Blog</a>
-            <a href="/contact.html" class="nav-button mt-4">Get a quote</a>
-        </nav>
     </div>
+</section>
 
-    <!-- Hero Section -->
-    <section id="main-content" class="section-pad hero-gradient" style="padding-top: 140px;">
-        <div class="container mx-auto px-4">
-            <div class="prose-narrow" style="max-width: 880px;">
-                <p class="eyebrow">About · Maryborough, QLD</p>
-                <h1 class="display" style="margin-bottom: 24px;">About Anchor Web Co</h1>
-                <p class="body-muted" style="font-size: 20px; max-width: 56ch; margin-bottom: 36px;">A Maryborough-based studio building websites and local SEO for Fraser Coast businesses.</p>
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="/contact.html" class="btn-primary">Get in touch</a>
-                    <a href="/#work" class="btn-secondary">See our work</a>
-                </div>
+<section class="section-pad" style="background:var(--surface-alt);">
+    <div class="container">
+        <div class="prose-narrow media-split">
+            <div>
+                <p class="eyebrow">Why the inner west</p>
+                <h2 class="h2" style="margin-bottom:20px;">Work closer to the businesses I understand.</h2>
+                <p class="body-muted">Red Hill sits beside a dense mix of independent shops, professional practices, hospitality, trades and home-service businesses. The rebrand gives Anchor Web Co a sharper job: help those nearby businesses present themselves clearly and compete for relevant local searches.</p>
+                <p class="body-muted" style="margin-top:16px;">The aim is not to look like a large agency. It is to be responsive, technically capable and easy to deal with.</p>
+            </div>
+            <figure><img class="media-split__image" src="/img/brisbane-inner-west/paddington-latrobe-terrace.webp" alt="Paddington local business precinct on Latrobe Terrace" width="1600" height="1200" loading="lazy"></figure>
+        </div>
+    </div>
+</section>
+
+<section class="section-pad">
+    <div class="container">
+        <div class="prose-narrow">
+            <p class="eyebrow">Working principles</p>
+            <h2 class="h2" style="margin-bottom:40px;">How projects are handled.</h2>
+            <div class="content-grid">
+                <article class="content-card"><h3>Direct communication</h3><p>The person on the call is the person doing the work, so decisions keep their context and questions get practical answers.</p></article>
+                <article class="content-card"><h3>Fixed scope before build</h3><p>Pages, features, review rounds, responsibilities and price are written down before development starts.</p></article>
+                <article class="content-card"><h3>Useful over impressive</h3><p>Design choices need to help visitors understand, trust and act—not merely add motion or decoration.</p></article>
+                <article class="content-card"><h3>Search built into structure</h3><p>Metadata and schema matter, but strong local SEO starts with useful pages and an honest view of the service area.</p></article>
+                <article class="content-card"><h3>Maintainable technology</h3><p>Static delivery and carefully selected integrations reduce the update load, attack surface and performance drag.</p></article>
+                <article class="content-card"><h3>No inflated promises</h3><p>Rankings and lead volumes cannot be guaranteed. The commitment is to sound implementation, clear reporting and scope you can inspect.</p></article>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Story Section -->
-    <section class="section-pad" style="background: var(--surface-alt);">
-        <div class="container mx-auto px-4">
-            <div class="prose-narrow" style="max-width: 720px;">
-                <h2 class="h2" style="margin-bottom: 24px;">Founded in Maryborough, built for the Fraser Coast</h2>
-                <p class="body-lg" style="margin-bottom: 20px;">Anchor Web Co. was founded by Matt Milzewski in Maryborough, QLD. Growing up on the Fraser Coast means we understand how local customers search, compare, and choose service providers.</p>
-                <p class="body-lg" style="margin-bottom: 20px;">We build websites and SEO campaigns that work for local intent, not generic national traffic — clear service pages, practical conversion copy, and technical SEO that supports rankings across Maryborough and Hervey Bay.</p>
-                <p class="body-lg">Based in Maryborough, primarily supporting businesses across the wider Fraser Coast. That local focus shapes how we write, structure, and optimise every site we ship.</p>
-            </div>
+<section class="section-pad cta-band">
+    <div class="container">
+        <div class="prose-narrow text-center" style="max-width:720px;">
+            <p class="eyebrow">Work with Matt</p>
+            <h2 class="h2" style="margin-bottom:18px;">Start with a useful conversation.</h2>
+            <p style="margin-bottom:30px;">Send a rough brief and I’ll tell you what I think the site actually needs.</p>
+            <a href="/contact.html" class="btn-primary" style="background:var(--accent);color:var(--ink);">Contact Anchor Web Co.</a>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Why Work With Us -->
-    <section class="section-pad">
-        <div class="container mx-auto px-4">
-            <div class="prose-narrow" style="max-width: 920px;">
-                <h2 class="h2" style="margin-bottom: 48px;">Why businesses work with us</h2>
-                <div class="step-card">
-                    <p class="step-card__num">01 — LOCAL AND DIRECT</p>
-                    <h3 class="step-card__title">Local and direct</h3>
-                    <p class="step-card__body">Based in Maryborough and focused on Fraser Coast businesses. You deal directly with the person doing the work.</p>
-                </div>
-                <div class="step-card">
-                    <p class="step-card__num">02 — FIXED-SCOPE DELIVERY</p>
-                    <h3 class="step-card__title">Practical, fixed-scope delivery</h3>
-                    <p class="step-card__body">Clear proposals, fixed fees, and no vague retainers. You know what is included before work starts.</p>
-                </div>
-                <div class="step-card" style="border-bottom: 1px solid var(--line);">
-                    <p class="step-card__num">03 — BUILT AROUND ENQUIRIES</p>
-                    <h3 class="step-card__title">Built around enquiries</h3>
-                    <p class="step-card__body">Every site and SEO campaign is shaped around getting more calls, quote requests, and real local leads.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Founder credentials -->
-    <section class="section-pad" style="background: var(--surface-alt);">
-        <div class="container mx-auto px-4">
-            <div class="prose-narrow" style="max-width: 920px;">
-                <div class="grid md:grid-cols-2 gap-12 items-start">
-                    <div>
-                        <h2 class="h2" style="margin-bottom: 24px;">Founder credentials</h2>
-                        <ul class="space-y-3 body-lg" style="list-style: disc; padding-left: 1.25rem;">
-                            <li>Bachelor of Information Technology (QUT)</li>
-                            <li>Diploma of Software Development</li>
-                            <li>5+ years at Telstra building enterprise-grade systems</li>
-                            <li>Hands-on experience across custom HTML, CSS, and JavaScript websites, cloud hosting, and technical SEO</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="h2" style="font-size: clamp(22px, 2vw, 28px); margin-bottom: 24px;">How we work</h3>
-                        <ul class="space-y-3 body-lg" style="list-style: disc; padding-left: 1.25rem;">
-                            <li>Clear fixed-scope proposals before work starts.</li>
-                            <li>Direct communication with Matt — no account-manager layers.</li>
-                            <li>Build and SEO decisions tied to leads and enquiries.</li>
-                            <li>Transparent progress updates and practical next steps.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Final CTA Section -->
-    <section class="section-pad" style="background: var(--surface);">
-        <div class="container mx-auto px-4">
-            <div class="prose-narrow" style="max-width: 720px; text-align: center;">
-                <h2 class="h2" style="margin-bottom: 32px;">Ready to talk about your project?</h2>
-                <a href="/contact.html" class="btn-primary">Get a project quote</a>
-                <p class="hero-meta" style="margin-top: 32px;">Maryborough, QLD · <a href="tel:+61439499944" style="color: var(--ink); text-decoration: underline;">0439 499 944</a> · <a href="mailto:info@anchorwebco.com.au" style="color: var(--ink); text-decoration: underline;">info@anchorwebco.com.au</a></p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="py-16" style="background: var(--ink); color: #fff;">
-        <div class="container mx-auto px-4">
-            <div class="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
-                <div>
-                    <h3 class="text-xl font-poppins font-bold mb-4">Anchor Web Co.</h3>
-                    <p style="color: rgba(255,255,255,0.7); font-size: 15px; line-height: 1.6;">Local web design and SEO. Maryborough, QLD.</p>
-                </div>
-                <div>
-                    <h3 class="text-sm font-poppins font-bold mb-4" style="text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);">Services</h3>
-                    <ul class="space-y-2" style="font-size: 15px;">
-                        <li><a href="/web-design-hervey-bay.html" class="text-white hover:text-coast-sky">Web Design Hervey Bay</a></li>
-                        <li><a href="/web-design-maryborough.html" class="text-white hover:text-coast-sky">Web Design Maryborough</a></li>
-                        <li><a href="/seo-hervey-bay.html" class="text-white hover:text-coast-sky">SEO Hervey Bay</a></li>
-                        <li><a href="/seo-maryborough.html" class="text-white hover:text-coast-sky">SEO Maryborough</a></li>
-                        <li><a href="/website-care-plans.html" class="text-white hover:text-coast-sky">Website Care Plans</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-sm font-poppins font-bold mb-4" style="text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);">Get in touch</h3>
-                    <ul class="space-y-2" style="font-size: 15px;">
-                        <li><a href="tel:+61439499944" class="text-white hover:text-coast-sky">0439 499 944</a></li>
-                        <li><a href="mailto:info@anchorwebco.com.au" class="text-white hover:text-coast-sky">info@anchorwebco.com.au</a></li>
-                        <li style="color: rgba(255,255,255,0.7);">Maryborough, QLD 4650</li>
-                        <li><a href="/free-website-audit-hervey-bay.html" class="text-white hover:text-coast-sky">Free Website Audit</a></li>
-                        <li><a href="/health-check.html" class="text-white hover:text-coast-sky">Website Health Check</a></li>
-                        <li><a href="/about.html" class="text-white hover:text-coast-sky">About</a></li>
-                        <li><a href="/blog/" class="text-white hover:text-coast-sky">Blog</a></li>
-                    </ul>
-                </div>
-            </div>
-            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 48px 0 24px;">
-            <p class="text-sm text-center" style="color: rgba(255,255,255,0.5);">&copy; <span class="copyright-year">2026</span> Anchor Web Co.</p>
-        </div>
-    </footer>
-
-    <!-- Scroll to Top Button -->
-    <button id="scroll-top" class="fixed bottom-4 right-4 bg-anchor-navy text-white p-3 rounded-full hidden" aria-label="Scroll to top">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
-        </svg>
-    </button>
-
-    <!-- JavaScript -->
-    <script src="__ANCHOR_ANALYTICS_SCRIPT_URL__" data-client-id="anchorwebco" data-endpoint="__ANCHOR_ANALYTICS_INGEST_URL__" defer></script>
-    <script src="js/main.js" defer></script>
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16766129889"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'AW-16766129889');
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Anchor Web Co.",
-      "url": "https://www.anchorwebco.com.au/",
-      "logo": "https://www.anchorwebco.com.au/img/og-image.webp",
-      "telephone": "+61-439-499-944",
-      "email": "info@anchorwebco.com.au",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Maryborough",
-        "addressRegion": "QLD",
-        "postalCode": "4650",
-        "addressCountry": "AU"
-      },
-      "areaServed": ["Maryborough", "Hervey Bay", "Fraser Coast"]
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Matt Milzewski",
-      "jobTitle": "Founder",
-      "worksFor": {
-        "@type": "Organization",
-        "name": "Anchor Web Co."
-      },
-      "alumniOf": [
-        {
-          "@type": "CollegeOrUniversity",
-          "name": "Queensland University of Technology"
-        }
-      ],
-      "description": "Maryborough-based founder of Anchor Web Co, specialising in website development and local SEO for Fraser Coast businesses."
-    }
-    </script>
-</body>
-</html>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Person",
+  "name":"Matt Milzewski",
+  "jobTitle":"Founder and web developer",
+  "worksFor":{"@id":"{{ site.url }}/#business"},
+  "homeLocation":{"@type":"Place","name":"Red Hill, Queensland"}
+}
+</script>

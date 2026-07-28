@@ -16,6 +16,31 @@
   status = 301
 
 [[redirects]]
+  from = "/web-design-hervey-bay*"
+  to = "/web-design-brisbane-inner-west.html"
+  status = 301
+
+[[redirects]]
+  from = "/web-design-maryborough*"
+  to = "/web-design-brisbane-inner-west.html"
+  status = 301
+
+[[redirects]]
+  from = "/seo-hervey-bay*"
+  to = "/local-seo-brisbane-inner-west.html"
+  status = 301
+
+[[redirects]]
+  from = "/seo-maryborough*"
+  to = "/local-seo-brisbane-inner-west.html"
+  status = 301
+
+[[redirects]]
+  from = "/free-website-audit-hervey-bay*"
+  to = "/free-website-audit-brisbane.html"
+  status = 301
+
+[[redirects]]
   from = "/blog/welcome-to-our-blog"
   to = "/blog/"
   status = 301
@@ -28,6 +53,71 @@
 [[redirects]]
   from = "/blog/welcome-to-our-blog.html"
   to = "/blog/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/google-ads-hervey-bay*"
+  to = "/blog/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/seo-maryborough-local-search*"
+  to = "/blog/local-seo-brisbane-inner-west/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/web-design-maryborough*"
+  to = "/blog/red-hill-business-website/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/tradies-websites-more-jobs*"
+  to = "/blog/red-hill-business-website/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/seo-hervey-bay-fraser-coast*"
+  to = "/blog/local-seo-brisbane-inner-west/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/hervey-bay-seo-company*"
+  to = "/local-seo-brisbane-inner-west.html"
+  status = 301
+
+[[redirects]]
+  from = "/blog/local-seo-hervey-bay*"
+  to = "/blog/local-seo-brisbane-inner-west/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/website-design-sunshine-coast*"
+  to = "/blog/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/brisbane-business-seo*"
+  to = "/blog/local-seo-brisbane-inner-west/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/mobile-first-design*"
+  to = "/blog/red-hill-business-website/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/google-my-business-optimization*"
+  to = "/blog/local-seo-brisbane-inner-west/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/website-speed-optimization*"
+  to = "/health-check.html"
+  status = 301
+
+[[redirects]]
+  from = "/blog/website-design-guide*"
+  to = "/blog/red-hill-business-website/"
   status = 301
 
 [[redirects]]
