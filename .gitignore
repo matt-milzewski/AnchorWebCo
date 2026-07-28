@@ -3,5 +3,6 @@ node_modules/
 src/css/tailwind-build.css
 analytics/cdk.out/
 analytics/dist/
+monitor-output/
 .DS_Store
 .claude/

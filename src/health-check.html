@@ -20,7 +20,7 @@ permalink: /health-check.html
     <div class="container">
         <div class="prose-narrow" style="max-width:900px;">
             <div class="form-shell">
-                <form id="health-check-form" class="space-y-5" novalidate>
+                <form id="health-check-form" class="space-y-5" data-analytics-form="health-check" novalidate>
                     <div>
                         <label for="website-url" class="block mb-2">Website URL</label>
                         <input id="website-url" name="website-url" type="url" required placeholder="https://example.com" autocomplete="url" aria-describedby="website-url-help">
@@ -43,6 +43,7 @@ permalink: /health-check.html
                     </div>
                     <p id="health-check-error" class="hidden text-sm text-red-700 rounded-lg bg-red-50 border border-red-200 px-3 py-2" role="alert"></p>
                     <p id="health-check-success" class="hidden text-sm text-green-800 rounded-lg bg-green-50 border border-green-200 px-3 py-2" role="status" aria-live="polite"></p>
+                    <p class="form-privacy">Your email is used to deliver the report and is not added to a marketing list. The requested URL and check results are stored so the service can operate and improve. <a href="/privacy.html">Privacy details</a>.</p>
                 </form>
             </div>
         </div>
@@ -67,11 +68,11 @@ permalink: /health-check.html
 <section class="section-pad cta-band">
     <div class="container">
         <div class="prose-narrow text-center" style="max-width:720px;">
-            <p class="eyebrow">Need human context?</p>
-            <h2 class="h2" style="margin-bottom:18px;">Turn the snapshot into priorities.</h2>
-            <p style="margin-bottom:30px;">Request a concise manual audit or send the report with your project enquiry.</p>
+            <p class="eyebrow">Need the next step?</p>
+            <h2 class="h2" style="margin-bottom:18px;">Turn the snapshot into a website plan.</h2>
+            <p style="margin-bottom:30px;">Use the self-serve planner for an instant build + care recommendation, or include the report in a short project enquiry.</p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="/free-website-audit-brisbane.html" class="btn-primary" style="background:var(--accent);color:var(--ink);">Request a free audit</a>
+                <a href="/website-planner.html" class="btn-primary" style="background:var(--accent);color:var(--ink);">Plan my website</a>
                 <a href="/contact.html" class="btn-outline">Contact Matt</a>
             </div>
         </div>

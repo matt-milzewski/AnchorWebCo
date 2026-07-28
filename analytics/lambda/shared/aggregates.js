@@ -5,6 +5,7 @@ function channelForEvent(type) {
   if (type === "click-whatsapp") return "whatsapp";
   if (type === "click-email") return "email";
   if (type === "form-submit-contact" || type === "form-submit-audit") return "form";
+  if (type === "form-submit-health-check") return "health-check";
   return "";
 }
 
@@ -42,6 +43,12 @@ function aggregateKeysForEvent(event, tenant) {
     if (props.budget) keys.push(aggregateSk(month, "budget", "value", props.budget));
     if (props.business_suburb) keys.push(aggregateSk(month, "business_suburb", "value", props.business_suburb));
     if (props.lead_source) keys.push(aggregateSk(month, "lead_source", "value", props.lead_source));
+  }
+
+  if (event.type.startsWith("cta-")) {
+    keys.push(aggregateSk(month, "cta", "action", `${event.type}:${props.button_location || event.path || "unknown"}`));
+  } else if (props.cta) {
+    keys.push(aggregateSk(month, "cta", "action", props.cta));
   }
 
   if (event.type === "form-submit-audit" && props.business_type) {

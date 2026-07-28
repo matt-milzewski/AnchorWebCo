@@ -3,7 +3,8 @@ const test = require("node:test");
 const { aggregateKeysForEvent, totalEnquiriesFromAggregates } = require("../lambda/shared/aggregates");
 const { tenantPk } = require("../lambda/shared/events");
 const { visitorHash, deriveRegion } = require("../lambda/shared/privacy");
-const { calculateFunnels, worstAbandonmentField, renderMonthlyReport } = require("../lambda/shared/reporting");
+const { calculateFunnels, conversionPriorityFlags, worstAbandonmentField, renderMonthlyReport } = require("../lambda/shared/reporting");
+const { previousMonthKey } = require("../lambda/report");
 const { domainAllowed, validateEventPayload } = require("../lambda/shared/validation");
 
 const anchorTenant = require("../lambda/tenants/anchorwebco.json");
@@ -35,20 +36,36 @@ test("region derivation distinguishes Brisbane inner-west and Fraser Coast", () 
   assert.equal(deriveRegion({ "cloudfront-viewer-city": "Hervey%20Bay", "cloudfront-viewer-country-region-name": "Queensland" }), "Fraser Coast");
 });
 
-test("payload validation enforces form intelligence fields", () => {
+test("payload validation requires source attribution but permits a short contact form", () => {
   const missing = validateEventPayload({ client_id: "anchorwebco", type: "form-submit-contact", properties: {} });
   assert.equal(missing.ok, false);
-  assert.match(missing.errors.join(" "), /service_type/);
-  assert.match(missing.errors.join(" "), /timeline/);
   assert.match(missing.errors.join(" "), /source_page/);
-  assert.match(missing.errors.join(" "), /cta/);
 
   const valid = validateEventPayload({
     client_id: "anchorwebco",
     type: "form-submit-contact",
-    properties: { service_type: "Website + SEO", timeline: "1-3 months", source_page: "/website-care-plans", cta: "cta-quote" }
+    properties: { source_page: "/contact" }
   });
   assert.equal(valid.ok, true);
+});
+
+test("health-check conversions are first-class analytics events", () => {
+  const valid = validateEventPayload({
+    client_id: "anchorwebco",
+    type: "form-submit-health-check",
+    properties: { source_page: "/health-check" }
+  });
+  assert.equal(valid.ok, true);
+
+  const keys = aggregateKeysForEvent({
+    type: "form-submit-health-check",
+    path: "/health-check",
+    received_at: "2026-07-28T03:00:00.000Z",
+    properties: { source_page: "/health-check" },
+    device: "mobile",
+    region: "Brisbane inner-west"
+  }, anchorTenant);
+  assert.ok(keys.includes("AGG#2026-07#enquiries#channel#health-check"));
 });
 
 test("aggregate keys count non-form conversions as enquiries", () => {
@@ -74,15 +91,17 @@ test("contact demand fields are available to automated reporting", () => {
       timeline: "1-3 months",
       budget: "$3,000–$5,000",
       business_suburb: "Red Hill",
-      lead_source: "google-search"
+      lead_source: "google-search",
+      cta: "cta-quote"
     },
     device: "desktop",
     region: "Brisbane inner-west"
   };
   const keys = aggregateKeysForEvent(event, anchorTenant);
-  assert.ok(keys.includes("AGG#2026-07#budget#value#$3,000–$5,000"));
+  assert.ok(keys.includes("AGG#2026-07#budget#value#3-000-5-000"));
   assert.ok(keys.includes("AGG#2026-07#business_suburb#value#red-hill"));
   assert.ok(keys.includes("AGG#2026-07#lead_source#value#google-search"));
+  assert.ok(keys.includes("AGG#2026-07#cta#action#cta-quote"));
 });
 
 test("total enquiries sums form, call, whatsapp and email channels", () => {
@@ -114,6 +133,30 @@ test("funnel calculation computes drop-off and worst abandoned field", () => {
   assert.equal(worstAbandonmentField(events, "Quote"), "phone");
 });
 
+test("automated conversion priorities flag material funnel drop-off", () => {
+  const events = Array.from({ length: 12 }, (_, index) => ({
+    type: "pageview",
+    path: "/contact",
+    visitor: `visitor-${index}`,
+    properties: {}
+  }));
+  events.push(
+    { type: "form-start-contact", path: "/contact", visitor: "visitor-1", properties: {} },
+    { type: "form-error-contact", path: "/contact", visitor: "visitor-1", properties: {} },
+    { type: "form-error-contact", path: "/contact", visitor: "visitor-2", properties: {} },
+    { type: "form-error-contact", path: "/contact", visitor: "visitor-3", properties: {} }
+  );
+
+  const flags = conversionPriorityFlags(events, anchorTenant);
+  assert.match(flags.join(" "), /Quote: only 8%/);
+  assert.match(flags.join(" "), /Forms: 3 errors/);
+});
+
+test("scheduled monthly reports default to the completed previous month", () => {
+  assert.equal(previousMonthKey(new Date("2026-07-01T22:15:00.000Z")), "2026-06");
+  assert.equal(previousMonthKey(new Date("2026-01-01T22:15:00.000Z")), "2025-12");
+});
+
 test("isolation key design scopes all tenant reads to one partition", () => {
   assert.equal(tenantPk("anchorwebco"), "TENANT#anchorwebco");
   assert.equal(tenantPk("bannister"), "TENANT#bannister");
@@ -132,13 +175,29 @@ test("reporting gate skips disabled tenant and renders enabled report layout", (
   assert.match(html, /Total enquiries/);
   assert.match(html, /Enquiries by channel/);
   assert.match(html, /Demand mix/);
+  assert.match(html, /Calls to action/);
   assert.match(html, /Funnels/);
+  assert.match(html, /Automated conversion priorities/);
   assert.match(html, /Top entry pages/);
   assert.match(html, /Traffic by source and region/);
   assert.match(html, /Mobile vs desktop conversion rate/);
   assert.match(html, /Care plans page/);
   assert.match(html, /Core Web Vitals/);
   assert.match(html, /Google Search Console/);
+});
+
+test("monthly report escapes aggregate-derived HTML", () => {
+  const html = renderMonthlyReport({
+    tenant: anchorTenant,
+    month: "2026-06",
+    events: [],
+    aggregates: [{
+      SK: "AGG#2026-06#business_suburb#value#<img src=x onerror=alert(1)>",
+      count: 1
+    }]
+  });
+  assert.doesNotMatch(html, /<img src=x/);
+  assert.match(html, /&lt;img src=x onerror=alert\(1\)&gt;/);
 });
 
 test("onboarding bannister is represented as config only", () => {

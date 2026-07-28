@@ -55,7 +55,8 @@ Deployment and setup instructions are in:
 
 This repo includes a reusable Formspree-style contact form backend:
 - Frontend form: `/contact.html`
-- Backend endpoint: `POST /api/forms/{siteId}`
+- Submission endpoint: `POST /api/forms/{siteId}`
+- Non-submitting health endpoint: `GET /api/forms/{siteId}`
 - Infrastructure: Terraform under `forms/terraform`
 - Runtime: API Gateway, Lambda, DynamoDB, SSM, SES
 
@@ -64,30 +65,17 @@ Deployment and setup instructions are in:
 
 ## Deployment to AWS S3
 
-1. Create an S3 bucket:
-   ```bash
-   aws s3 mb s3://anchorwebco.com.au
-   ```
+Production deployment happens through `.github/workflows/deploy.yml` on a push to `main` or a manual workflow dispatch. The workflow:
 
-2. Set bucket policy for public access:
-   ```bash
-   aws s3api put-bucket-policy --bucket anchorwebco.com.au --policy file://bucket-policy.json
-   ```
+1. Injects the configured forms, CMS and analytics endpoints.
+2. Builds and verifies the generated Eleventy site.
+3. Syncs `_site/` to the private `s3://anchorweb.co` origin bucket.
+4. Publishes the CloudFront routing function and waits for cache invalidation.
+5. Verifies production metadata, redirects and the forms preflight.
 
-3. Manual deployment (sync local files to S3):
-   ```bash
-   aws s3 sync . s3://anchorwebco.com.au \
-     --exclude ".git/*" \
-     --exclude ".github/*" \
-     --exclude "README.md" \
-     --exclude "bucket-policy.json" \
-     --acl public-read \
-     --delete
-   ```
+Do not sync the repository root. It contains source code and infrastructure that must never be published as website files.
 
-4. Automated deployment happens via GitHub Actions on push to main branch.
-
-5. CloudFront distribution is already configured with:
+CloudFront is configured with:
    - Custom domain: `www.anchorwebco.com.au`
    - SSL certificate for HTTPS
    - Viewer request function for redirects

@@ -4,6 +4,7 @@ title: Website Pricing
 seoTitle: Website Build, Hosting & Care Pricing Brisbane
 description: Choose a fixed-fee website build from $1,970, then select managed hosting and care from $69/month. Clear connected pricing for Brisbane businesses.
 permalink: /pricing.html
+pricingCalculator: true
 ---
 <section class="section-pad local-hero">
     <div class="container">
@@ -11,6 +12,46 @@ permalink: /pricing.html
             <p class="eyebrow">Website build + hosting pricing</p>
             <h1 class="display" style="margin-bottom: 24px;">Choose the build. Then choose how it is hosted and managed.</h1>
             <p class="body-muted" style="font-size: 20px; max-width: 62ch;">Every new website has two connected parts: a one-off build and an ongoing hosting and care plan that begins when the site launches. Choose one from each.</p>
+        </div>
+    </div>
+</section>
+
+<section id="price-calculator" class="section-pad" style="background:var(--surface-alt);">
+    <div class="container">
+        <div class="prose-narrow calculator-layout">
+            <div>
+                <p class="eyebrow">Instant build + care total</p>
+                <h2 class="h2" style="margin-bottom:18px;">See the connected first-year price.</h2>
+                <p class="body-muted">Choose one build and one ongoing plan. The result shows the build cost, care cost and first-year total without making you calculate it yourself.</p>
+            </div>
+            <div class="price-calculator">
+                <div class="grid md:grid-cols-2 gap-5">
+                    <div>
+                        <label for="calculator-build">Step 1 · Website build</label>
+                        <select id="calculator-build">
+                            <option value="one-page">One-Page Launch — $1,970</option>
+                            <option value="local-business" selected>Local Business Site — $3,850</option>
+                            <option value="growth">Growth Website — from $5,950</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="calculator-care">Step 2 · Hosting &amp; care</label>
+                        <select id="calculator-care">
+                            <option value="site-care" selected>Site Care — $69/mo or $690/yr</option>
+                            <option value="care-insights">Care + Insights — $129/mo or $1,290/yr</option>
+                            <option value="lead-monitor">Lead Monitor — $229/mo or $2,290/yr</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="calculator-result" aria-live="polite">
+                    <div><span>One-off build</span><strong id="calculator-build-price">$3,850</strong></div>
+                    <div><span>Annual care</span><strong id="calculator-care-price">$690</strong></div>
+                    <div class="calculator-result__total"><span>First year</span><strong id="calculator-first-year">$4,540</strong></div>
+                    <p id="calculator-ongoing">Then $69/month or $690/year for ongoing hosting and care.</p>
+                </div>
+                <a id="calculator-cta" href="/contact.html?package=local-business&amp;care=site-care" class="btn-primary">Send this combination with my brief</a>
+                <p class="form-privacy">Annual care is priced as ten months. The care plan begins when the site launches. Growth Website totals are starting prices.</p>
+            </div>
         </div>
     </div>
 </section>
@@ -37,8 +78,8 @@ permalink: /pricing.html
                         <li>Analytics and Search Console setup guidance</li>
                         <li>Launch and 14-day defect support</li>
                     </ul>
-                    <p class="notice" style="margin: 24px 0 0;">Then add hosting &amp; care from $69/month.</p>
-                    <a href="/contact.html?package=one-page" class="btn-secondary">Choose One-Page + care</a>
+                    <p class="notice" style="margin: 24px 0 0;"><strong>$2,660 first year</strong> with annual Site Care.</p>
+                    <a href="/contact.html?package=one-page&amp;care=site-care" class="btn-secondary">Choose One-Page + Site Care</a>
                 </article>
                 <article class="pricing-card pricing-card--featured">
                     <p class="pricing-card__label">Best fit for most businesses</p>
@@ -55,8 +96,8 @@ permalink: /pricing.html
                         <li>Analytics and enquiry event tracking</li>
                         <li>Launch and 30-day defect support</li>
                     </ul>
-                    <p class="notice" style="margin: 24px 0 0;">Then add hosting &amp; care from $69/month.</p>
-                    <a href="/contact.html?package=local-business" class="btn-primary">Choose Local Business + care</a>
+                    <p class="notice" style="margin: 24px 0 0;"><strong>$4,540 first year</strong> with annual Site Care.</p>
+                    <a href="/contact.html?package=local-business&amp;care=site-care" class="btn-primary">Choose Local Business + Site Care</a>
                 </article>
                 <article class="pricing-card">
                     <p class="pricing-card__label">Larger scope</p>
@@ -73,8 +114,8 @@ permalink: /pricing.html
                         <li>Technical SEO launch checks</li>
                         <li>Launch and 30-day defect support</li>
                     </ul>
-                    <p class="notice" style="margin: 24px 0 0;">Hosting &amp; care is selected to match the final platform.</p>
-                    <a href="/contact.html?package=growth" class="btn-secondary">Choose Growth + care</a>
+                    <p class="notice" style="margin: 24px 0 0;"><strong>From $6,640 first year</strong> with annual Site Care.</p>
+                    <a href="/contact.html?package=growth&amp;care=site-care" class="btn-secondary">Choose Growth + Site Care</a>
                 </article>
             </div>
         </div>
@@ -95,8 +136,8 @@ permalink: /pricing.html
                     <p class="pricing-card__term">$690/year when paid annually</p>
                     <ul class="check-list">
                         <li>Managed hosting and CDN</li>
-                        <li>Uptime, SSL and form monitoring</li>
-                        <li>Automated monthly health summary</li>
+                        <li>Uptime, SSL and configured form checks</li>
+                        <li>Automatic incident alerts</li>
                     </ul>
                     <a href="/contact.html?care=site-care" class="btn-secondary">Choose Site Care</a>
                 </article>
@@ -107,22 +148,22 @@ permalink: /pricing.html
                     <p class="pricing-card__term">$1,290/year when paid annually</p>
                     <ul class="check-list">
                         <li>Everything in Site Care</li>
-                        <li>Traffic, enquiry and search summaries</li>
-                        <li>One minor quarterly content edit</li>
+                        <li>Traffic, enquiry and performance summaries</li>
+                        <li>Monthly email report with no meeting required</li>
                     </ul>
                     <a href="/contact.html?care=care-insights" class="btn-primary">Choose Care + Insights</a>
                 </article>
                 <article class="pricing-card">
-                    <p class="pricing-card__label">Hosting + search monitoring</p>
-                    <h3 class="pricing-card__title">Local Visibility Monitor</h3>
+                    <p class="pricing-card__label">Hosting + lead monitoring</p>
+                    <h3 class="pricing-card__title">Lead Monitor</h3>
                     <p class="pricing-card__price">$229<span style="font-size:18px;">/mo</span></p>
                     <p class="pricing-card__term">$2,290/year when paid annually</p>
                     <ul class="check-list">
                         <li>Everything in Care + Insights</li>
-                        <li>Local keyword and profile monitoring</li>
-                        <li>Quarterly review and priority list</li>
+                        <li>Enquiry funnel and demand-mix reporting</li>
+                        <li>Monthly conversion priority flags</li>
                     </ul>
-                    <a href="/contact.html?care=visibility-monitor" class="btn-secondary">Choose Visibility Monitor</a>
+                    <a href="/contact.html?care=lead-monitor" class="btn-secondary">Choose Lead Monitor</a>
                 </article>
             </div>
             <div class="notice" style="margin-top: 30px;">Build price = the one-off cost to create and launch the website. Hosting &amp; care = the ongoing cost to keep it online, monitored and supported.</div>
@@ -162,11 +203,13 @@ permalink: /pricing.html
             <p class="eyebrow">What is not hidden in the price</p>
             <h2 class="h2" style="margin-bottom: 28px;">Clear ownership and recurring costs.</h2>
             <div class="space-y-0">
-                <div class="step-card"><h3 class="step-card__title">Domain and paid software</h3><p class="step-card__body">Your domain, paid fonts, specialist software, booking tools, email platforms and paid third-party services are billed directly to you or listed separately.</p></div>
+                <div class="step-card"><h3 class="step-card__title">Domain and paid software</h3><p class="step-card__body">Your domain is registered in your name. Paid fonts, specialist software, booking tools, email platforms and other third-party services are billed directly to you or listed separately.</p></div>
                 <div class="step-card"><h3 class="step-card__title">Hosting and care</h3><p class="step-card__body">Every new Anchor-built website is paired with a hosting and care plan. The selected monthly or annual plan begins when the website launches and appears alongside the build in your proposal.</p></div>
+                <div class="step-card"><h3 class="step-card__title">What you own</h3><p class="step-card__body">Once invoices are paid, you own the approved business content and the custom site files created for your project. Third-party assets, licensed software and Anchor’s reusable internal tooling remain subject to their existing licences.</p></div>
+                <div class="step-card"><h3 class="step-card__title">If you leave</h3><p class="step-card__body">Monthly care can be cancelled before the next billing date. A current static site export can be provided after outstanding invoices are paid. Transfer to compatible hosting and any migration work are quoted separately.</p></div>
                 <div class="step-card" style="border-bottom: 1px solid var(--line);"><h3 class="step-card__title">Revisions</h3><p class="step-card__body">Each proposal states its included review rounds. New functionality or direction outside the agreed brief is priced before it is added.</p></div>
             </div>
-            <div class="notice" style="margin-top: 32px;">All prices are in Australian dollars. GST treatment is confirmed on the formal proposal and invoice.</div>
+            <div class="notice" style="margin-top: 32px;">All prices are in Australian dollars. GST is added only if legally applicable and is shown on the proposal before you accept it.</div>
         </div>
     </div>
 </section>
@@ -193,7 +236,7 @@ permalink: /pricing.html
     {"@type": "Offer", "priceCurrency": "AUD", "price": "5950", "itemOffered": {"@type": "Service", "name": "Growth Website"}},
     {"@type": "Offer", "priceCurrency": "AUD", "price": "69", "itemOffered": {"@type": "Service", "name": "Site Care managed hosting"}},
     {"@type": "Offer", "priceCurrency": "AUD", "price": "129", "itemOffered": {"@type": "Service", "name": "Care + Insights managed hosting"}},
-    {"@type": "Offer", "priceCurrency": "AUD", "price": "229", "itemOffered": {"@type": "Service", "name": "Local Visibility Monitor managed hosting"}}
+    {"@type": "Offer", "priceCurrency": "AUD", "price": "229", "itemOffered": {"@type": "Service", "name": "Lead Monitor managed hosting and conversion reporting"}}
   ]
 }
 </script>

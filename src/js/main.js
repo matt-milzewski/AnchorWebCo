@@ -103,29 +103,49 @@ if (testimonialCarousel && testimonials.length > 0) {
 const contactForm = document.getElementById('contact-form');
 
 if (contactForm) {
+    function reportContactError(field, reason) {
+        window.dispatchEvent(new CustomEvent('anchor:form-error', {
+            detail: {
+                form: 'contact',
+                field: field || 'unknown',
+                reason: reason || 'client-validation'
+            }
+        }));
+    }
+
     const startedAtField = document.getElementById('form-started-at');
     if (startedAtField) {
         startedAtField.value = String(Date.now());
     }
 
-    const serviceField = document.getElementById('service');
-    if (serviceField) {
-        const query = new URLSearchParams(window.location.search);
-        const requestedService = query.get('package') || query.get('service');
-        const matchingOption = Array.from(serviceField.options).some((option) => option.value === requestedService);
-        if (requestedService && matchingOption) {
-            serviceField.value = requestedService;
-        }
-    }
+    const query = new URLSearchParams(window.location.search);
+    const requestedPackage = query.get('package') || '';
+    const requestedCare = query.get('care') || '';
+    const packageField = document.getElementById('recommended-package');
+    const careField = document.getElementById('recommended-care');
+    const plannerSourceField = document.getElementById('planner-source');
+    const selectedPlanSummary = document.getElementById('selected-plan-summary');
+    const packageLabels = {
+        'one-page': 'One-Page Launch',
+        'local-business': 'Local Business Site',
+        'growth': 'Growth Website'
+    };
+    const careLabels = {
+        'site-care': 'Site Care',
+        'care-insights': 'Care + Insights',
+        'lead-monitor': 'Lead Monitor'
+    };
 
-    const careField = document.getElementById('care-plan');
-    if (careField) {
-        const query = new URLSearchParams(window.location.search);
-        const requestedCare = query.get('care');
-        const matchingCareOption = Array.from(careField.options).some((option) => option.value === requestedCare);
-        if (requestedCare && matchingCareOption) {
-            careField.value = requestedCare;
-        }
+    if (packageField) packageField.value = requestedPackage;
+    if (careField) careField.value = requestedCare;
+    if (plannerSourceField) plannerSourceField.value = query.get('source') || '';
+
+    if (selectedPlanSummary && (packageLabels[requestedPackage] || careLabels[requestedCare])) {
+        const parts = [];
+        if (packageLabels[requestedPackage]) parts.push(packageLabels[requestedPackage]);
+        if (careLabels[requestedCare]) parts.push(careLabels[requestedCare]);
+        selectedPlanSummary.innerHTML = '<strong>Your saved starting point:</strong> ' + parts.join(' + ') + '. I will confirm the fit before anything is agreed.';
+        selectedPlanSummary.classList.remove('hidden');
     }
 
     contactForm.addEventListener('submit', async (e) => {
@@ -150,16 +170,20 @@ if (contactForm) {
         const phoneRegex = /^(\+61|0)[2-478]\d{8}$/;
 
         if (!name || !email || !message) {
+            reportContactError('required', 'client-validation');
             showToast('Please fill in all required fields', 'error');
             return;
         }
 
         if (!emailRegex.test(email)) {
+            reportContactError('email', 'client-validation');
             showToast('Please enter a valid email address', 'error');
             return;
         }
 
-        if (phone && !phoneRegex.test(phone)) {
+        const compactPhone = phone.replace(/[\s()-]/g, '');
+        if (phone && !phoneRegex.test(compactPhone)) {
+            reportContactError('phone', 'client-validation');
             showToast('Please enter a valid Australian phone number', 'error');
             return;
         }
@@ -170,23 +194,7 @@ if (contactForm) {
         submitButton.textContent = 'Sending...';
         submitButton.disabled = true;
 
-        try {
-            // Send Google Ads conversion event first, then submit.
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'conversion_event_submit_lead_form', {
-                    event_callback: function () {
-                        submitFormToFormBackend();
-                    },
-                    event_timeout: 2000
-                });
-            } else {
-                submitFormToFormBackend();
-            }
-        } catch (error) {
-            showToast('Error sending message. Please try again later.', 'error');
-            console.error('Form submission error:', error);
-            resetSubmitButton();
-        }
+        submitFormToFormBackend();
 
         async function submitFormToFormBackend() {
             try {
@@ -197,9 +205,10 @@ if (contactForm) {
                 });
 
                 const formsApiBase = (window.ANCHOR_FORMS_API_BASE || '').replace(/\/$/, '');
-                const endpoint = formsApiBase
-                    ? `${formsApiBase}/api/forms/anchor-web-co`
-                    : 'https://formspree.io/f/xdkgalak';
+                if (!formsApiBase) {
+                    throw new Error('The enquiry service is temporarily unavailable. Please call or email Anchor Web Co.');
+                }
+                const endpoint = `${formsApiBase}/api/forms/anchor-web-co`;
 
                 const response = await fetch(endpoint, {
                     method: 'POST',
@@ -211,19 +220,43 @@ if (contactForm) {
                 });
 
                 if (response.ok) {
-                    window.location.replace('thank-you.html');
-
-                    setTimeout(() => {
-                        if (window.location.pathname !== '/thank-you.html') {
-                            window.location.href = 'thank-you.html';
+                    const responseData = await response.json().catch(() => ({}));
+                    window.dispatchEvent(new CustomEvent('anchor:form-success', {
+                        detail: {
+                            form: 'contact',
+                            submission_id: responseData.submissionId || '',
+                            project_stage: formDataObj.project_stage || '',
+                            service_type: formDataObj.recommended_package || formDataObj.project_stage || '',
+                            care_plan: formDataObj.recommended_care || '',
+                            business_suburb: formDataObj.business_suburb || '',
+                            source_page: formDataObj.source_page || window.location.pathname,
+                            cta: formDataObj.cta || 'contact-form'
                         }
-                    }, 1000);
+                    }));
+
+                    let redirected = false;
+                    const redirectToThankYou = function () {
+                        if (redirected) return;
+                        redirected = true;
+                        window.location.replace('/thank-you.html');
+                    };
+
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'conversion_event_submit_lead_form', {
+                            event_callback: redirectToThankYou,
+                            event_timeout: 1200
+                        });
+                        setTimeout(redirectToThankYou, 1300);
+                    } else {
+                        redirectToThankYou();
+                    }
                 } else {
-                    const data = await response.json();
+                    const data = await response.json().catch(() => ({}));
                     throw new Error(data.error || 'Failed to send message');
                 }
             } catch (error) {
-                showToast('Error sending message. Please try again later.', 'error');
+                reportContactError('endpoint', 'submission-failed');
+                showToast(error.message || 'Error sending message. Please call or email instead.', 'error');
                 console.error('Form submission error:', error);
                 resetSubmitButton();
             }

@@ -21,6 +21,8 @@ POST /api/forms/{siteId}
 Content-Type: application/json
 ```
 
+The same route accepts `GET` as a non-submitting health check. It verifies that the Lambda can load the selected site configuration without creating a lead or sending email.
+
 Example:
 
 ```json
@@ -75,7 +77,7 @@ Stored in SSM as:
       "recipientEmail": "info@anchorwebco.com.au",
       "allowedOrigins": ["https://www.anchorwebco.com.au"],
       "requiredFields": ["name", "email", "message"],
-      "honeypotFields": ["company", "_gotcha", "website"],
+      "honeypotFields": ["company", "_gotcha"],
       "replyToField": "email",
       "subjectPrefix": "[Anchor Web Co]"
     }

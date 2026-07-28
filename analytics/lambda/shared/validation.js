@@ -28,14 +28,17 @@ function validateEventPayload(payload) {
   if (payload.type === "scroll-depth" && !properties.depth) errors.push("scroll-depth requires depth.");
   if (payload.type === "field-blur" && (!properties.form || !properties.field)) errors.push("field-blur requires form and field.");
   if (payload.type === "form-submit-contact") {
-    ["service_type", "timeline", "source_page", "cta"].forEach((field) => {
+    ["source_page"].forEach((field) => {
       if (!properties[field]) errors.push(`form-submit-contact requires ${field}.`);
     });
   }
   if (payload.type === "form-submit-audit") {
-    ["business_type", "source_page"].forEach((field) => {
+    ["source_page"].forEach((field) => {
       if (!properties[field]) errors.push(`form-submit-audit requires ${field}.`);
     });
+  }
+  if (payload.type === "form-submit-health-check" && !properties.source_page) {
+    errors.push("form-submit-health-check requires source_page.");
   }
 
   return {

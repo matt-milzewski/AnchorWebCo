@@ -18,12 +18,18 @@ site_configs = [
       "https://anchorwebco.com.au"
     ]
     requiredFields  = ["name", "email", "message"]
-    honeypotFields  = ["company", "_gotcha", "website"]
+    honeypotFields  = ["company", "_gotcha"]
     replyToField    = "email"
     subjectPrefix   = "[Anchor Web Co]"
     subject         = "New website enquiry"
     spamThreshold   = 2
     maxLinks        = 3
     minimumSubmitMs = 3000
+    autoReplyEnabled        = true
+    autoReplySubject        = "We received your Anchor Web Co enquiry"
+    autoReplyResponseWindow = "within two business days"
+    autoReplyPhone          = "0439 499 944"
+    autoReplyPlannerUrl     = "https://www.anchorwebco.com.au/website-planner.html"
+    autoReplyPricingUrl     = "https://www.anchorwebco.com.au/pricing.html"
   }
 ]

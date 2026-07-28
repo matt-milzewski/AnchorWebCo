@@ -39,6 +39,11 @@ resource "aws_dynamodb_table" "submissions" {
     enabled = true
   }
 
+  ttl {
+    attribute_name = "expiresAt"
+    enabled        = true
+  }
+
   server_side_encryption {
     enabled = true
   }
@@ -198,15 +203,16 @@ resource "aws_lambda_function" "forms" {
 
   environment {
     variables = {
-      FORM_SITES_CONFIG_PARAMETER  = aws_ssm_parameter.sites_config.name
-      FORM_SUBMISSIONS_TABLE       = aws_dynamodb_table.submissions.name
-      FORM_RATE_LIMIT_TABLE        = aws_dynamodb_table.rate_limits.name
-      FORM_ALLOWED_ORIGINS         = join(",", var.allowed_origins)
-      FORM_DEFAULT_FROM_EMAIL      = var.default_from_email
-      FORM_DEFAULT_REPLY_TO_EMAIL  = var.default_reply_to_email
-      FORM_RATE_LIMIT_MAX_REQUESTS = tostring(var.per_ip_max_requests)
+      FORM_SITES_CONFIG_PARAMETER    = aws_ssm_parameter.sites_config.name
+      FORM_SUBMISSIONS_TABLE         = aws_dynamodb_table.submissions.name
+      FORM_RATE_LIMIT_TABLE          = aws_dynamodb_table.rate_limits.name
+      FORM_ALLOWED_ORIGINS           = join(",", var.allowed_origins)
+      FORM_DEFAULT_FROM_EMAIL        = var.default_from_email
+      FORM_DEFAULT_REPLY_TO_EMAIL    = var.default_reply_to_email
+      FORM_RATE_LIMIT_MAX_REQUESTS   = tostring(var.per_ip_max_requests)
       FORM_RATE_LIMIT_WINDOW_SECONDS = tostring(var.per_ip_window_seconds)
-      FORM_MAX_PAYLOAD_BYTES       = tostring(var.max_payload_bytes)
+      FORM_MAX_PAYLOAD_BYTES         = tostring(var.max_payload_bytes)
+      FORM_SUBMISSION_RETENTION_DAYS = tostring(var.submission_retention_days)
     }
   }
 
@@ -221,7 +227,7 @@ resource "aws_apigatewayv2_api" "forms" {
 
   cors_configuration {
     allow_origins = var.allowed_origins
-    allow_methods = ["POST", "OPTIONS"]
+    allow_methods = ["GET", "POST", "OPTIONS"]
     allow_headers = ["content-type"]
     max_age       = 3600
   }
@@ -239,6 +245,7 @@ resource "aws_apigatewayv2_integration" "forms" {
 
 resource "aws_apigatewayv2_route" "forms" {
   for_each = toset([
+    "GET /api/forms/{siteId}",
     "OPTIONS /api/forms/{siteId}",
     "POST /api/forms/{siteId}"
   ])

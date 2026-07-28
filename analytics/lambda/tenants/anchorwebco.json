@@ -8,7 +8,8 @@
   "created_at": "2026-06-22T00:00:00.000Z",
   "funnels": [
     { "name": "Quote", "steps": [{ "match": "pageview", "path": "/contact" }, { "match": "event", "type": "form-start-contact" }, { "match": "event", "type": "form-submit-contact" }] },
-    { "name": "Audit", "steps": [{ "match": "pageview", "path": "/free-website-audit-brisbane" }, { "match": "event", "type": "form-start-audit" }, { "match": "event", "type": "form-submit-audit" }] },
+    { "name": "Health check", "steps": [{ "match": "pageview", "path": "/health-check" }, { "match": "event", "type": "form-start-health-check" }, { "match": "event", "type": "form-submit-health-check" }] },
+    { "name": "Website planner", "steps": [{ "match": "pageview", "path": "/website-planner" }, { "match": "event", "type": "website-plan-complete" }, { "match": "event", "type": "form-submit-contact" }] },
     { "name": "Care plan", "steps": [{ "match": "pageview", "path": "/website-care-plans" }, { "match": "event", "type": "cta-quote" }, { "match": "event", "type": "form-submit-contact" }] },
     { "name": "Call conversion", "steps": [{ "match": "pageview" }, { "match": "event", "type": "click-call" }] },
     { "name": "Service to enquiry", "steps": [{ "match": "pageview", "path_prefix": "/web-design" }, { "match": "event", "type": "form-submit-contact" }] }

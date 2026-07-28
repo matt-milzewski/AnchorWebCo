@@ -18,6 +18,7 @@ const env = {
   rateLimitWindowSeconds: Number(process.env.FORM_RATE_LIMIT_WINDOW_SECONDS || 3600),
   rateLimitMaxRequests: Number(process.env.FORM_RATE_LIMIT_MAX_REQUESTS || 8),
   maxPayloadBytes: Number(process.env.FORM_MAX_PAYLOAD_BYTES || 32000),
+  submissionRetentionDays: Number(process.env.FORM_SUBMISSION_RETENTION_DAYS || 365),
 };
 
 let cachedSitesConfig;
@@ -58,7 +59,7 @@ function options(event) {
   return {
     statusCode: 204,
     headers: responseHeaders(event, {
-      "access-control-allow-methods": "POST,OPTIONS",
+      "access-control-allow-methods": "GET,POST,OPTIONS",
       "access-control-allow-headers": "content-type",
       "access-control-max-age": "3600",
     }),
@@ -165,6 +166,7 @@ function assessSubmission({ fields, site, event }) {
   const suspiciousTerms = ["casino", "viagra", "crypto", "forex", "loan offer", "whatsapp marketing"];
 
   if (allowedOrigins.length && origin && !allowedOrigins.includes(origin)) reasons.push("origin-not-allowed");
+  if (site.autoReplyEnabled && allowedOrigins.length && !origin) reasons.push("origin-not-allowed");
   if (!userAgent) reasons.push("missing-user-agent");
   if (honeypotFields.some((field) => fields[field])) reasons.push("honeypot-filled");
   if (linkCount > Number(site.maxLinks || 3)) reasons.push("too-many-links");
@@ -172,6 +174,7 @@ function assessSubmission({ fields, site, event }) {
 
   const startedAt = Number(fields._startedAt || fields.formStartedAt || 0);
   if (startedAt && Date.now() - startedAt < Number(site.minimumSubmitMs || 3000)) reasons.push("submitted-too-fast");
+  if (site.autoReplyEnabled && !startedAt) reasons.push("missing-start-time");
 
   requiredFields.forEach((field) => {
     if (!fields[field]) errors.push(`${humanizeKey(field)} is required.`);
@@ -181,9 +184,13 @@ function assessSubmission({ fields, site, event }) {
   if (fields[emailField] && !isEmail(fields[emailField])) errors.push("A valid email address is required.");
 
   const spamScore = reasons.length;
+  const autoReplyAbuseSignal = Boolean(
+    site.autoReplyEnabled
+    && reasons.some((reason) => ["origin-not-allowed", "missing-start-time", "submitted-too-fast"].includes(reason)),
+  );
   return {
     errors,
-    spam: spamScore >= Number(site.spamThreshold || 2) || reasons.includes("honeypot-filled"),
+    spam: spamScore >= Number(site.spamThreshold || 2) || reasons.includes("honeypot-filled") || autoReplyAbuseSignal,
     spamScore,
     reasons,
   };
@@ -283,6 +290,67 @@ async function sendLeadEmail({ fields, site, siteId, submissionId, ip, origin })
   );
 }
 
+function buildAutoReplyEmail({ fields, site }) {
+  const name = String(fields.name || "").trim().split(/\s+/)[0] || "there";
+  const responseWindow = site.autoReplyResponseWindow || "within two business days";
+  const phone = site.autoReplyPhone || "";
+  const plannerUrl = site.autoReplyPlannerUrl || "";
+  const pricingUrl = site.autoReplyPricingUrl || "";
+  const siteName = site.name || "Anchor Web Co";
+  const subject = site.autoReplySubject || `We received your ${siteName} enquiry`;
+  const links = [
+    plannerUrl ? `Plan your website: ${plannerUrl}` : "",
+    pricingUrl ? `Review build + care pricing: ${pricingUrl}` : "",
+  ].filter(Boolean);
+  const text = [
+    `Hi ${name},`,
+    "",
+    `Thanks for contacting ${siteName}. Your enquiry arrived safely.`,
+    `Matt will review it and reply personally ${responseWindow}.`,
+    phone ? `If the matter is time-sensitive, call ${phone}.` : null,
+    "",
+    ...links,
+    "",
+    "This is a transactional receipt for the enquiry you submitted. You have not been added to a marketing list.",
+  ].filter((line) => line !== null).join("\n");
+  const htmlLinks = [
+    plannerUrl ? `<li><a href="${escapeHtml(plannerUrl)}">Use the instant website planner</a></li>` : "",
+    pricingUrl ? `<li><a href="${escapeHtml(pricingUrl)}">Review build + care pricing</a></li>` : "",
+  ].filter(Boolean).join("");
+  const html = `<!doctype html><html><body style="font-family:Arial,sans-serif;color:#17211b;line-height:1.6;max-width:640px;margin:0 auto;padding:24px;">
+    <h1 style="font-size:24px;">Your enquiry arrived safely.</h1>
+    <p>Hi ${escapeHtml(name)},</p>
+    <p>Thanks for contacting ${escapeHtml(siteName)}. Matt will review your brief and reply personally ${escapeHtml(responseWindow)}.</p>
+    ${phone ? `<p>If the matter is time-sensitive, call <a href="tel:${escapeHtml(phone.replace(/\s+/g, ""))}">${escapeHtml(phone)}</a>.</p>` : ""}
+    ${htmlLinks ? `<p>While you wait:</p><ul>${htmlLinks}</ul>` : ""}
+    <p style="color:#64748b;font-size:13px;margin-top:28px;">This is a transactional receipt for the enquiry you submitted. You have not been added to a marketing list.</p>
+  </body></html>`;
+
+  return { subject, text, html };
+}
+
+async function sendAutoReplyEmail({ fields, site }) {
+  if (!site.autoReplyEnabled || !isEmail(fields.email)) return false;
+  const email = buildAutoReplyEmail({ fields, site });
+  await ses.send(
+    new SendEmailCommand({
+      FromEmailAddress: site.fromEmail || env.defaultFromEmail,
+      Destination: { ToAddresses: [fields.email] },
+      ReplyToAddresses: [site.autoReplyReplyTo || env.defaultReplyToEmail],
+      Content: {
+        Simple: {
+          Subject: { Data: email.subject },
+          Body: {
+            Text: { Data: email.text },
+            Html: { Data: email.html },
+          },
+        },
+      },
+    }),
+  );
+  return true;
+}
+
 async function storeSubmission(item) {
   await dynamo.send(
     new PutCommand({
@@ -290,74 +358,6 @@ async function storeSubmission(item) {
       Item: item,
     }),
   );
-}
-
-function buildAnalyticsEvent({ fields, site, siteId, event }) {
-  const analytics = site.analytics || {};
-  const clientId = analytics.clientId || site.analyticsClientId;
-  const ingestUrl = analytics.ingestUrl || site.analyticsIngestUrl || process.env.ANALYTICS_INGEST_URL;
-  if (!clientId || !ingestUrl) return null;
-
-  const formType =
-    fields.analytics_form_type ||
-    fields.analyticsFormType ||
-    analytics.formType ||
-    site.analyticsFormType ||
-    (siteId.includes("audit") ? "audit" : "contact");
-  const sourcePage = fields.source_page || fields.sourcePage || fields._source_page || fields.landing_page || event.headers?.referer || "";
-  const baseProperties = {
-    source_page: sourcePage,
-    cta: fields.cta || fields._cta || fields.last_cta || "",
-  };
-
-  if (formType === "audit") {
-    return {
-      url: ingestUrl,
-      payload: {
-        client_id: clientId,
-        type: "form-submit-audit",
-        path: "/free-website-audit-brisbane",
-        properties: {
-          ...baseProperties,
-          business_type: fields.business_type || fields.businessType || fields.type_of_business || fields["business-type"] || "",
-        },
-      },
-    };
-  }
-
-  return {
-    url: ingestUrl,
-    payload: {
-      client_id: clientId,
-      type: "form-submit-contact",
-      path: "/contact",
-      properties: {
-        ...baseProperties,
-        service_type: fields.service_type || fields.service || fields.what_are_you_looking_for || "",
-        timeline: fields.timeline || fields.preferred_timeline || "",
-        budget: fields.budget || fields.budget_band || "",
-        business_suburb: fields.business_suburb || fields.suburb || "",
-        lead_source: fields.lead_source || fields.how_did_you_find_us || "",
-      },
-    },
-  };
-}
-
-async function sendAnalyticsEvent({ fields, site, siteId, event }) {
-  const analyticsEvent = buildAnalyticsEvent({ fields, site, siteId, event });
-  if (!analyticsEvent) return;
-  try {
-    await fetch(analyticsEvent.url, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        origin: (site.allowedOrigins || [])[0] || event.headers?.origin || "",
-      },
-      body: JSON.stringify(analyticsEvent.payload),
-    });
-  } catch (error) {
-    console.error("analytics-submit-failed", error);
-  }
 }
 
 async function handleSubmit(event, siteId) {
@@ -380,6 +380,7 @@ async function handleSubmit(event, siteId) {
     siteId,
     submissionId,
     submittedAt,
+    expiresAt: Math.floor(Date.now() / 1000) + env.submissionRetentionDays * 86400,
     status: spam ? "spam" : "accepted",
     spam,
     spamReasons,
@@ -398,8 +399,26 @@ async function handleSubmit(event, siteId) {
 
   await sendLeadEmail({ fields, site, siteId, submissionId, ip, origin });
   await storeSubmission({ ...baseItem, status: "sent" });
-  await sendAnalyticsEvent({ fields, site, siteId, event });
+  try {
+    await sendAutoReplyEmail({ fields, site });
+  } catch (error) {
+    console.error("form-auto-reply-failed", { siteId, submissionId, message: error.message });
+  }
   return json(event, 200, { ok: true, submissionId });
+}
+
+function buildHealthPayload(siteId, site) {
+  return {
+    ok: true,
+    siteId,
+    siteName: site.name || siteId,
+    autoReplyEnabled: Boolean(site.autoReplyEnabled),
+  };
+}
+
+async function handleHealth(event, siteId) {
+  const site = await getSite(siteId);
+  return json(event, 200, buildHealthPayload(siteId, site));
 }
 
 exports.handler = async function handler(event) {
@@ -410,7 +429,9 @@ exports.handler = async function handler(event) {
     if (method === "OPTIONS") return options(event);
 
     const route = parseRoute(path);
-    if (!route || method !== "POST") return json(event, 404, { error: "Not found." });
+    if (!route) return json(event, 404, { error: "Not found." });
+    if (method === "GET") return handleHealth(event, route.siteId);
+    if (method !== "POST") return json(event, 404, { error: "Not found." });
 
     return handleSubmit(event, route.siteId);
   } catch (error) {
@@ -421,8 +442,9 @@ exports.handler = async function handler(event) {
 
 exports._private = {
   assessSubmission,
+  buildAutoReplyEmail,
   buildEmail,
-  buildAnalyticsEvent,
+  buildHealthPayload,
   humanizeKey,
   normalizeFields,
   parseRoute,

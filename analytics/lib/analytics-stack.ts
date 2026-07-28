@@ -157,7 +157,7 @@ export class AnchorAnalyticsStack extends cdk.Stack {
     new cdk.CustomResource(this, "SeedInitialTenants", {
       serviceToken: seed.functionArn,
       properties: {
-        tenantConfigVersion: "2026-06-22-v1"
+        tenantConfigVersion: "2026-07-28-v2"
       }
     });
 

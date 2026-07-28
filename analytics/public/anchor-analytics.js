@@ -98,7 +98,9 @@
   }
 
   function formName(form) {
-    return form.getAttribute("data-analytics-form") || (form.id && form.id.indexOf("audit") >= 0 ? "audit" : "contact");
+    if (form.getAttribute("data-analytics-form")) return form.getAttribute("data-analytics-form");
+    if (form.id && form.id.indexOf("health-check") >= 0) return "health-check";
+    return form.id && form.id.indexOf("audit") >= 0 ? "audit" : "contact";
   }
 
   function fieldName(field) {
@@ -116,9 +118,9 @@
   function wireForms() {
     Array.prototype.forEach.call(document.querySelectorAll("form"), function (form) {
       var name = formName(form);
-      var startType = name === "audit" ? "form-start-audit" : "form-start-contact";
-      var submitType = name === "audit" ? "form-submit-audit" : "form-submit-contact";
-      var errorType = name === "audit" ? "form-error-audit" : "form-error-contact";
+      if (name === "planner") return;
+      var startType = name === "audit" ? "form-start-audit" : name === "health-check" ? "form-start-health-check" : "form-start-contact";
+      var errorType = name === "audit" ? "form-error-audit" : name === "health-check" ? "form-error-health-check" : "form-error-contact";
 
       form.addEventListener("focusin", function () {
         if (session.formStarted[name]) return;
@@ -132,6 +134,10 @@
         send("field-blur", { form: name, field: fieldName(target) });
       }, true);
 
+      form.addEventListener("invalid", function (event) {
+        send(errorType, { field: fieldName(event.target), reason: "browser-validation" });
+      }, true);
+
       form.addEventListener("submit", function () {
         setHidden(form, "source_page", sourcePage());
         setHidden(form, "cta", session.lastCta || "");
@@ -142,15 +148,34 @@
           return;
         }
 
-        var props = { source_page: sourcePage(), cta: session.lastCta || "" };
-        if (name === "audit") {
-          props.business_type = selectValue(form, ["business_type", "businessType", "type_of_business", "business-type"]);
-        } else {
-          props.service_type = selectValue(form, ["service_type", "service", "what_are_you_looking_for"]);
-          props.timeline = selectValue(form, ["timeline", "preferred_timeline"]);
-        }
-        send(submitType, props);
+        // A submit attempt is not a conversion. The page dispatches
+        // anchor:form-success only after the first-party form API accepts it.
       });
+    });
+  }
+
+  function wireConfirmedConversions() {
+    window.addEventListener("anchor:form-success", function (event) {
+      var detail = event.detail || {};
+      var form = detail.form || "contact";
+      var type = form === "audit" ? "form-submit-audit" : form === "health-check" ? "form-submit-health-check" : "form-submit-contact";
+      send(type, Object.assign({
+        source_page: detail.source_page || sourcePage(),
+        cta: detail.cta || session.lastCta || "",
+        utm: detail.utm || utm(),
+        referrer: detail.referrer || document.referrer || ""
+      }, detail));
+    });
+
+    window.addEventListener("anchor:form-error", function (event) {
+      var detail = event.detail || {};
+      var form = detail.form || "contact";
+      var type = form === "audit" ? "form-error-audit" : form === "health-check" ? "form-error-health-check" : "form-error-contact";
+      send(type, detail);
+    });
+
+    window.addEventListener("anchor:planner-complete", function (event) {
+      send("website-plan-complete", event.detail || {});
     });
   }
 
@@ -236,6 +261,7 @@
   });
   wireClicks();
   wireForms();
+  wireConfirmedConversions();
   wireScrollDepth();
   wireWebVitals();
 })();

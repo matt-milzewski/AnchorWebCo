@@ -9,10 +9,12 @@ const publicPages = [
   "pricing.html",
   "website-care-plans.html",
   "work.html",
-  "free-website-audit-brisbane.html",
   "health-check.html",
+  "website-planner.html",
+  "web-design-brisbane-tradies.html",
   "about.html",
   "contact.html",
+  "privacy.html",
 ];
 
 module.exports = function () {

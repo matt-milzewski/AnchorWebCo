@@ -1,0 +1,116 @@
+---
+layout: layouts/marketing-page.njk
+title: Brisbane New Business Website Planner
+seoTitle: Free Brisbane Website Planner | Instant Build + Care Price
+description: Answer four questions to see a recommended Anchor Web Co website build, managed care plan and first-year price. No email or sales call required.
+permalink: /website-planner.html
+websitePlanner: true
+---
+<section class="section-pad local-hero">
+    <div class="container">
+        <div class="local-hero__grid">
+            <div class="local-hero__copy">
+                <p class="eyebrow">Instant website planner · Free</p>
+                <h1 class="display" style="margin-bottom:24px;">See the website setup that fits your business.</h1>
+                <p class="body-muted" style="font-size:20px;max-width:60ch;">Answer four short questions. The planner recommends a one-off build, the ongoing hosting and care level, a useful page structure and the first-year price.</p>
+                <p class="hero-meta">No email required · Instant result · Change any answer</p>
+            </div>
+            <figure class="local-hero__media">
+                <img class="local-hero__image" src="/img/brisbane-inner-west/red-hill-bookshop.webp" alt="Local Red Hill shopfront representing a Brisbane small-business website plan" width="1600" height="1200" fetchpriority="high">
+                <figcaption class="local-hero__caption">Useful whether you are starting fresh or replacing a site that has stopped helping.</figcaption>
+            </figure>
+        </div>
+    </div>
+</section>
+
+<section class="section-pad" style="background:var(--surface-alt);">
+    <div class="container">
+        <div class="prose-narrow planner-layout">
+            <form id="website-planner-form" class="form-shell planner-form" data-analytics-form="planner">
+                <div>
+                    <p class="planner-step">1 of 4</p>
+                    <label for="planner-start">Where are you starting?</label>
+                    <select id="planner-start" name="start" required>
+                        <option value="" disabled selected>Choose one</option>
+                        <option value="new">New business with no website</option>
+                        <option value="replace">Replacing an existing website</option>
+                        <option value="expand">Expanding a basic website</option>
+                    </select>
+                </div>
+                <div>
+                    <p class="planner-step">2 of 4</p>
+                    <label for="planner-scope">How much does the site need to explain?</label>
+                    <select id="planner-scope" name="scope" required>
+                        <option value="" disabled selected>Choose one</option>
+                        <option value="one">One main service or a simple launch</option>
+                        <option value="several">Two to five important services</option>
+                        <option value="many">Six or more services, locations or content areas</option>
+                    </select>
+                </div>
+                <div>
+                    <p class="planner-step">3 of 4</p>
+                    <label for="planner-goal">What is the main job of the website?</label>
+                    <select id="planner-goal" name="goal" required>
+                        <option value="" disabled selected>Choose one</option>
+                        <option value="presence">Give the business a credible online presence</option>
+                        <option value="enquiries">Turn local visitors into calls and quote requests</option>
+                        <option value="growth">Compete across several services or Brisbane areas</option>
+                    </select>
+                </div>
+                <div>
+                    <p class="planner-step">4 of 4</p>
+                    <label for="planner-care">What should happen after launch?</label>
+                    <select id="planner-care" name="care" required>
+                        <option value="" disabled selected>Choose one</option>
+                        <option value="essential">Keep it hosted, checked and low-maintenance</option>
+                        <option value="insights">Also send useful traffic and enquiry reporting</option>
+                        <option value="visibility">Also monitor the enquiry funnel and lead mix</option>
+                    </select>
+                </div>
+                <button type="submit" class="contact-submit-btn">Show my website plan</button>
+                <p class="form-privacy">The answers stay in your browser unless you choose to send the recommended plan with an enquiry.</p>
+            </form>
+
+            <aside id="website-plan-result" class="planner-result" tabindex="-1" aria-live="polite">
+                <p class="pricing-card__label">Your result</p>
+                <h2 class="h2" style="font-size:clamp(28px,4vw,38px);margin:12px 0 16px;">Your recommendation will appear here.</h2>
+                <p class="body-muted">Choose one answer in each field, then select “Show my website plan.” You can change the answers and recalculate as often as you like.</p>
+            </aside>
+        </div>
+    </div>
+</section>
+
+<section class="section-pad">
+    <div class="container">
+        <div class="prose-narrow content-grid">
+            <article class="content-card">
+                <p class="pricing-card__label">Starting fresh?</p>
+                <h3>You do not need an existing website.</h3>
+                <p>The planner works for a new electrician, consultant, cleaner or other service business that needs its first credible online presence.</p>
+            </article>
+            <article class="content-card">
+                <p class="pricing-card__label">Already online?</p>
+                <h3>Check the technical starting point.</h3>
+                <p>Run the automated health check to review performance, mobile usability and core search signals on an existing site.</p>
+                <a href="/health-check.html" class="inline-block mt-5 font-medium underline">Run the website health check</a>
+            </article>
+            <article class="content-card">
+                <p class="pricing-card__label">Need certainty?</p>
+                <h3>The result is a guide, not a hidden commitment.</h3>
+                <p>Nothing is purchased through the planner. Matt confirms scope, responsibilities, timing and both prices in writing before work starts.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebApplication",
+  "name":"Anchor Web Co Brisbane Website Planner",
+  "url":"{{ site.url }}/website-planner.html",
+  "applicationCategory":"BusinessApplication",
+  "isAccessibleForFree":true,
+  "offers":{"@type":"Offer","price":"0","priceCurrency":"AUD"}
+}
+</script>

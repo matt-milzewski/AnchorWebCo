@@ -2,15 +2,16 @@
 layout: layouts/marketing-page.njk
 title: Contact
 seoTitle: Contact Anchor Web Co | Brisbane Inner West Web Design
-description: Choose a website build and managed hosting and care plan with Anchor Web Co. Get practical next steps and connected pricing from Matt in Red Hill.
+description: Tell Matt what your Brisbane business needs from its website. Receive an instant email receipt and a personal reply within two business days.
 permalink: /contact.html
 ---
 <section class="section-pad local-hero">
     <div class="container">
         <div class="prose-narrow" style="max-width:900px;">
             <p class="eyebrow">Contact · Red Hill, Brisbane</p>
-            <h1 class="display" style="margin-bottom:24px;">Choose what you need built—and how you want it looked after.</h1>
-            <p class="body-muted" style="font-size:20px;max-width:62ch;">Share the business and goal. I’ll reply personally with a connected recommendation covering the one-off website build and ongoing hosting and care.</p>
+            <h1 class="display" style="margin-bottom:24px;">Tell me the job your website needs to do.</h1>
+            <p class="body-muted" style="font-size:20px;max-width:62ch;">A rough brief is enough. You do not need to choose a package or know the right technical answer before getting in touch.</p>
+            <p class="hero-meta">Instant email receipt · Personal reply within two business days · No marketing list</p>
         </div>
     </div>
 </section>
@@ -20,13 +21,17 @@ permalink: /contact.html
         <div class="prose-narrow grid lg:grid-cols-[1.2fr_0.8fr] gap-8 items-start">
             <div class="form-shell">
                 <h2 class="h2" style="font-size:clamp(26px,3vw,34px);margin-bottom:12px;">Project enquiry</h2>
-                <p class="body-muted" style="margin-bottom:28px;">A rough brief is fine. Required fields are marked.</p>
+                <p class="body-muted" style="margin-bottom:28px;">Only the essentials. Required fields are marked.</p>
                 <form id="contact-form" class="space-y-5" data-analytics-form="contact">
                     <input type="hidden" name="_subject" value="New project enquiry from Anchor Web Co.">
                     <input type="hidden" name="_startedAt" id="form-started-at" value="">
                     <input type="hidden" name="analytics_form_type" value="contact">
                     <input type="hidden" name="source_page" value="/contact.html">
                     <input type="hidden" name="cta" value="contact-form">
+                    <input type="hidden" name="recommended_package" id="recommended-package" value="">
+                    <input type="hidden" name="recommended_care" id="recommended-care" value="">
+                    <input type="hidden" name="planner_source" id="planner-source" value="">
+                    <div id="selected-plan-summary" class="selected-plan-summary hidden" role="status" aria-live="polite"></div>
                     <div>
                         <label for="name" class="block mb-2">Business / your name *</label>
                         <input type="text" id="name" name="name" required autocomplete="name">
@@ -43,80 +48,32 @@ permalink: /contact.html
                     </div>
                     <div class="grid md:grid-cols-2 gap-5">
                         <div>
-                            <label for="service" class="block mb-2">Step 1 · Website build or service *</label>
-                            <select id="service" name="service" required>
-                                <option value="" disabled selected>Select a build or service</option>
-                                <option value="one-page">One-Page Launch — $1,970</option>
-                                <option value="local-business">Local Business Site — $3,850</option>
-                                <option value="growth">Growth Website — from $5,950</option>
-                                <option value="website-rebuild">Website rebuild</option>
-                                <option value="seo-foundation">Fixed-scope local SEO foundation</option>
-                                <option value="existing-site-care">Hosting and care for an existing site</option>
-                                <option value="health-check">Health check or audit</option>
-                                <option value="other">Something else</option>
+                            <label for="project-stage" class="block mb-2">Where are you starting? *</label>
+                            <select id="project-stage" name="project_stage" required>
+                                <option value="" disabled selected>Choose the closest fit</option>
+                                <option value="new-business">New business, no website yet</option>
+                                <option value="replace-site">Replace an existing website</option>
+                                <option value="improve-site">Improve an existing website</option>
+                                <option value="care-only">Hosting or care for an existing site</option>
+                                <option value="not-sure">Not sure yet</option>
                             </select>
                         </div>
                         <div>
-                            <label for="budget" class="block mb-2">Likely one-off build budget</label>
-                            <select id="budget" name="budget">
-                                <option value="" selected>Not sure yet</option>
-                                <option>$1,970–$3,000</option>
-                                <option>$3,000–$5,000</option>
-                                <option>$5,000–$8,000</option>
-                                <option>$8,000+</option>
-                            </select>
+                            <label for="business-suburb" class="block mb-2">Business suburb</label>
+                            <input type="text" id="business-suburb" name="business_suburb" autocomplete="address-level2" placeholder="e.g. Bardon">
                         </div>
-                    </div>
-                    <div>
-                        <label for="care-plan" class="block mb-2">Step 2 · Hosting &amp; care after launch *</label>
-                        <select id="care-plan" name="care_plan" required>
-                            <option value="help-me-choose" selected>Help me choose the right plan</option>
-                            <option value="site-care">Site Care — $69/month</option>
-                            <option value="care-insights">Care + Insights — $129/month</option>
-                            <option value="visibility-monitor">Local Visibility Monitor — $229/month</option>
-                            <option value="specialist-hosting">Specialist hosting to be scoped</option>
-                            <option value="not-applicable">Not a new website build</option>
-                        </select>
-                        <p class="body-muted" style="font-size:14px;margin-top:8px;">New Anchor-built websites pair the one-off build with an ongoing hosting and care plan that starts at launch.</p>
-                    </div>
-                    <div class="grid md:grid-cols-2 gap-5">
-                        <div>
-                            <label for="business-suburb" class="block mb-2">Business suburb *</label>
-                            <input type="text" id="business-suburb" name="business_suburb" required autocomplete="address-level2" placeholder="e.g. Red Hill">
-                        </div>
-                        <div>
-                            <label for="website" class="block mb-2">Current website</label>
-                            <input type="url" id="website" name="website" autocomplete="url" placeholder="https://">
-                        </div>
-                    </div>
-                    <div>
-                        <label for="timeline" class="block mb-2">Preferred timing</label>
-                        <select id="timeline" name="timeline">
-                            <option value="Not specified" selected>Not sure yet</option>
-                            <option value="ASAP">As soon as practical</option>
-                            <option value="1-3 months">Within 1–3 months</option>
-                            <option value="3-6 months">Within 3–6 months</option>
-                            <option value="Planning ahead">Planning ahead</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="lead-source" class="block mb-2">How did you find Anchor Web Co?</label>
-                        <select id="lead-source" name="lead_source">
-                            <option value="not-specified" selected>Prefer not to say</option>
-                            <option value="google-search">Google search</option>
-                            <option value="google-maps">Google Maps</option>
-                            <option value="referral">Referral</option>
-                            <option value="local-network">Local group or business network</option>
-                            <option value="social">Social media</option>
-                            <option value="other">Somewhere else</option>
-                        </select>
                     </div>
                     <div>
                         <label for="message" class="block mb-2">What should the website help you achieve? *</label>
-                        <textarea id="message" name="message" required rows="7" placeholder="Tell me about the business, priority services, customer area and what is not working now."></textarea>
+                        <textarea id="message" name="message" required rows="6" placeholder="For example: I am starting an electrical business in Bardon and need a credible site that brings in local quote requests."></textarea>
+                    </div>
+                    <div>
+                        <label for="current-website" class="block mb-2">Current website <span class="body-muted">(optional)</span></label>
+                        <input type="url" id="current-website" name="current_website" autocomplete="url" placeholder="https://">
                     </div>
                     <div class="hidden" aria-hidden="true"><label for="company">Company</label><input id="company" type="text" name="company" tabindex="-1" autocomplete="off"></div>
-                    <button type="submit" class="contact-submit-btn">Request my build + care recommendation</button>
+                    <button type="submit" class="contact-submit-btn">Send my project brief</button>
+                    <p class="form-privacy">You will receive an automatic receipt, then a personal reply from Matt within two business days. Your details are used to respond to this enquiry and are not added to a marketing list. <a href="/privacy.html">Privacy details</a>.</p>
                 </form>
             </div>
             <aside class="space-y-6">
@@ -126,19 +83,14 @@ permalink: /contact.html
                     <p><a href="tel:{{ site.phoneHref }}" class="font-medium underline">{{ site.phoneDisplay }}</a></p>
                     <p style="margin-top:8px;"><a href="mailto:{{ site.email }}" class="font-medium underline">{{ site.email }}</a></p>
                     <p class="body-muted" style="margin-top:8px;">Red Hill, QLD 4059</p>
+                    <p class="body-muted" style="margin-top:16px;">Bachelor of IT (QUT) · Diploma of Software Development · 5+ years at Telstra</p>
                 </div>
                 <div class="content-card">
-                    <p class="pricing-card__label">Useful to include</p>
-                    <ul class="check-list" style="margin-bottom:0;">
-                        <li>Your current site, if there is one</li>
-                        <li>Priority services or products</li>
-                        <li>Main customer suburbs</li>
-                        <li>Examples of sites you like</li>
-                        <li>Preferred hosting and care level</li>
-                        <li>Any deadline or launch constraint</li>
-                    </ul>
+                    <p class="pricing-card__label">Client feedback</p>
+                    <blockquote class="contact-review">“Brilliant on the tech side of things and highly recommended if you want a clean, functional site.”</blockquote>
+                    <p class="body-muted" style="font-size:14px;margin-top:14px;">S Kennedy · Google review</p>
                 </div>
-                <div class="notice">Prefer a self-serve first step? The <a href="/health-check.html" class="underline font-medium">free website health check</a> sends an automated technical snapshot to your email.</div>
+                <div class="notice">Prefer a self-serve first step? The <a href="/website-planner.html" class="underline font-medium">instant website planner</a> recommends a build, care plan and first-year price without asking for your email.</div>
             </aside>
         </div>
     </div>
@@ -149,7 +101,7 @@ permalink: /contact.html
         <div class="prose-narrow" style="max-width:820px;">
             <p class="eyebrow">Before you send</p>
             <h2 class="h2">Common questions.</h2>
-            <details class="step-card"><summary class="step-card__title cursor-pointer">What happens after I enquire?</summary><p class="step-card__body">I review the brief and reply with any questions. If the project is a fit, the next step is a short call or a written scope with the recommended package.</p></details>
+            <details class="step-card"><summary class="step-card__title cursor-pointer">What happens after I enquire?</summary><p class="step-card__body">An automatic email confirms the form arrived. Matt reviews the brief within two business days and replies with any questions, the likely build plus care combination, and the next useful step.</p></details>
             <details class="step-card"><summary class="step-card__title cursor-pointer">How long does a build take?</summary><p class="step-card__body">Most small-business sites take around three to five weeks once the scope, content inputs and start date are confirmed. Larger integrations or delayed feedback extend the timeline.</p></details>
             <details class="step-card" style="border-bottom:1px solid var(--line);"><summary class="step-card__title cursor-pointer">Do you only work with Red Hill businesses?</summary><p class="step-card__body">No. Red Hill and Brisbane’s inner west are the local focus, but suitable projects can be delivered elsewhere using the same direct process.</p></details>
         </div>

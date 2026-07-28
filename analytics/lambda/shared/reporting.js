@@ -1,6 +1,15 @@
 const { cleanPath } = require("./events");
 const { matchesStep, totalEnquiriesFromAggregates } = require("./aggregates");
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function calculateFunnels(events, tenant) {
   return (tenant.funnels || []).map((funnel) => {
     const steps = funnel.steps.map((step, index) => {
@@ -45,7 +54,7 @@ function conversionRateForEntryPages(events) {
   const entryByVisitor = new Map();
   const conversionsByPath = new Map();
   const visitsByPath = new Map();
-  const conversionTypes = new Set(["form-submit-contact", "form-submit-audit", "click-call", "click-whatsapp", "click-email"]);
+  const conversionTypes = new Set(["form-submit-contact", "form-submit-audit", "form-submit-health-check", "click-call", "click-whatsapp", "click-email"]);
 
   for (const event of events) {
     if (event.type === "pageview" && event.visitor && !entryByVisitor.has(event.visitor)) {
@@ -68,22 +77,58 @@ function conversionRateForEntryPages(events) {
   }).sort((a, b) => b.conversions - a.conversions || b.visits - a.visits);
 }
 
+function conversionPriorityFlags(events, tenant) {
+  const flags = [];
+  const funnels = calculateFunnels(events, tenant);
+
+  for (const funnel of funnels) {
+    if (funnel.steps.length < 2) continue;
+    const first = funnel.steps[0];
+    const second = funnel.steps[1];
+    if (first.count >= 10 && second.count / first.count < 0.2) {
+      const rate = Math.round((second.count / first.count) * 100);
+      flags.push(`${funnel.name}: only ${rate}% moved from step 1 to step 2. Review the entry-page promise and primary action.`);
+      continue;
+    }
+
+    if (funnel.steps.length >= 3) {
+      const completion = funnel.steps[2];
+      if (second.count >= 5 && completion.count / second.count < 0.5) {
+        const rate = Math.round((completion.count / second.count) * 100);
+        flags.push(`${funnel.name}: only ${rate}% moved from step 2 to completion. Review form friction, errors and response expectations.`);
+      }
+    }
+  }
+
+  const formErrors = events.filter((event) => /^form-error-/.test(event.type)).length;
+  if (formErrors >= 3) {
+    flags.push(`Forms: ${formErrors} errors were recorded. Check the affected fields and submission endpoint.`);
+  }
+
+  return flags.length
+    ? flags.slice(0, 5)
+    : ["No high-confidence conversion issue crossed the automatic alert thresholds this month."];
+}
+
 function renderMonthlyReport({ tenant, month, events, aggregates }) {
   const totalEnquiries = totalEnquiriesFromAggregates(aggregates);
   const funnels = calculateFunnels(events, tenant);
   const entryPages = conversionRateForEntryPages(events).slice(0, 10);
-  const list = (items) => items.length ? `<ul>${items.map((item) => `<li>${item}</li>`).join("")}</ul>` : "<p>No data yet.</p>";
+  const priorityFlags = conversionPriorityFlags(events, tenant);
+  const list = (items) => items.length ? `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : "<p>No data yet.</p>";
   const bySk = (category) => aggregates
     .filter((item) => item.SK.includes(`#${category}#`))
     .map((item) => `${item.SK.split("#").slice(3).join(" / ")}: ${item.count}`);
 
   return `<!doctype html>
 <html><body style="font-family:Arial,sans-serif;color:#17211b;">
-<h1>${tenant.display_name} analytics report, ${month}</h1>
+<h1>${escapeHtml(tenant.display_name)} analytics report, ${escapeHtml(month)}</h1>
 <p><strong>Total enquiries:</strong> ${totalEnquiries}</p>
 <h2>Enquiries by channel</h2>${list(bySk("enquiries"))}
 <h2>Demand mix</h2>${list([...bySk("service_type"), ...bySk("timeline"), ...bySk("budget"), ...bySk("business_suburb"), ...bySk("lead_source"), ...bySk("business_type")])}
+<h2>Calls to action</h2>${list(bySk("cta"))}
 <h2>Funnels</h2>${list(funnels.map((funnel) => `${funnel.name}: ${funnel.steps.map((step) => `step ${step.index} ${step.count} (${step.drop_off_percent}% drop-off)`).join(", ")}${funnel.worst_field ? `. Worst field: ${funnel.worst_field}` : ""}`))}
+<h2>Automated conversion priorities</h2>${list(priorityFlags)}
 <h2>Top entry pages and conversion rate</h2>${list(entryPages.map((page) => `${page.path}: ${page.conversions}/${page.visits} (${page.conversion_rate}%)`))}
 <h2>Traffic by source and region</h2>${list([...bySk("source"), ...bySk("region")])}<p>Brisbane inner-west traffic is broken out where server-side region data allows it. Search engines hide most query data, so this report complements Google Search Console rather than replacing it.</p>
 <h2>Mobile vs desktop conversion rate</h2>${list(bySk("device"))}
@@ -94,6 +139,7 @@ function renderMonthlyReport({ tenant, month, events, aggregates }) {
 
 module.exports = {
   calculateFunnels,
+  conversionPriorityFlags,
   conversionRateForEntryPages,
   renderMonthlyReport,
   worstAbandonmentField

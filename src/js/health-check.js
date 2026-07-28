@@ -48,6 +48,13 @@
         }
         errorEl.textContent = message;
         errorEl.classList.remove('hidden');
+        window.dispatchEvent(new CustomEvent('anchor:form-error', {
+            detail: {
+                form: 'health-check',
+                field: 'health-check',
+                reason: message || 'health-check-error'
+            }
+        }));
     }
 
     function clearError() {
@@ -251,6 +258,16 @@
             showSuccess(payload && payload.message
                 ? payload.message
                 : 'Success. Your report is being emailed now. Please check your inbox in the next minute.');
+
+            window.dispatchEvent(new CustomEvent('anchor:form-success', {
+                detail: {
+                    form: 'health-check',
+                    submission_id: payload && payload.run_id ? payload.run_id : '',
+                    source_page: window.location.pathname,
+                    cta: 'health-check-form',
+                    website_host: new URL(normalizedUrl).hostname
+                }
+            }));
 
             if (payload && Array.isArray(payload.warnings) && payload.warnings.length > 0) {
                 stopLoadingState(payload.warnings.join(' '));

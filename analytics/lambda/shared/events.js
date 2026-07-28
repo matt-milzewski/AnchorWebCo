@@ -3,6 +3,7 @@ const crypto = require("node:crypto");
 const CONVERSION_EVENTS = new Set([
   "form-submit-contact",
   "form-submit-audit",
+  "form-submit-health-check",
   "click-call",
   "click-whatsapp",
   "click-email"
@@ -10,7 +11,8 @@ const CONVERSION_EVENTS = new Set([
 
 const FORM_EVENTS = new Set([
   "form-submit-contact",
-  "form-submit-audit"
+  "form-submit-audit",
+  "form-submit-health-check"
 ]);
 
 const STANDARD_EVENTS = new Set([
@@ -28,6 +30,10 @@ const STANDARD_EVENTS = new Set([
   "form-start-audit",
   "form-submit-audit",
   "form-error-audit",
+  "form-start-health-check",
+  "form-submit-health-check",
+  "form-error-health-check",
+  "website-plan-complete",
   "field-blur",
   "scroll-depth",
   "web-vitals"
@@ -57,7 +63,16 @@ function eventSk(date = new Date(), id = ulidLike(date)) {
 function aggregateSk(month, category, dimension, value) {
   const parts = ["AGG", month, category];
   if (dimension) parts.push(dimension);
-  if (value !== undefined && value !== null && value !== "") parts.push(String(value).toLowerCase().replace(/\s+/g, "-"));
+  if (value !== undefined && value !== null && value !== "") {
+    const normalized = String(value)
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9._:/@-]+/g, "-")
+      .replace(/-{2,}/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 100);
+    if (normalized) parts.push(normalized);
+  }
   return parts.join("#");
 }
 

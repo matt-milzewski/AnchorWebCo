@@ -31,6 +31,11 @@ resource "aws_dynamodb_table" "health_check_runs" {
     type = "S"
   }
 
+  ttl {
+    attribute_name = "expires_at"
+    enabled        = true
+  }
+
   point_in_time_recovery {
     enabled = true
   }
@@ -226,6 +231,7 @@ resource "aws_lambda_function" "health_check" {
       SES_FROM_EMAIL            = var.enable_ses_email ? var.ses_from_email : ""
       LEAD_NOTIFICATION_EMAIL   = var.enable_ses_email ? var.lead_notification_email : ""
       PAGESPEED_TIMEOUT_MS      = tostring(var.pagespeed_timeout_ms)
+      RUN_RETENTION_DAYS        = tostring(var.run_retention_days)
     }
   }
 

@@ -1,0 +1,31 @@
+[
+  {
+    "name": "Anchor Web Co",
+    "url": "https://www.anchorwebco.com.au/",
+    "corePaths": ["/pricing.html", "/contact.html", "/health-check.html"],
+    "formPath": "/contact.html",
+    "formEndpoint": "https://jp5by1qc4d.execute-api.ap-southeast-2.amazonaws.com/api/forms/anchor-web-co",
+    "formSiteId": "anchor-web-co",
+    "expectedText": "Anchor Web Co"
+  },
+  {
+    "name": "Bannister Communications",
+    "url": "https://www.bannistercommunications.com/",
+    "corePaths": ["/services.html", "/contact.html"],
+    "formPath": "/contact.html",
+    "expectedText": "Bannister Communications"
+  },
+  {
+    "name": "Coastwide Exterior Cleaning",
+    "url": "https://coastwideexteriors.com.au/",
+    "corePaths": ["/services.html", "/contact.html"],
+    "formPath": "/contact.html",
+    "expectedText": "Coastwide Exterior Cleaning"
+  },
+  {
+    "name": "The Royal Hotel Gympie",
+    "url": "https://royalgympie.com.au/",
+    "corePaths": ["/accommodation/", "/contact/"],
+    "expectedText": "Royal Hotel"
+  }
+]

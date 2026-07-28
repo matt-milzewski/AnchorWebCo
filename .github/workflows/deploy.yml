@@ -6,13 +6,17 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: anchor-web-co-production
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -21,6 +25,20 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Validate production runtime configuration
+        env:
+          ANCHOR_FORMS_API_BASE: ${{ vars.ANCHOR_FORMS_API_BASE }}
+          ANCHOR_ANALYTICS_SCRIPT_URL: ${{ vars.ANCHOR_ANALYTICS_SCRIPT_URL }}
+          ANCHOR_ANALYTICS_INGEST_URL: ${{ vars.ANCHOR_ANALYTICS_INGEST_URL }}
+        run: |
+          set -euo pipefail
+          for var in ANCHOR_FORMS_API_BASE ANCHOR_ANALYTICS_SCRIPT_URL ANCHOR_ANALYTICS_INGEST_URL; do
+            if [ -z "${!var}" ]; then
+              echo "Missing required repository variable: $var"
+              exit 1
+            fi
+          done
 
       - name: Configure CMS admin API
         if: ${{ vars.ANCHOR_CMS_API_BASE != '' }}
@@ -49,8 +67,11 @@ jobs:
           ANCHOR_CMS_SITE_ID: anchor-web-co
         run: npm run build
 
+      - name: Verify generated site
+        run: npm test
+
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -99,7 +120,22 @@ jobs:
           echo "Published $FUNCTION_NAME."
 
       - name: Invalidate CloudFront cache
+        id: invalidate
         run: |
-          aws cloudfront create-invalidation \
+          INVALIDATION_ID="$(aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
+            --paths "/*" \
+            --query 'Invalidation.Id' \
+            --output text)"
+          echo "invalidation_id=$INVALIDATION_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for CloudFront invalidation
+        run: |
+          aws cloudfront wait invalidation-completed \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --id "${{ steps.invalidate.outputs.invalidation_id }}"
+
+      - name: Verify production website and forms
+        env:
+          ANCHOR_FORMS_API_BASE: ${{ vars.ANCHOR_FORMS_API_BASE }}
+        run: npm run verify:production

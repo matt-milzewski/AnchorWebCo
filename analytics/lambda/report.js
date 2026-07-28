@@ -5,8 +5,12 @@ const { renderMonthlyReport } = require("./shared/reporting");
 
 const ses = new SESv2Client({});
 
+function previousMonthKey(date = new Date()) {
+  return monthKey(new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() - 1, 1)));
+}
+
 async function handler(event = {}) {
-  const month = event.month || monthKey(new Date());
+  const month = event.month || previousMonthKey(new Date());
   const tenants = await listTenantConfigs(event.client_ids);
   const sent = [];
 
@@ -38,5 +42,6 @@ async function handler(event = {}) {
 }
 
 module.exports = {
-  handler
+  handler,
+  previousMonthKey
 };

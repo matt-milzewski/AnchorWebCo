@@ -49,6 +49,12 @@ variable "runs_table_name" {
   default     = "health_check_runs"
 }
 
+variable "run_retention_days" {
+  description = "Days before raw health-check runs expire from DynamoDB"
+  type        = number
+  default     = 365
+}
+
 variable "rate_limit_table_name" {
   description = "DynamoDB table for per-IP rate limiting"
   type        = string

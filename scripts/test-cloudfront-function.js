@@ -36,7 +36,11 @@ expectRedirect(
 );
 expectRedirect(
   "/free-website-audit-hervey-bay",
-  "https://www.anchorwebco.com.au/free-website-audit-brisbane.html",
+  "https://www.anchorwebco.com.au/health-check.html",
+);
+expectRedirect(
+  "/free-website-audit-brisbane.html",
+  "https://www.anchorwebco.com.au/health-check.html",
 );
 expectRedirect(
   "/blog/local-seo-hervey-bay/",

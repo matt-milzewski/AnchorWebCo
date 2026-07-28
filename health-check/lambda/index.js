@@ -1184,6 +1184,7 @@ async function saveRun(reportPayload, email) {
     const item = {
         run_id: reportPayload.run_id,
         created_at: reportPayload.created_at,
+        expires_at: Math.floor(Date.now() / 1000) + Number(process.env.RUN_RETENTION_DAYS || 365) * 86400,
         website_url: reportPayload.website_url,
         email: email || null,
         overall_score: reportPayload.overall_score,

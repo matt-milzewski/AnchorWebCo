@@ -117,9 +117,26 @@ const pricingHtml = fs.readFileSync(path.join(outputRoot, "pricing.html"), "utf8
 assert.match(pricingHtml, /Step 1 · One-off build/, "pricing.html: build step");
 assert.match(pricingHtml, /Step 2 · Ongoing hosting &amp; care/, "pricing.html: hosting and care step");
 assert.match(pricingHtml, /Every new Anchor-built website is paired with a hosting and care plan/, "pricing.html: connected offer");
+assert.match(pricingHtml, /id="price-calculator"/, "pricing.html: connected price calculator");
+assert.match(pricingHtml, /\$4,540/, "pricing.html: first-year Local Business total");
 
 const contactHtml = fs.readFileSync(path.join(outputRoot, "contact.html"), "utf8");
-assert.match(contactHtml, /name="care_plan"/, "contact.html: separate hosting and care selection");
+assert.match(contactHtml, /name="recommended_package"/, "contact.html: saved build recommendation");
+assert.match(contactHtml, /name="recommended_care"/, "contact.html: saved care recommendation");
+assert.match(contactHtml, /name="current_website"/, "contact.html: legitimate current website field");
+assert.doesNotMatch(contactHtml, /name="(?:budget|timeline|lead_source)"/, "contact.html: high-friction qualification fields removed");
+assert.match(contactHtml, /within two business days/, "contact.html: response expectation");
+assert.match(contactHtml, /href="\/privacy.html"/, "contact.html: privacy notice");
+
+const plannerHtml = fs.readFileSync(path.join(outputRoot, "website-planner.html"), "utf8");
+assert.match(plannerHtml, /No email required/, "website-planner.html: self-serve promise");
+assert.match(plannerHtml, /id="website-planner-form"/, "website-planner.html: planner form");
+
+assert.equal(
+  fs.existsSync(path.join(outputRoot, "free-website-audit-brisbane.html")),
+  false,
+  "Manual audit page must stay retired in favour of the automated health check",
+);
 
 console.log(
   `Verified ${htmlFiles.length} public HTML files with unique metadata, valid JSON-LD, and working internal targets.`,

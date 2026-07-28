@@ -27,6 +27,45 @@ test("assessSubmission flags honeypot spam", () => {
   assert.ok(result.reasons.includes("honeypot-filled"));
 });
 
+test("assessSubmission accepts a legitimate current website", () => {
+  const result = _private.assessSubmission({
+    fields: {
+      name: "Bardon Electrical",
+      email: "owner@example.com",
+      message: "I need a new site.",
+      current_website: "https://example.com",
+      website: "https://legacy-field.example",
+      _startedAt: String(Date.now() - 5000),
+    },
+    site: {
+      autoReplyEnabled: true,
+      allowedOrigins: ["https://www.anchorwebco.com.au"],
+      honeypotFields: ["company", "_gotcha"],
+    },
+    event: { headers: { origin: "https://www.anchorwebco.com.au", "user-agent": "node-test" } },
+  });
+  assert.equal(result.spam, false);
+  assert.deepEqual(result.errors, []);
+});
+
+test("assessSubmission suppresses auto-reply abuse without browser provenance", () => {
+  const result = _private.assessSubmission({
+    fields: {
+      name: "Bot",
+      email: "target@example.com",
+      message: "Send an unsolicited receipt",
+    },
+    site: {
+      autoReplyEnabled: true,
+      allowedOrigins: ["https://www.anchorwebco.com.au"],
+    },
+    event: { headers: { "user-agent": "script" } },
+  });
+  assert.equal(result.spam, true);
+  assert.ok(result.reasons.includes("origin-not-allowed"));
+  assert.ok(result.reasons.includes("missing-start-time"));
+});
+
 test("publicFields removes honeypot and timing fields", () => {
   assert.deepEqual(
     _private.publicFields(
@@ -65,57 +104,37 @@ test("buildEmail includes flexible custom fields", () => {
   assert.equal(email.replyTo, "matt@example.com");
 });
 
-test("buildAnalyticsEvent maps contact demand fields", () => {
-  const event = _private.buildAnalyticsEvent({
-    fields: {
-      service: "Website + SEO",
-      timeline: "1-3 months",
-      budget: "$3,000–$5,000",
-      business_suburb: "Red Hill",
-      lead_source: "google-search",
-      source_page: "/website-care-plans",
-      cta: "cta-quote",
-      analytics_form_type: "contact",
-    },
+test("buildAutoReplyEmail confirms receipt without marketing language", () => {
+  const email = _private.buildAutoReplyEmail({
+    fields: { name: "Alex Morgan", email: "alex@example.com" },
     site: {
-      analytics: {
-        clientId: "anchorwebco",
-        ingestUrl: "https://analytics.example/ingest",
-      },
+      name: "Anchor Web Co",
+      autoReplyResponseWindow: "within two business days",
+      autoReplyPhone: "0439 499 944",
+      autoReplyPlannerUrl: "https://www.anchorwebco.com.au/website-planner.html",
+      autoReplyPricingUrl: "https://www.anchorwebco.com.au/pricing.html",
     },
-    siteId: "anchor-web-co",
-    event: { headers: {} },
   });
 
-  assert.equal(event.url, "https://analytics.example/ingest");
-  assert.equal(event.payload.type, "form-submit-contact");
-  assert.equal(event.payload.properties.service_type, "Website + SEO");
-  assert.equal(event.payload.properties.timeline, "1-3 months");
-  assert.equal(event.payload.properties.budget, "$3,000–$5,000");
-  assert.equal(event.payload.properties.business_suburb, "Red Hill");
-  assert.equal(event.payload.properties.lead_source, "google-search");
-  assert.equal(event.payload.properties.source_page, "/website-care-plans");
-  assert.equal(event.payload.properties.cta, "cta-quote");
+  assert.match(email.subject, /received your Anchor Web Co enquiry/i);
+  assert.match(email.text, /Hi Alex/);
+  assert.match(email.text, /within two business days/);
+  assert.match(email.text, /not been added to a marketing list/i);
+  assert.match(email.html, /instant website planner/i);
 });
 
-test("buildAnalyticsEvent maps audit business type", () => {
-  const event = _private.buildAnalyticsEvent({
-    fields: {
-      business_type: "Builder",
-      source_page: "/free-website-audit-brisbane",
-      analytics_form_type: "audit",
+test("buildHealthPayload exposes the configured form service without personal data", () => {
+  assert.deepEqual(
+    _private.buildHealthPayload("anchor-web-co", {
+      name: "Anchor Web Co",
+      autoReplyEnabled: true,
+      recipientEmail: "private@example.com",
+    }),
+    {
+      ok: true,
+      siteId: "anchor-web-co",
+      siteName: "Anchor Web Co",
+      autoReplyEnabled: true,
     },
-    site: {
-      analytics: {
-        clientId: "anchorwebco",
-        ingestUrl: "https://analytics.example/ingest",
-      },
-    },
-    siteId: "anchor-audit",
-    event: { headers: {} },
-  });
-
-  assert.equal(event.payload.type, "form-submit-audit");
-  assert.equal(event.payload.properties.business_type, "Builder");
-  assert.equal(event.payload.properties.source_page, "/free-website-audit-brisbane");
+  );
 });

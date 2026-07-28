@@ -17,10 +17,15 @@
       { "match": "event", "type": "form-start-contact" },
       { "match": "event", "type": "form-submit-contact" }
     ] },
-    { "name": "Audit", "steps": [
-      { "match": "pageview", "path": "/free-website-audit-brisbane" },
-      { "match": "event", "type": "form-start-audit" },
-      { "match": "event", "type": "form-submit-audit" }
+    { "name": "Health check", "steps": [
+      { "match": "pageview", "path": "/health-check" },
+      { "match": "event", "type": "form-start-health-check" },
+      { "match": "event", "type": "form-submit-health-check" }
+    ] },
+    { "name": "Website planner", "steps": [
+      { "match": "pageview", "path": "/website-planner" },
+      { "match": "event", "type": "website-plan-complete" },
+      { "match": "event", "type": "form-submit-contact" }
     ] },
     { "name": "Care plan", "steps": [
       { "match": "pageview", "path": "/website-care-plans" },

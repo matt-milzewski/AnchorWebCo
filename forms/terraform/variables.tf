@@ -30,19 +30,26 @@ variable "allowed_origins" {
 variable "site_configs" {
   description = "Reusable per-site form routing configuration"
   type = list(object({
-    siteId          = string
-    name            = string
-    recipientEmail  = string
-    allowedOrigins  = list(string)
-    requiredFields  = optional(list(string), ["name", "email", "message"])
-    honeypotFields  = optional(list(string), ["company", "_gotcha", "website"])
-    replyToField    = optional(string, "email")
-    subjectPrefix   = optional(string)
-    subject         = optional(string)
-    fromEmail       = optional(string)
-    spamThreshold   = optional(number, 2)
-    maxLinks        = optional(number, 3)
-    minimumSubmitMs = optional(number, 3000)
+    siteId                  = string
+    name                    = string
+    recipientEmail          = string
+    allowedOrigins          = list(string)
+    requiredFields          = optional(list(string), ["name", "email", "message"])
+    honeypotFields          = optional(list(string), ["company", "_gotcha", "website"])
+    replyToField            = optional(string, "email")
+    subjectPrefix           = optional(string)
+    subject                 = optional(string)
+    fromEmail               = optional(string)
+    spamThreshold           = optional(number, 2)
+    maxLinks                = optional(number, 3)
+    minimumSubmitMs         = optional(number, 3000)
+    autoReplyEnabled        = optional(bool, false)
+    autoReplySubject        = optional(string)
+    autoReplyResponseWindow = optional(string)
+    autoReplyPhone          = optional(string)
+    autoReplyPlannerUrl     = optional(string)
+    autoReplyPricingUrl     = optional(string)
+    autoReplyReplyTo        = optional(string)
   }))
   sensitive = true
   default   = []
@@ -94,6 +101,12 @@ variable "max_payload_bytes" {
   description = "Maximum accepted request payload size"
   type        = number
   default     = 32000
+}
+
+variable "submission_retention_days" {
+  description = "Days before unconverted raw form submissions expire from DynamoDB"
+  type        = number
+  default     = 365
 }
 
 variable "api_rate_limit" {
