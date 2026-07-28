@@ -3,6 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const outputRoot = path.resolve("_site");
+const retiredRegionPattern = /Maryborough|Hervey Bay|Fraser Coast/i;
 
 function walk(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -31,15 +32,27 @@ function resolveLocalPath(urlValue) {
 
 assert.ok(fs.existsSync(outputRoot), "Run npm run build before verifying the output.");
 
-const htmlFiles = walk(outputRoot)
+const outputFiles = walk(outputRoot);
+const htmlFiles = outputFiles
   .filter((file) => file.endsWith(".html"))
   .filter((file) => !file.includes(`${path.sep}admin${path.sep}`));
 
 assert.equal(
-  walk(outputRoot).some((file) => /bh[-_]?lock|bhlocksandsecurity/i.test(path.basename(file))),
+  outputFiles.some((file) => /bh[-_]?lock|bhlocksandsecurity/i.test(path.basename(file))),
   false,
   "Legacy BH Lock assets must not be present in the public build.",
 );
+assert.equal(
+  outputFiles.some((file) => /maryborough|hervey|fraser/i.test(path.basename(file))),
+  false,
+  "Retired regional names must not be present in public asset filenames.",
+);
+
+for (const file of outputFiles.filter((candidate) => /\.(?:css|html|js|json|txt|xml)$/i.test(candidate))) {
+  const content = fs.readFileSync(file, "utf8");
+  const relative = path.relative(outputRoot, file);
+  assert.doesNotMatch(content, retiredRegionPattern, `${relative}: retired regional positioning`);
+}
 
 const titles = new Map();
 
@@ -86,7 +99,7 @@ for (const file of htmlFiles) {
     assert.ok(fs.existsSync(localPath), `${relative}: missing local target ${value}`);
   }
 
-  assert.doesNotMatch(html, /Hervey Bay|Fraser Coast|Sunshine Coast/i, `${relative}: retired regional positioning`);
+  assert.doesNotMatch(html, /Sunshine Coast/i, `${relative}: retired regional positioning`);
   assert.doesNotMatch(html, /BH Lock|bhlocks|bh-lock/i, `${relative}: retired BH Lock portfolio reference`);
   assert.doesNotMatch(
     html,
@@ -98,9 +111,6 @@ for (const file of htmlFiles) {
     /Ongoing care is optional|Optional care starts/i,
     `${relative}: disconnected optional-care positioning`,
   );
-  if (!["index.html", "work.html"].includes(relative)) {
-    assert.doesNotMatch(html, /Maryborough/i, `${relative}: retired regional positioning`);
-  }
 }
 
 const pricingHtml = fs.readFileSync(path.join(outputRoot, "pricing.html"), "utf8");

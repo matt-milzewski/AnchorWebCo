@@ -1,5 +1,6 @@
 const cmsPosts = require("./cmsBlogPosts.json");
 const localPosts = require("./localBlogPosts.js");
+const retiredRegionalContentPattern = /Maryborough|Hervey Bay|Fraser Coast/i;
 
 const legacyRegionalSlugs = new Set([
   "google-ads-hervey-bay",
@@ -17,7 +18,13 @@ const legacyRegionalSlugs = new Set([
   "website-design-guide",
 ]);
 
-module.exports = [...localPosts, ...cmsPosts.filter((post) => !legacyRegionalSlugs.has(post.slug))]
+module.exports = [
+  ...localPosts,
+  ...cmsPosts.filter((post) => (
+    !legacyRegionalSlugs.has(post.slug)
+    && !retiredRegionalContentPattern.test(JSON.stringify(post))
+  )),
+]
   .filter((post) => post.status === "published")
   .map((post) => ({
     ...post,
