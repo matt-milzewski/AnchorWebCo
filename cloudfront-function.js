@@ -26,14 +26,14 @@ function handler(event) {
         };
     }
     
-    // Force HTTPS
-    if (headers['cloudfront-forwarded-proto'] && headers['cloudfront-forwarded-proto'].value === 'http') {
-        return redirect('https://' + host + uri);
-    }
-    
-    // Force www subdomain
+    // Collapse the apex host directly to the HTTPS www canonical in one hop.
     if (host === 'anchorwebco.com.au') {
         return redirect('https://www.anchorwebco.com.au' + uri);
+    }
+
+    // Force HTTPS for requests already using the canonical host.
+    if (headers['cloudfront-forwarded-proto'] && headers['cloudfront-forwarded-proto'].value === 'http') {
+        return redirect('https://' + host + uri);
     }
     
     // Collapse duplicate URLs so crawlers index the canonical variants

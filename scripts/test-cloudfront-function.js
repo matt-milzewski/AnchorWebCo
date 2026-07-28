@@ -60,6 +60,11 @@ expectRedirect(
   "https://www.anchorwebco.com.au/",
   { host: "anchorwebco.com.au" },
 );
+expectRedirect(
+  "/pricing",
+  "https://www.anchorwebco.com.au/pricing",
+  { host: "anchorwebco.com.au", proto: "http" },
+);
 
 const home = context.handler(request("/"));
 assert.equal(home.uri, "/index.html");
