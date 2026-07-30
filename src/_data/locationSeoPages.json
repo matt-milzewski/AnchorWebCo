@@ -1,0 +1,45 @@
+[
+  {
+    "suburb": "Paddington",
+    "postcode": "4064",
+    "fileName": "web-design-paddington-brisbane.html",
+    "url": "/web-design-paddington-brisbane.html",
+    "primaryIntent": "web design Paddington Brisbane",
+    "heroImage": "/img/brisbane-inner-west/paddington-latrobe-terrace.webp",
+    "ctaLocations": ["paddington-hero", "paddington-final"],
+    "trackedLinks": [
+      {"href": "/website-planner.html", "event": "cta-quote", "location": "paddington-hero"},
+      {"href": "/pricing.html", "event": "cta-see-plans", "location": "paddington-hero"},
+      {"href": "/website-planner.html", "event": "cta-quote", "location": "paddington-final"},
+      {"href": "/contact.html", "event": "cta-quote", "location": "paddington-final-contact"}
+    ],
+    "requiredInboundPages": [
+      "index.html",
+      "web-design-brisbane-inner-west.html",
+      "web-design-red-hill.html",
+      "local-seo-brisbane-inner-west.html",
+      "blog/local-seo-brisbane-inner-west/index.html"
+    ]
+  },
+  {
+    "suburb": "Ashgrove",
+    "postcode": "4060",
+    "fileName": "web-design-ashgrove-brisbane.html",
+    "url": "/web-design-ashgrove-brisbane.html",
+    "primaryIntent": "web design Ashgrove Brisbane",
+    "heroImage": "/img/brisbane-inner-west/ashgrove-monoplane-shops.webp",
+    "ctaLocations": ["ashgrove-hero", "ashgrove-final"],
+    "trackedLinks": [
+      {"href": "/website-planner.html", "event": "cta-quote", "location": "ashgrove-hero"},
+      {"href": "/work.html", "event": "cta-see-work", "location": "ashgrove-hero"},
+      {"href": "/website-planner.html", "event": "cta-quote", "location": "ashgrove-final"}
+    ],
+    "requiredInboundPages": [
+      "index.html",
+      "web-design-brisbane-inner-west.html",
+      "web-design-red-hill.html",
+      "local-seo-brisbane-inner-west.html",
+      "blog/local-seo-brisbane-inner-west/index.html"
+    ]
+  }
+]

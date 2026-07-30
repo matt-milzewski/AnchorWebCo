@@ -4,6 +4,7 @@
     --surface: #FAFAF7;
     --surface-alt: #FFFFFF;
     --accent: #38bdf8;
+    --accent-text: #0369A1;
     --muted: #6B7280;
     --line: #E7E5E0;
 
@@ -53,11 +54,11 @@ h6 {
 
 .nav-link:hover,
 .nav-link:focus {
-    color: var(--coast-sky);
+    color: var(--accent-text);
 }
 
 .nav-link.active {
-    color: var(--coast-sky);
+    color: var(--accent-text);
     font-weight: 600;
 }
 
@@ -248,7 +249,7 @@ h6 {
     padding: 0.4rem 0.8rem;
     border-radius: 999px;
     background-color: rgba(56, 189, 248, 0.12);
-    color: var(--coast-sky);
+    color: var(--accent-text);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     font-size: 0.75rem;
@@ -270,7 +271,7 @@ h6 {
 
 .area-support-link {
     margin-top: auto;
-    color: var(--coast-sky);
+    color: var(--accent-text);
     font-weight: 600;
     text-decoration: none;
 }
@@ -329,7 +330,7 @@ h6 {
 
 #mobile-menu nav a:hover,
 #mobile-menu nav a:focus {
-    color: var(--coast-sky);
+    color: var(--accent-text);
 }
 
 #mobile-menu nav a.nav-button {
@@ -422,7 +423,7 @@ label {
 }
 
 .google-reviews-kicker {
-    color: var(--coast-sky);
+    color: var(--accent-text);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     font-size: 0.8rem;
@@ -767,7 +768,7 @@ label {
     letter-spacing: 0.08em;
     font-size: 14px;
     font-weight: 600;
-    color: var(--accent);
+    color: var(--accent-text);
     margin-bottom: 16px;
 }
 
@@ -778,6 +779,10 @@ label {
     line-height: 1.05;
     letter-spacing: -0.02em;
     color: var(--ink);
+}
+
+.display--location {
+    font-size: clamp(46px, 5vw, 70px);
 }
 
 .h2 {
@@ -869,7 +874,7 @@ label {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
     font-size: 14px;
-    color: var(--accent);
+    color: var(--accent-text);
     letter-spacing: 0.08em;
     margin-bottom: 12px;
 }
@@ -938,7 +943,7 @@ label {
 .dropdown-menu a:hover,
 .dropdown-menu a:focus {
     background: var(--surface);
-    color: var(--accent);
+    color: var(--accent-text);
 }
 
 @media print {
@@ -1027,6 +1032,23 @@ label {
     font-size: 14px;
 }
 
+.local-hero__caption a {
+    color: var(--ink);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.local-hero__caption a:hover {
+    color: var(--accent-text);
+}
+
+.local-hero__caption a:focus-visible {
+    border-radius: 2px;
+    outline: 2px solid var(--accent-text);
+    outline-offset: 2px;
+}
+
 .proof-strip {
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
@@ -1081,6 +1103,20 @@ label {
     line-height: 1.25;
 }
 
+.location-card h3 a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--ink) 32%, transparent);
+    text-underline-offset: 4px;
+    transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.location-card h3 a:hover,
+.location-card h3 a:focus-visible {
+    color: var(--ink);
+    text-decoration-color: var(--accent);
+}
+
 .content-card p,
 .location-card p {
     color: var(--muted);
@@ -1097,7 +1133,7 @@ label {
 }
 
 .pricing-card__label {
-    color: var(--accent);
+    color: var(--accent-text);
     font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -1208,14 +1244,14 @@ label {
 .image-credit {
     max-width: 850px;
     margin: 24px auto 0;
-    color: rgba(255,255,255,0.42);
+    color: rgba(255,255,255,0.68);
     font-size: 11px;
     line-height: 1.5;
     text-align: center;
 }
 
 .image-credit a {
-    color: rgba(255,255,255,0.62);
+    color: rgba(255,255,255,0.88);
     text-decoration: underline;
 }
 
@@ -1252,6 +1288,10 @@ label {
 
     .display {
         font-size: clamp(42px, 13vw, 62px);
+    }
+
+    .display--location {
+        font-size: clamp(40px, 11.5vw, 48px);
     }
 }
 
@@ -1380,7 +1420,7 @@ label {
 
 .planner-step {
     margin-bottom: 6px;
-    color: var(--accent);
+    color: var(--accent-text);
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.08em;

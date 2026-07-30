@@ -1,20 +1,20 @@
 <header>
-    <nav class="fixed w-full bg-white z-50 site-nav" style="border-bottom: 1px solid var(--line);">
+    <nav class="fixed w-full bg-white z-50 site-nav" style="border-bottom: 1px solid var(--line);" aria-label="Primary navigation">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <a href="/" class="text-xl font-poppins font-bold brand-lockup" style="color: var(--ink);">
                 <span>Anchor Web Co.</span>
                 <small>Red Hill · Brisbane</small>
             </a>
-            <button id="mobile-menu-button" class="xl:hidden menu-toggle" aria-label="Open navigation" aria-controls="mobile-menu" aria-expanded="false">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button type="button" id="mobile-menu-button" class="xl:hidden menu-toggle" aria-label="Open navigation" aria-controls="mobile-menu" aria-expanded="false">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
             <div class="hidden xl:flex items-center gap-8 text-sm">
                 <a href="/work.html" class="nav-link">Work</a>
                 <div class="has-dropdown">
-                    <button type="button" class="nav-link nav-dropdown-trigger" aria-haspopup="true">Services</button>
-                    <div class="dropdown-menu" role="menu">
+                    <button type="button" class="nav-link nav-dropdown-trigger">Services</button>
+                    <div class="dropdown-menu">
                         <a href="/web-design-brisbane-tradies.html">Websites for Brisbane Trades</a>
                         <a href="/web-design-brisbane-inner-west.html">Web Design — Inner West</a>
                         <a href="/web-design-red-hill.html">Web Design — Red Hill</a>
@@ -34,8 +34,8 @@
         </div>
     </nav>
     <div id="mobile-menu" class="fixed inset-0 z-50 bg-white flex-col items-center justify-center space-y-6 text-xl font-poppins font-bold hidden transition-all duration-300">
-        <button id="mobile-menu-close" class="absolute top-6 right-6 text-4xl" style="color: var(--ink);" aria-label="Close menu">&times;</button>
-        <nav class="flex flex-col items-center space-y-4 mt-12 w-full px-6">
+        <button type="button" id="mobile-menu-close" class="absolute top-6 right-6 text-4xl" style="color: var(--ink);" aria-label="Close menu">&times;</button>
+        <nav class="flex flex-col items-center space-y-4 mt-12 w-full px-6" aria-label="Mobile navigation">
             <a href="/work.html" class="nav-link">Work</a>
             <details class="w-full text-center">
                 <summary class="nav-link cursor-pointer list-none">Services</summary>
