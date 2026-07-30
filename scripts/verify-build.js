@@ -55,6 +55,7 @@ for (const file of outputFiles.filter((candidate) => /\.(?:css|html|js|json|txt|
 }
 
 const titles = new Map();
+const descriptions = new Map();
 
 for (const file of htmlFiles) {
   const html = fs.readFileSync(file, "utf8");
@@ -75,6 +76,19 @@ for (const file of htmlFiles) {
   const title = html.match(/<title>([^<]+)<\/title>/)[1];
   assert.ok(!titles.has(title), `${relative}: duplicate title also used by ${titles.get(title)}`);
   titles.set(title, relative);
+
+  const description = html.match(/<meta name="description" content="([^"]+)">/)[1];
+  assert.ok(!descriptions.has(description), `${relative}: duplicate description also used by ${descriptions.get(description)}`);
+  descriptions.set(description, relative);
+
+  const route = relative.split(path.sep).join("/");
+  const expectedPath = route === "index.html"
+    ? "/"
+    : route.endsWith("/index.html")
+      ? `/${route.slice(0, -10)}`
+      : `/${route}`;
+  const canonical = html.match(/<link rel="canonical" href="([^"]+)">/)[1];
+  assert.equal(canonical, `https://www.anchorwebco.com.au${expectedPath}`, `${relative}: exact canonical`);
 
   for (const match of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
     assert.doesNotThrow(() => JSON.parse(match[1]), `${relative}: invalid JSON-LD`);

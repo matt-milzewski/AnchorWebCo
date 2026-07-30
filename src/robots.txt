@@ -11,6 +11,8 @@ Allow: /contact
 Allow: /health-check
 Allow: /web-design-brisbane-inner-west
 Allow: /web-design-red-hill
+Allow: /web-design-paddington-brisbane
+Allow: /web-design-ashgrove-brisbane
 Allow: /local-seo-brisbane-inner-west
 Allow: /pricing
 Allow: /website-care-plans

@@ -2,7 +2,13 @@
   {
     "name": "Anchor Web Co",
     "url": "https://www.anchorwebco.com.au/",
-    "corePaths": ["/pricing.html", "/contact.html", "/health-check.html"],
+    "corePaths": [
+      "/pricing.html",
+      "/contact.html",
+      "/health-check.html",
+      "/web-design-paddington-brisbane.html",
+      "/web-design-ashgrove-brisbane.html"
+    ],
     "formPath": "/contact.html",
     "formEndpoint": "https://jp5by1qc4d.execute-api.ap-southeast-2.amazonaws.com/api/forms/anchor-web-co",
     "formSiteId": "anchor-web-co",

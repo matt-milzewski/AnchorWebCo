@@ -12,7 +12,7 @@ module.exports = [
     featuredImageHeight: 1200,
     body: `
       <h2>Start with the customers you can serve well</h2>
-      <p>Your website should reflect the places your business genuinely works. If you are based in Red Hill and regularly help customers in Paddington, Bardon, Ashgrove, Kelvin Grove, Milton and Auchenflower, say so clearly and support it with real service information, projects and reviews.</p>
+      <p>Your website should reflect the places your business genuinely works. If you are based in Red Hill and regularly help customers in <a href="/web-design-paddington-brisbane.html">Paddington</a>, Bardon, <a href="/web-design-ashgrove-brisbane.html">Ashgrove</a>, Kelvin Grove, Milton and Auchenflower, say so clearly and support it with real service information, projects and reviews.</p>
       <h2>Fix the site structure before publishing at scale</h2>
       <p>Make sure each core service has a useful page, contact details are consistent, important pages are indexable and the site has clean titles, descriptions, internal links, canonicals and structured data. A large collection of near-duplicate suburb pages will not repair weak foundations.</p>
       <h2>Use one accurate Google Business Profile</h2>

@@ -1,10 +1,12 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const locationSeoPages = require("./locationSeoPages.json");
 
 const publicPages = [
   "index.html",
   "web-design-brisbane-inner-west.html",
   "web-design-red-hill.html",
+  ...locationSeoPages.map((page) => page.fileName),
   "local-seo-brisbane-inner-west.html",
   "pricing.html",
   "website-care-plans.html",

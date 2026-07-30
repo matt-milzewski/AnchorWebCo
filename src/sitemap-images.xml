@@ -6,15 +6,23 @@
     <loc>https://www.anchorwebco.com.au/</loc>
     <image:image>
       <image:loc>https://www.anchorwebco.com.au/img/brisbane-inner-west/red-hill-city-view.webp</image:loc>
-      <image:title>Anchor Web Co. - Brisbane Inner West Web Design</image:title>
     </image:image>
   </url>
 
   <url>
-    <loc>https://www.anchorwebco.com.au/about.html</loc>
+    <loc>https://www.anchorwebco.com.au/web-design-paddington-brisbane.html</loc>
     <image:image>
       <image:loc>https://www.anchorwebco.com.au/img/brisbane-inner-west/paddington-latrobe-terrace.webp</image:loc>
-      <image:title>Paddington and Brisbane Inner West Businesses</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.anchorwebco.com.au/web-design-ashgrove-brisbane.html</loc>
+    <image:image>
+      <image:loc>https://www.anchorwebco.com.au/img/brisbane-inner-west/ashgrove-monoplane-shops.webp</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.anchorwebco.com.au/img/brisbane-inner-west/ashgrove-waterworks-road.webp</image:loc>
     </image:image>
   </url>
 
@@ -22,7 +30,6 @@
     <loc>https://www.anchorwebco.com.au/blog/</loc>
     <image:image>
       <image:loc>https://www.anchorwebco.com.au/img/brisbane-inner-west/red-hill-bookshop.webp</image:loc>
-      <image:title>Red Hill Small Business Website Advice</image:title>
     </image:image>
   </url>
 
@@ -30,7 +37,6 @@
     <loc>https://www.anchorwebco.com.au/contact.html</loc>
     <image:image>
       <image:loc>https://www.anchorwebco.com.au/img/anchor-web-co-brisbane-social.webp</image:loc>
-      <image:title>Contact Anchor Web Co.</image:title>
     </image:image>
   </url>
 
