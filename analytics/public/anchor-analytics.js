@@ -5,6 +5,8 @@
   var clientId = script && script.getAttribute("data-client-id");
   var endpoint = script && (script.getAttribute("data-endpoint") || script.getAttribute("data-ingest-url"));
   var session = {
+    id: null,
+    acquisition: null,
     lastCta: null,
     lastCtaPage: null,
     formStarted: {},
@@ -31,6 +33,36 @@
     return data;
   }
 
+  function randomId() {
+    try {
+      if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+    } catch (_) {}
+    return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 12);
+  }
+
+  function restoreSession() {
+    try {
+      session.id = sessionStorage.getItem("anchorAnalyticsSessionId") || randomId();
+      sessionStorage.setItem("anchorAnalyticsSessionId", session.id);
+      session.acquisition = JSON.parse(sessionStorage.getItem("anchorAnalyticsAcquisition") || "null");
+      if (!session.acquisition) {
+        session.acquisition = {
+          entry_page: path(),
+          initial_referrer: document.referrer || "",
+          utm: utm()
+        };
+        sessionStorage.setItem("anchorAnalyticsAcquisition", JSON.stringify(session.acquisition));
+      }
+    } catch (_) {
+      session.id = randomId();
+      session.acquisition = {
+        entry_page: path(),
+        initial_referrer: document.referrer || "",
+        utm: utm()
+      };
+    }
+  }
+
   function device() {
     var width = window.innerWidth || document.documentElement.clientWidth || 0;
     if (width < 768) return "mobile";
@@ -46,19 +78,25 @@
       properties: Object.assign({
         path: path(),
         source_page: sourcePage(),
+        session_id: session.id,
+        entry_page: session.acquisition && session.acquisition.entry_page || path(),
+        initial_referrer: session.acquisition && session.acquisition.initial_referrer || "",
+        utm: session.acquisition && session.acquisition.utm || {},
         viewport: { width: window.innerWidth || 0, height: window.innerHeight || 0 },
         device: device()
       }, properties || {})
     });
 
     if (navigator.sendBeacon) {
-      var blob = new Blob([payload], { type: "application/json" });
-      if (navigator.sendBeacon(endpoint, blob)) return;
+      // A string is sent as a CORS-safelisted text/plain request. Sending an
+      // application/json Blob forces a preflight that unload-time beacons do
+      // not reliably complete.
+      if (navigator.sendBeacon(endpoint, payload)) return;
     }
 
     fetch(endpoint, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "text/plain;charset=UTF-8" },
       body: payload,
       keepalive: true,
       credentials: "omit"
@@ -199,6 +237,19 @@
       if (!link) return;
       var href = link.getAttribute("href") || "";
       var location = link.getAttribute("data-location") || link.closest("header") && "header" || link.closest("footer") && "footer" || "body";
+      if (href && href.charAt(0) !== "#" && !/^(?:javascript:|tel:|mailto:|sms:)/i.test(href)) {
+        try {
+          var destination = new URL(href, window.location.href);
+          var internal = destination.origin === window.location.origin;
+          send("link-click", {
+            source_page: path(),
+            link_destination: internal ? destination.pathname.replace(/\.html$/, "") || "/" : destination.hostname.replace(/^www\./, "") + destination.pathname,
+            link_text: (link.textContent || link.getAttribute("aria-label") || "").replace(/\s+/g, " ").trim().slice(0, 100),
+            link_location: location,
+            outbound: !internal
+          });
+        } catch (_) {}
+      }
       if (href.indexOf("tel:") === 0) send("click-call", { location: location, source_page: sourcePage() });
       if (href.indexOf("mailto:") === 0) send("click-email", { source_page: sourcePage() });
       if (/wa\.me|whatsapp/i.test(href)) send("click-whatsapp", { source_page: sourcePage() });
@@ -251,11 +302,12 @@
     }, 8000);
   }
 
+  restoreSession();
   restoreCta();
   send("pageview", {
     path: path(),
-    referrer: document.referrer || "",
-    utm: utm(),
+    referrer: session.acquisition.initial_referrer || "",
+    utm: session.acquisition.utm || {},
     viewport: { width: window.innerWidth || 0, height: window.innerHeight || 0 },
     device: device()
   });

@@ -109,6 +109,8 @@ async function verifyAnalytics(homeHtml) {
   );
   const scriptBody = await scriptResponse.text();
   assert.match(scriptBody, /website-plan-complete/, "Analytics script is missing the expected planner event");
+  assert.match(scriptBody, /sendBeacon\(endpoint, payload\)/, "Analytics script is missing the CORS-safe Beacon transport");
+  assert.doesNotMatch(scriptBody, /new Blob\(\[payload\].*application\/json/, "Analytics script still uses the broken JSON Blob Beacon transport");
 
   const ingestResponse = await request(ingestUrl, {
     method: "OPTIONS",
@@ -124,6 +126,13 @@ async function verifyAnalytics(homeHtml) {
     [origin, "*"].includes(ingestResponse.headers.get("access-control-allow-origin")),
     "Analytics ingest CORS origin mismatch",
   );
+
+  assert.match(homeHtml, /<script src="\/js\/posthog-init\.js" defer><\/script>/, "Home page is missing PostHog");
+  const posthogScript = await verifyPublicFile("/js/posthog-init.js", /(?:application|text)\/javascript/i);
+  assert.doesNotMatch(posthogScript, /__ANCHOR_POSTHOG_/, "PostHog runtime configuration was not resolved");
+  assert.match(posthogScript, /cookieless_mode:\s*"always"/, "PostHog is not configured for cookieless collection");
+  assert.match(posthogScript, /person_profiles:\s*"never"/, "PostHog person profiles must remain disabled");
+  assert.match(posthogScript, /blockSelector:\s*"form, \[data-ph-block\]"/, "PostHog session replay is not blocking forms");
 }
 
 async function main() {

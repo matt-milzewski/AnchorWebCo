@@ -1,9 +1,11 @@
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
 const test = require("node:test");
 const { aggregateKeysForEvent, totalEnquiriesFromAggregates } = require("../lambda/shared/aggregates");
 const { tenantPk } = require("../lambda/shared/events");
 const { visitorHash, deriveRegion } = require("../lambda/shared/privacy");
-const { calculateFunnels, conversionPriorityFlags, worstAbandonmentField, renderMonthlyReport } = require("../lambda/shared/reporting");
+const { calculateFunnels, conversionPriorityFlags, linkClickThroughs, worstAbandonmentField, renderMonthlyReport } = require("../lambda/shared/reporting");
 const { previousMonthKey } = require("../lambda/report");
 const { domainAllowed, validateEventPayload } = require("../lambda/shared/validation");
 
@@ -81,6 +83,22 @@ test("aggregate keys count non-form conversions as enquiries", () => {
   assert.ok(keys.includes("AGG#2026-06#enquiries#channel#call"));
 });
 
+test("traffic aggregates count pageviews rather than every interaction", () => {
+  const base = {
+    path: "/pricing",
+    received_at: "2026-07-28T03:00:00.000Z",
+    properties: { session_id: "s1" },
+    device: "mobile",
+    region: "Brisbane inner-west"
+  };
+  const pageviewKeys = aggregateKeysForEvent({ ...base, type: "pageview" }, anchorTenant);
+  const clickKeys = aggregateKeysForEvent({ ...base, type: "link-click", properties: { ...base.properties, source_page: "/pricing", link_destination: "/contact" } }, anchorTenant);
+  assert.ok(pageviewKeys.includes("AGG#2026-07#pageview#path#/pricing"));
+  assert.ok(pageviewKeys.includes("AGG#2026-07#traffic_device#type#mobile"));
+  assert.equal(clickKeys.some((key) => key.includes("#traffic_device#")), false);
+  assert.ok(clickKeys.includes("AGG#2026-07#link_click#/pricing#/contact"));
+});
+
 test("contact demand fields are available to automated reporting", () => {
   const event = {
     type: "form-submit-contact",
@@ -131,6 +149,17 @@ test("funnel calculation computes drop-off and worst abandoned field", () => {
   assert.equal(quote.steps[1].drop_off_percent, 50);
   assert.equal(quote.worst_field, "phone");
   assert.equal(worstAbandonmentField(events, "Quote"), "phone");
+});
+
+test("link click-throughs preserve exact source, destination and location", () => {
+  const links = linkClickThroughs([
+    { type: "link-click", path: "/pricing", visitor: "v1", properties: { session_id: "s1", source_page: "/pricing", link_destination: "/contact", link_location: "body", link_text: "Get a quote" } },
+    { type: "link-click", path: "/pricing", visitor: "v1", properties: { session_id: "s1", source_page: "/pricing", link_destination: "/contact", link_location: "body", link_text: "Get a quote" } },
+    { type: "link-click", path: "/pricing", visitor: "v2", properties: { session_id: "s2", source_page: "/pricing", link_destination: "/contact", link_location: "body", link_text: "Get a quote" } }
+  ]);
+  assert.deepEqual(links.map(({ source, destination, location, clicks, sessions }) => ({ source, destination, location, clicks, sessions })), [
+    { source: "/pricing", destination: "/contact", location: "body", clicks: 3, sessions: 2 }
+  ]);
 });
 
 test("automated conversion priorities flag material funnel drop-off", () => {
@@ -198,6 +227,21 @@ test("monthly report escapes aggregate-derived HTML", () => {
   });
   assert.doesNotMatch(html, /<img src=x/);
   assert.match(html, /&lt;img src=x onerror=alert\(1\)&gt;/);
+});
+
+test("monthly report labels missing pageview data as a tracking failure", () => {
+  const html = renderMonthlyReport({ tenant: anchorTenant, month: "2026-07", events: [], aggregates: [] });
+  assert.match(html, /DATA COLLECTION FAILED/);
+  assert.match(html, /Total enquiries:<\/strong> Unavailable/);
+  assert.doesNotMatch(html, /Total enquiries:<\/strong> 0/);
+});
+
+test("browser tracker uses a CORS-safe beacon and records sessions and link paths", () => {
+  const tracker = fs.readFileSync(path.join(__dirname, "..", "public", "anchor-analytics.js"), "utf8");
+  assert.match(tracker, /sendBeacon\(endpoint, payload\)/);
+  assert.doesNotMatch(tracker, /new Blob\(\[payload\].*application\/json/);
+  assert.match(tracker, /session_id: session\.id/);
+  assert.match(tracker, /send\("link-click"/);
 });
 
 test("onboarding bannister is represented as config only", () => {

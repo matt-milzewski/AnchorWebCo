@@ -17,6 +17,7 @@ const FORM_EVENTS = new Set([
 
 const STANDARD_EVENTS = new Set([
   "pageview",
+  "link-click",
   "cta-quote",
   "cta-see-work",
   "cta-see-plans",
