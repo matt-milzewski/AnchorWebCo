@@ -31,14 +31,24 @@ jobs:
           ANCHOR_FORMS_API_BASE: ${{ vars.ANCHOR_FORMS_API_BASE }}
           ANCHOR_ANALYTICS_SCRIPT_URL: ${{ vars.ANCHOR_ANALYTICS_SCRIPT_URL }}
           ANCHOR_ANALYTICS_INGEST_URL: ${{ vars.ANCHOR_ANALYTICS_INGEST_URL }}
+          ANCHOR_POSTHOG_KEY: ${{ vars.ANCHOR_POSTHOG_KEY }}
+          ANCHOR_POSTHOG_HOST: ${{ vars.ANCHOR_POSTHOG_HOST }}
         run: |
           set -euo pipefail
-          for var in ANCHOR_FORMS_API_BASE ANCHOR_ANALYTICS_SCRIPT_URL ANCHOR_ANALYTICS_INGEST_URL; do
+          for var in ANCHOR_FORMS_API_BASE ANCHOR_ANALYTICS_SCRIPT_URL ANCHOR_ANALYTICS_INGEST_URL ANCHOR_POSTHOG_KEY ANCHOR_POSTHOG_HOST; do
             if [ -z "${!var}" ]; then
               echo "Missing required repository variable: $var"
               exit 1
             fi
           done
+          if [[ "$ANCHOR_POSTHOG_KEY" != phc_* ]]; then
+            echo "ANCHOR_POSTHOG_KEY must be a PostHog project key beginning with phc_."
+            exit 1
+          fi
+          if [ "$ANCHOR_POSTHOG_HOST" != "https://eu.i.posthog.com" ]; then
+            echo "ANCHOR_POSTHOG_HOST must keep analytics data in the configured EU region."
+            exit 1
+          fi
 
       - name: Configure CMS admin API
         if: ${{ vars.ANCHOR_CMS_API_BASE != '' }}
@@ -60,6 +70,13 @@ jobs:
         env:
           ANCHOR_ANALYTICS_SCRIPT_URL: ${{ vars.ANCHOR_ANALYTICS_SCRIPT_URL }}
           ANCHOR_ANALYTICS_INGEST_URL: ${{ vars.ANCHOR_ANALYTICS_INGEST_URL }}
+
+      - name: Configure PostHog
+        run: |
+          node -e "const fs=require('fs'); const p='src/js/posthog-init.js'; let js=fs.readFileSync(p,'utf8'); js=js.replaceAll('__ANCHOR_POSTHOG_KEY__', process.env.ANCHOR_POSTHOG_KEY).replaceAll('__ANCHOR_POSTHOG_HOST__', process.env.ANCHOR_POSTHOG_HOST); fs.writeFileSync(p, js);"
+        env:
+          ANCHOR_POSTHOG_KEY: ${{ vars.ANCHOR_POSTHOG_KEY }}
+          ANCHOR_POSTHOG_HOST: ${{ vars.ANCHOR_POSTHOG_HOST }}
 
       - name: Build site
         env:

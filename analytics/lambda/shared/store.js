@@ -57,28 +57,42 @@ async function incrementAggregate(PK, SK, amount = 1) {
 }
 
 async function queryTenant(clientId, skPrefix) {
-  const result = await client.send(new QueryCommand({
-    TableName: tableName(),
-    KeyConditionExpression: "PK = :pk AND begins_with(SK, :sk)",
-    ExpressionAttributeValues: {
-      ":pk": tenantPk(clientId),
-      ":sk": skPrefix
-    }
-  }));
-  return result.Items || [];
+  const items = [];
+  let ExclusiveStartKey;
+  do {
+    const result = await client.send(new QueryCommand({
+      TableName: tableName(),
+      KeyConditionExpression: "PK = :pk AND begins_with(SK, :sk)",
+      ExpressionAttributeValues: {
+        ":pk": tenantPk(clientId),
+        ":sk": skPrefix
+      },
+      ExclusiveStartKey
+    }));
+    items.push(...(result.Items || []));
+    ExclusiveStartKey = result.LastEvaluatedKey;
+  } while (ExclusiveStartKey);
+  return items;
 }
 
 async function listTenantConfigs(clientIds) {
   if (!clientIds || !clientIds.length) {
-    const registry = await client.send(new QueryCommand({
-      TableName: tableName(),
-      KeyConditionExpression: "PK = :pk AND begins_with(SK, :sk)",
-      ExpressionAttributeValues: {
-        ":pk": "REGISTRY#TENANTS",
-        ":sk": "TENANT#"
-      }
-    }));
-    clientIds = (registry.Items || []).map((item) => item.client_id).filter(Boolean);
+    const registryItems = [];
+    let ExclusiveStartKey;
+    do {
+      const registry = await client.send(new QueryCommand({
+        TableName: tableName(),
+        KeyConditionExpression: "PK = :pk AND begins_with(SK, :sk)",
+        ExpressionAttributeValues: {
+          ":pk": "REGISTRY#TENANTS",
+          ":sk": "TENANT#"
+        },
+        ExclusiveStartKey
+      }));
+      registryItems.push(...(registry.Items || []));
+      ExclusiveStartKey = registry.LastEvaluatedKey;
+    } while (ExclusiveStartKey);
+    clientIds = registryItems.map((item) => item.client_id).filter(Boolean);
   }
 
   const tenants = [];

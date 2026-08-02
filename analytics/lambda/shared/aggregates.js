@@ -12,9 +12,10 @@ function channelForEvent(type) {
 function sourceFor(properties = {}) {
   const utm = properties.utm || {};
   if (utm.source) return String(utm.source).toLowerCase();
-  if (properties.referrer) {
+  const referrer = properties.initial_referrer || properties.referrer;
+  if (referrer) {
     try {
-      return new URL(properties.referrer).hostname.replace(/^www\./, "");
+      return new URL(referrer).hostname.replace(/^www\./, "");
     } catch {
       return "referral";
     }
@@ -28,13 +29,27 @@ function aggregateKeysForEvent(event, tenant) {
   const keys = [];
 
   keys.push(aggregateSk(month, "event", "type", event.type));
-  keys.push(aggregateSk(month, "page", "path", event.path));
-  keys.push(aggregateSk(month, "device", "type", event.device || props.device || "unknown"));
-  keys.push(aggregateSk(month, "region", "name", event.region || "unknown"));
-  keys.push(aggregateSk(month, "source", "name", sourceFor(props)));
+  if (event.type === "pageview") {
+    keys.push(aggregateSk(month, "pageview", "path", event.path));
+    keys.push(aggregateSk(month, "traffic_device", "type", event.device || props.device || "unknown"));
+    keys.push(aggregateSk(month, "traffic_region", "name", event.region || "unknown"));
+    keys.push(aggregateSk(month, "traffic_source", "name", sourceFor(props)));
+  }
+
+  if (event.type === "link-click") {
+    keys.push(aggregateSk(
+      month,
+      "link_click",
+      cleanPath(props.source_page || event.path),
+      props.link_destination || "unknown"
+    ));
+  }
 
   if (CONVERSION_EVENTS.has(event.type)) {
     keys.push(aggregateSk(month, "enquiries", "channel", channelForEvent(event.type)));
+    keys.push(aggregateSk(month, "conversion_device", "type", event.device || props.device || "unknown"));
+    keys.push(aggregateSk(month, "conversion_region", "name", event.region || "unknown"));
+    keys.push(aggregateSk(month, "conversion_source", "name", sourceFor(props)));
   }
 
   if (event.type === "form-submit-contact") {
