@@ -26,6 +26,7 @@
                     <li><a href="/health-check.html" class="text-white hover:text-coast-sky">Website Health Check</a></li>
                     <li><a href="/about.html" class="text-white hover:text-coast-sky">About</a></li>
                     <li><a href="/privacy.html" class="text-white hover:text-coast-sky">Privacy</a></li>
+                    <li><button type="button" id="analytics-settings" class="footer-privacy-button">Analytics settings</button></li>
                     <li><a href="/blog/" class="text-white hover:text-coast-sky">Blog</a></li>
                 </ul>
             </div>
@@ -35,5 +36,15 @@
         <p class="image-credit">Local photography: <a href="https://commons.wikimedia.org/wiki/User:Kgbo" rel="noopener">Kgbo</a> and <a href="https://commons.wikimedia.org/wiki/User:Orderinchaos" rel="noopener">Orderinchaos</a>, under <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license noopener">CC BY-SA 4.0</a> and <a href="https://creativecommons.org/licenses/by-sa/3.0/" rel="license noopener">CC BY-SA 3.0</a>. Images resized and converted to WebP.</p>
     </div>
 </footer>
+<div id="analytics-consent" class="analytics-consent" role="region" aria-labelledby="analytics-consent-title" hidden>
+    <div class="analytics-consent__copy">
+        <strong id="analytics-consent-title">Choose how analytics works</strong>
+        <p>“Use analytics” enables privacy-masked session replay and Google Ads measurement cookies. “Cookieless only” still measures pages and clicks without analytics cookies or replay. Forms and input fields are never recorded. <a href="/privacy.html">Privacy details</a>.</p>
+    </div>
+    <div class="analytics-consent__actions">
+        <button type="button" data-analytics-choice="reject" class="analytics-consent__button analytics-consent__button--secondary">Cookieless only</button>
+        <button type="button" data-analytics-choice="accept" class="analytics-consent__button analytics-consent__button--primary">Use analytics</button>
+    </div>
+</div>
 <script src="__ANCHOR_ANALYTICS_SCRIPT_URL__" data-client-id="anchorwebco" data-endpoint="__ANCHOR_ANALYTICS_INGEST_URL__" defer></script>
 <script src="/js/posthog-init.js" defer></script>

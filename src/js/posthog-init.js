@@ -3,7 +3,63 @@
 
   var token = "__ANCHOR_POSTHOG_KEY__";
   var apiHost = "__ANCHOR_POSTHOG_HOST__";
+  var consentCookie = "anchor_analytics_choice";
+  var consentChoice = readConsentChoice();
+  var posthogClient = null;
   if (!token || token.indexOf("__ANCHOR_") === 0 || !/^https:\/\//.test(apiHost)) return;
+
+  function readConsentChoice() {
+    var match = document.cookie.match(/(?:^|; )anchor_analytics_choice=(accept|reject)(?:;|$)/);
+    return match ? match[1] : "";
+  }
+
+  function saveConsentChoice(choice) {
+    document.cookie = consentCookie + "=" + choice + "; Max-Age=15552000; Path=/; SameSite=Lax; Secure";
+  }
+
+  function setGoogleConsent(choice) {
+    if (typeof window.gtag !== "function") return;
+    var state = choice === "accept" ? "granted" : "denied";
+    window.gtag("consent", "update", {
+      ad_storage: state,
+      analytics_storage: state,
+      ad_user_data: state,
+      ad_personalization: state
+    });
+  }
+
+  function showConsentBanner() {
+    var banner = document.getElementById("analytics-consent");
+    if (banner) banner.hidden = false;
+  }
+
+  function hideConsentBanner() {
+    var banner = document.getElementById("analytics-consent");
+    if (banner) banner.hidden = true;
+  }
+
+  function applyConsentChoice(choice) {
+    consentChoice = choice;
+    saveConsentChoice(choice);
+    hideConsentBanner();
+    setGoogleConsent(choice);
+    if (!posthogClient) return;
+    if (choice === "accept") {
+      posthogClient.opt_in_capturing();
+    } else {
+      posthogClient.opt_out_capturing();
+    }
+  }
+
+  function setupConsentControls() {
+    var accept = document.querySelector('[data-analytics-choice="accept"]');
+    var reject = document.querySelector('[data-analytics-choice="reject"]');
+    var settings = document.getElementById("analytics-settings");
+    if (accept) accept.addEventListener("click", function () { applyConsentChoice("accept"); });
+    if (reject) reject.addEventListener("click", function () { applyConsentChoice("reject"); });
+    if (settings) settings.addEventListener("click", showConsentBanner);
+    if (!consentChoice) showConsentBanner();
+  }
 
   // Minimal form of PostHog's official array loader. Calls made before the
   // library arrives are queued and replayed by array.js.
@@ -35,7 +91,7 @@
     api_host: apiHost,
     ui_host: apiHost.replace(".i.posthog.com", ".posthog.com"),
     defaults: "2026-06-25",
-    cookieless_mode: "always",
+    cookieless_mode: "on_reject",
     person_profiles: "never",
     capture_pageview: true,
     capture_pageleave: true,
@@ -52,6 +108,17 @@
       maskAllInputs: true,
       blockSelector: "form, [data-ph-block]",
       maskTextSelector: ".ph-mask, [data-ph-mask]"
+    },
+    loaded: function (client) {
+      posthogClient = client;
+      var currentStatus = client.get_explicit_consent_status();
+      if (consentChoice === "accept" && currentStatus !== "granted") {
+        client.opt_in_capturing();
+      } else if (consentChoice === "reject" && currentStatus !== "denied") {
+        client.opt_out_capturing();
+      } else if (!consentChoice && currentStatus === "pending") {
+        showConsentBanner();
+      }
     },
     before_send: function (event) {
       if (!event || !event.properties) return event;
@@ -88,4 +155,6 @@
       });
     }
   });
+
+  setupConsentControls();
 })();

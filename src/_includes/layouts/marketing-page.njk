@@ -85,6 +85,16 @@
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      var analyticsConsentGranted = document.cookie.split('; ').some(function (part) {
+        return part === 'anchor_analytics_choice=accept';
+      });
+      gtag('consent', 'default', {
+        ad_storage: analyticsConsentGranted ? 'granted' : 'denied',
+        analytics_storage: analyticsConsentGranted ? 'granted' : 'denied',
+        ad_user_data: analyticsConsentGranted ? 'granted' : 'denied',
+        ad_personalization: analyticsConsentGranted ? 'granted' : 'denied',
+        wait_for_update: 500
+      });
       gtag('js', new Date());
       gtag('config', 'AW-16766129889');
     </script>
