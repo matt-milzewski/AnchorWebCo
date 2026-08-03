@@ -40,4 +40,39 @@
     </image:image>
   </url>
 
+  <url>
+    <loc>https://www.anchorwebco.com.au/web-design-cleaners-brisbane.html</loc>
+    <image:image>
+      <image:loc>https://www.anchorwebco.com.au/img/work-coastwide-home.webp</image:loc>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.anchorwebco.com.au/web-design-electricians-brisbane.html</loc>
+    <image:image>
+      <image:loc>https://www.anchorwebco.com.au/img/brisbane-tradie-electrician.webp</image:loc>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.anchorwebco.com.au/web-design-security-companies-brisbane.html</loc>
+    <image:image>
+      <image:loc>https://www.anchorwebco.com.au/img/Bannister_Logo.webp</image:loc>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.anchorwebco.com.au/work/coastwide-exterior-cleaning-website.html</loc>
+    <image:image>
+      <image:loc>https://www.anchorwebco.com.au/img/work-coastwide-home.webp</image:loc>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.anchorwebco.com.au/work/bannister-communications-website.html</loc>
+    <image:image>
+      <image:loc>https://www.anchorwebco.com.au/img/Bannister_Logo.webp</image:loc>
+    </image:image>
+  </url>
+
 </urlset>

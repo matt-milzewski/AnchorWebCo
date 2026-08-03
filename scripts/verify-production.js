@@ -14,6 +14,18 @@ const requiredPages = [
   "/website-care-plans.html",
   "/website-planner.html",
   "/web-design-brisbane-tradies.html",
+  "/web-design-cleaners-brisbane.html",
+  "/web-design-electricians-brisbane.html",
+  "/web-design-security-companies-brisbane.html",
+  "/web-design-plumbers-brisbane.html",
+  "/work/coastwide-exterior-cleaning-website.html",
+  "/work/bannister-communications-website.html",
+  "/blog/what-should-cleaning-business-website-include/",
+  "/blog/showcase-before-after-cleaning-work/",
+  "/blog/what-should-electrician-website-include/",
+  "/blog/electrician-better-quote-enquiries/",
+  "/blog/what-should-plumbing-website-include/",
+  "/blog/what-should-security-company-website-include/",
   "/work.html",
   "/contact.html",
   "/privacy.html",
@@ -185,6 +197,13 @@ async function main() {
   for (const check of locationChecks) {
     assert.match(sitemap, new RegExp(`<loc>${escapeRegExp(origin)}${check.pathname}</loc>`), `${check.pathname}: standard sitemap entry`);
     assert.match(imageSitemap, new RegExp(`<loc>${escapeRegExp(origin)}${check.pathname}</loc>`), `${check.pathname}: image sitemap page entry`);
+  }
+  for (const pathname of requiredPages.filter((item) => (
+    item.startsWith("/web-design-")
+    || item.startsWith("/work/")
+    || item.startsWith("/blog/")
+  ))) {
+    assert.match(sitemap, new RegExp(`<loc>${escapeRegExp(origin)}${escapeRegExp(pathname)}</loc>`), `${pathname}: standard sitemap entry`);
   }
   assert.match(robots, /Sitemap:\s*https:\/\/www\.anchorwebco\.com\.au\/sitemap\.xml/i, "robots.txt: standard sitemap");
   assert.match(robots, /Sitemap:\s*https:\/\/www\.anchorwebco\.com\.au\/sitemap-images\.xml/i, "robots.txt: image sitemap");

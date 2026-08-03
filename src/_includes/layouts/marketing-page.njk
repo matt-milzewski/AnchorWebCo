@@ -8,6 +8,8 @@
     {% set canonicalUrl = site.url ~ (canonicalPath or page.url) %}
     {% set fullTitle = seoTitle or (title ~ " | " ~ site.name) %}
     {% set socialImage = site.url ~ (ogImage or site.defaultOgImage) %}
+    {% set socialImageWidth = ogImageWidth or 1200 %}
+    {% set socialImageHeight = ogImageHeight or 630 %}
     <link rel="canonical" href="{{ canonicalUrl }}">
     <link rel="icon" type="image/png" sizes="180x180" href="/icons/favicon-180.png">
     <meta property="og:type" content="website">
@@ -17,8 +19,8 @@
     <meta property="og:title" content="{{ fullTitle }}">
     <meta property="og:description" content="{{ description or site.description }}">
     <meta property="og:image" content="{{ socialImage }}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:image:width" content="{{ socialImageWidth }}">
+    <meta property="og:image:height" content="{{ socialImageHeight }}">
     <meta property="og:image:alt" content="Anchor Web Co — web design for Brisbane's inner west">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ fullTitle }}">

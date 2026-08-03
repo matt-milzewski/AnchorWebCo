@@ -14,6 +14,12 @@ const publicPages = [
   "health-check.html",
   "website-planner.html",
   "web-design-brisbane-tradies.html",
+  "web-design-cleaners-brisbane.html",
+  "web-design-electricians-brisbane.html",
+  "web-design-security-companies-brisbane.html",
+  "web-design-plumbers-brisbane.html",
+  "work-coastwide-exterior-cleaning-website.html",
+  "work-bannister-communications-website.html",
   "about.html",
   "contact.html",
   "privacy.html",
@@ -26,7 +32,13 @@ module.exports = function () {
 
     return {
       fileName,
-      url: fileName === "index.html" ? "/" : `/${fileName}`,
+      url: fileName === "index.html"
+        ? "/"
+        : fileName === "work-coastwide-exterior-cleaning-website.html"
+          ? "/work/coastwide-exterior-cleaning-website.html"
+          : fileName === "work-bannister-communications-website.html"
+            ? "/work/bannister-communications-website.html"
+            : `/${fileName}`,
       lastmod: stats.mtime.toISOString(),
     };
   });
