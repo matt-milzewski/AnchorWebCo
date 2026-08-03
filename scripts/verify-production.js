@@ -140,12 +140,15 @@ async function verifyAnalytics(homeHtml) {
   );
 
   assert.match(homeHtml, /<script src="\/js\/posthog-init\.js" defer><\/script>/, "Home page is missing PostHog");
-  assert.match(homeHtml, /id="analytics-consent"/, "Home page is missing the analytics choice banner");
-  assert.match(homeHtml, /id="analytics-settings"/, "Home page is missing the analytics settings control");
-  assert.match(homeHtml, /gtag\('consent', 'default'/, "Google Consent Mode is missing its denied-by-default configuration");
+  assert.doesNotMatch(homeHtml, /id="analytics-consent"/, "Home page still contains the analytics banner");
+  assert.match(homeHtml, /id="analytics-settings"[^>]*>Limit analytics<\/button>/, "Home page is missing the analytics limit control");
+  assert.match(homeHtml, /gtag\('consent', 'default'/, "Google Consent Mode is missing");
+  assert.match(homeHtml, /anchor_analytics_choice=reject/, "Google Consent Mode does not respect the analytics limit preference");
+  assert.match(homeHtml, /analyticsLimited \? 'denied' : 'granted'/, "Google Consent Mode is not enabled by default with an opt-out");
   const posthogScript = await verifyPublicFile("/js/posthog-init.js", /(?:application|text)\/javascript/i);
   assert.doesNotMatch(posthogScript, /__ANCHOR_POSTHOG_/, "PostHog runtime configuration was not resolved");
   assert.match(posthogScript, /cookieless_mode:\s*"on_reject"/, "PostHog is not configured for consent-aware cookieless collection");
+  assert.match(posthogScript, /readConsentChoice\(\) \|\| "accept"/, "PostHog is not enabled by default");
   assert.match(posthogScript, /person_profiles:\s*"never"/, "PostHog person profiles must remain disabled");
   assert.match(posthogScript, /blockSelector:\s*"form, \[data-ph-block\]"/, "PostHog session replay is not blocking forms");
   assert.match(posthogScript, /get_explicit_consent_status/, "PostHog does not check for an explicit analytics choice");

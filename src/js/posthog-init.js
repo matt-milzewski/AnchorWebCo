@@ -4,7 +4,7 @@
   var token = "__ANCHOR_POSTHOG_KEY__";
   var apiHost = "__ANCHOR_POSTHOG_HOST__";
   var consentCookie = "anchor_analytics_choice";
-  var consentChoice = readConsentChoice();
+  var consentChoice = readConsentChoice() || "accept";
   var posthogClient = null;
   if (!token || token.indexOf("__ANCHOR_") === 0 || !/^https:\/\//.test(apiHost)) return;
 
@@ -28,37 +28,36 @@
     });
   }
 
-  function showConsentBanner() {
-    var banner = document.getElementById("analytics-consent");
-    if (banner) banner.hidden = false;
-  }
-
-  function hideConsentBanner() {
-    var banner = document.getElementById("analytics-consent");
-    if (banner) banner.hidden = true;
+  function updateSettingsControl() {
+    var settings = document.getElementById("analytics-settings");
+    if (!settings) return;
+    var fullAnalyticsEnabled = consentChoice === "accept";
+    settings.textContent = fullAnalyticsEnabled ? "Limit analytics" : "Enable full analytics";
+    settings.setAttribute("aria-pressed", fullAnalyticsEnabled ? "true" : "false");
   }
 
   function applyConsentChoice(choice) {
     consentChoice = choice;
     saveConsentChoice(choice);
-    hideConsentBanner();
     setGoogleConsent(choice);
-    if (!posthogClient) return;
-    if (choice === "accept") {
-      posthogClient.opt_in_capturing();
-    } else {
-      posthogClient.opt_out_capturing();
+    updateSettingsControl();
+    if (posthogClient) {
+      if (choice === "accept") {
+        posthogClient.opt_in_capturing();
+      } else {
+        posthogClient.opt_out_capturing();
+      }
     }
   }
 
-  function setupConsentControls() {
-    var accept = document.querySelector('[data-analytics-choice="accept"]');
-    var reject = document.querySelector('[data-analytics-choice="reject"]');
+  function setupAnalyticsControl() {
     var settings = document.getElementById("analytics-settings");
-    if (accept) accept.addEventListener("click", function () { applyConsentChoice("accept"); });
-    if (reject) reject.addEventListener("click", function () { applyConsentChoice("reject"); });
-    if (settings) settings.addEventListener("click", showConsentBanner);
-    if (!consentChoice) showConsentBanner();
+    updateSettingsControl();
+    if (settings) {
+      settings.addEventListener("click", function () {
+        applyConsentChoice(consentChoice === "accept" ? "reject" : "accept");
+      });
+    }
   }
 
   // Minimal form of PostHog's official array loader. Calls made before the
@@ -116,8 +115,6 @@
         client.opt_in_capturing();
       } else if (consentChoice === "reject" && currentStatus !== "denied") {
         client.opt_out_capturing();
-      } else if (!consentChoice && currentStatus === "pending") {
-        showConsentBanner();
       }
     },
     before_send: function (event) {
@@ -156,5 +153,5 @@
     }
   });
 
-  setupConsentControls();
+  setupAnalyticsControl();
 })();

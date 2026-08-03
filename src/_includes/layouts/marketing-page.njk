@@ -87,15 +87,14 @@
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      var analyticsConsentGranted = document.cookie.split('; ').some(function (part) {
-        return part === 'anchor_analytics_choice=accept';
+      var analyticsLimited = document.cookie.split('; ').some(function (part) {
+        return part === 'anchor_analytics_choice=reject';
       });
       gtag('consent', 'default', {
-        ad_storage: analyticsConsentGranted ? 'granted' : 'denied',
-        analytics_storage: analyticsConsentGranted ? 'granted' : 'denied',
-        ad_user_data: analyticsConsentGranted ? 'granted' : 'denied',
-        ad_personalization: analyticsConsentGranted ? 'granted' : 'denied',
-        wait_for_update: 500
+        ad_storage: analyticsLimited ? 'denied' : 'granted',
+        analytics_storage: analyticsLimited ? 'denied' : 'granted',
+        ad_user_data: analyticsLimited ? 'denied' : 'granted',
+        ad_personalization: analyticsLimited ? 'denied' : 'granted'
       });
       gtag('js', new Date());
       gtag('config', 'AW-16766129889');

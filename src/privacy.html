@@ -8,7 +8,7 @@ permalink: /privacy.html
 <section class="section-pad local-hero">
     <div class="container">
         <div class="prose-narrow" style="max-width:860px;">
-            <p class="eyebrow">Privacy · Updated 2 August 2026</p>
+            <p class="eyebrow">Privacy · Updated 3 August 2026</p>
             <h1 class="display" style="margin-bottom:24px;">Your information is used to provide the service you asked for.</h1>
             <p class="body-muted" style="font-size:20px;max-width:62ch;">This notice explains the information Anchor Web Co collects through this website, why it is used and how to ask a question or request access or deletion.</p>
         </div>
@@ -24,7 +24,7 @@ permalink: /privacy.html
             <p>When you request a website health check, the service collects the website URL and email address you enter, the resulting technical checks and scores, and service diagnostics needed to generate and send the report.</p>
 
             <p>The website records limited usage information including pages viewed, referral and campaign parameters, links and calls to action clicked, form starts and confirmed submissions, broad device and viewport information, approximate region where available, and web-performance measurements. The first-party analytics system uses a rotating pseudonymous visitor identifier rather than asking for your identity.</p>
-            <p>PostHog analytics is also used to understand landing pages, navigation paths, heatmaps and, when you choose “Use analytics”, session replays. PostHog is paused until you make a choice. “Cookieless only” measures pages and interactions with a privacy-preserving daily server hash and does not enable replay or store an analytics identifier in your browser. “Use analytics” stores a first-party analytics identifier and enables replay. Form areas and all input values are blocked from session recording, URLs are reduced to their path before custom processing, and Anchor Web Co does not create PostHog person profiles.</p>
+            <p>PostHog analytics is used by default to understand landing pages, navigation paths, heatmaps and privacy-masked session replays. Form areas are blocked from session recording, all input values are masked, URLs are reduced to their path before custom processing, and Anchor Web Co does not create PostHog person profiles. You can use “Limit analytics” in the website footer to stop future replay and analytics-cookie use. Limited analytics measures pages and interactions without storing a PostHog analytics identifier in your browser.</p>
 
             <h2>How the information is used</h2>
             <ul>
@@ -37,7 +37,7 @@ permalink: /privacy.html
             <p>A project enquiry or health-check request does not add you to a marketing list. If an optional marketing service is introduced later, it will require a separate, clear choice and include an unsubscribe option.</p>
 
             <h2>Services that process information</h2>
-            <p>Anchor Web Co uses Amazon Web Services for website hosting, form processing, storage, email delivery and first-party analytics. PostHog Cloud in the European Union processes cookieless website analytics or, with your choice, privacy-masked session replays. Google Ads measurement is loaded with advertising and analytics storage denied by default and may use browser storage or cookies only when you choose “Use analytics”. Google Fonts is requested to display the site typography.</p>
+            <p>Anchor Web Co uses Amazon Web Services for website hosting, form processing, storage, email delivery and first-party analytics. PostHog Cloud in the European Union processes website analytics and privacy-masked session replays. Google Ads measurement may use browser storage or cookies for campaign and conversion measurement. Selecting “Limit analytics” in the website footer changes Google advertising and analytics storage to denied and places PostHog in cookieless mode. Google Fonts is requested to display the site typography.</p>
             <p>Information is not sold. It may be disclosed to service providers only where needed to operate the website and respond to your request, or where disclosure is required by law.</p>
 
             <h2>Retention and security</h2>
@@ -45,7 +45,7 @@ permalink: /privacy.html
             <p>Reasonable technical controls include encrypted AWS storage, restricted service permissions, HTTPS delivery, rate limiting and spam filtering. No internet service can guarantee absolute security.</p>
 
             <h2>Your choices</h2>
-            <p>A necessary first-party preference cookie remembers whether you selected “Use analytics” or “Cookieless only” for six months. It contains only that choice. You can change it at any time using “Analytics settings” in the website footer. Changing to “Cookieless only” stops future replay and analytics-cookie use.</p>
+            <p>Full analytics is enabled by default. You can select “Limit analytics” in the website footer at any time. A necessary first-party preference cookie then remembers your choice for six months and contains only that setting. The same footer control can re-enable full analytics later.</p>
             <p>You can ask what personal information is held about you, request a correction or deletion where appropriate, or raise a privacy question by emailing <a href="mailto:{{ site.email }}">{{ site.email }}</a>. Include enough detail to identify the relevant enquiry without sending sensitive information.</p>
 
             <h2>Contact</h2>
