@@ -26,6 +26,8 @@ jobs:
       AWS_REGION_VALUE: ${{ secrets.AWS_REGION }}
       FORMS_API_BASE: ${{ vars.ANCHOR_FORMS_API_BASE }}
       CLOUDFRONT_ORIGIN: ${{ inputs.cloudfront_origin || 'https://dl4dzzrd6411l.cloudfront.net' }}
+      PRIMARY_ORIGIN: https://havenhomesco.com.au
+      WWW_ORIGIN: https://www.havenhomesco.com.au
 
     steps:
       - name: Validate source configuration
@@ -75,12 +77,14 @@ jobs:
           fi
 
           config="$(jq -cn \
-            --arg origin "$CLOUDFRONT_ORIGIN" \
+            --arg cloudfront_origin "$CLOUDFRONT_ORIGIN" \
+            --arg primary_origin "$PRIMARY_ORIGIN" \
+            --arg www_origin "$WWW_ORIGIN" \
             '{
               siteId: "haven-homes-co",
               name: "Haven Homes Co.",
               recipientEmail: "mattmilzewski@gmail.com",
-              allowedOrigins: [$origin],
+              allowedOrigins: [$primary_origin, $www_origin, $cloudfront_origin],
               requiredFields: ["name", "address", "phone", "email", "service"],
               honeypotFields: ["company", "_gotcha", "website"],
               replyToField: "email",
@@ -109,7 +113,7 @@ jobs:
             echo "- AWS deployment secrets copied from Anchor Web Co."
             echo "- Shared form API variable configured."
             if [ -n "$CLOUDFRONT_ORIGIN" ]; then
-              echo "- Haven form configuration registered for $CLOUDFRONT_ORIGIN."
+              echo "- Haven form configuration registered for $PRIMARY_ORIGIN, $WWW_ORIGIN and $CLOUDFRONT_ORIGIN."
               echo "- Anchor forms deployment dispatched."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
