@@ -83,7 +83,7 @@ jobs:
             '{
               siteId: "haven-homes-co",
               name: "Haven Homes Co.",
-              recipientEmail: "mattmilzewski@gmail.com",
+              recipientEmail: "cassandrawarat@gmail.com",
               allowedOrigins: [$primary_origin, $www_origin, $cloudfront_origin],
               requiredFields: ["name", "address", "phone", "email", "service"],
               honeypotFields: ["company", "_gotcha", "website"],
