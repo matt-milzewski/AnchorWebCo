@@ -76,11 +76,9 @@ jobs:
             --arg cloudfront_origin "$CLOUDFRONT_ORIGIN" \
             --arg primary_origin "$PRIMARY_ORIGIN" \
             --arg www_origin "$WWW_ORIGIN" \
-            --arg recipient_email "$HAVEN_RECIPIENT_EMAIL" \
             '{
               siteId: "haven-homes-co",
               name: "Haven Homes Co.",
-              recipientEmail: $recipient_email,
               allowedOrigins: [$primary_origin, $www_origin, $cloudfront_origin],
               requiredFields: ["name", "address", "phone", "email", "service"],
               honeypotFields: ["company", "_gotcha", "website"],
@@ -98,6 +96,8 @@ jobs:
           gh variable set HAVEN_FORM_SITE_CONFIG_JSON \
             --repo "matt-milzewski/AnchorWebCo" \
             --body "$config"
+          printf '%s' "$HAVEN_RECIPIENT_EMAIL" | gh secret set HAVEN_RECIPIENT_EMAIL \
+            --repo "matt-milzewski/AnchorWebCo"
 
           gh workflow run deploy-forms.yml \
             --repo "matt-milzewski/AnchorWebCo" \

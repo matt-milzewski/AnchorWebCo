@@ -37,41 +37,27 @@ jobs:
 
       - name: Validate required secrets
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEPLOY_ROLE_ARN: ${{ vars.AWS_FORMS_DEPLOY_ROLE_ARN }}
           AWS_REGION: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
           FORM_SITE_CONFIGS_JSON: ${{ secrets.FORM_SITE_CONFIGS_JSON }}
+          HAVEN_RECIPIENT_EMAIL: ${{ secrets.HAVEN_RECIPIENT_EMAIL }}
         run: |
           missing=0
-          for var in AWS_REGION FORM_SITE_CONFIGS_JSON; do
+          for var in AWS_DEPLOY_ROLE_ARN AWS_REGION FORM_SITE_CONFIGS_JSON HAVEN_RECIPIENT_EMAIL; do
             if [ -z "${!var}" ]; then
               echo "Missing required secret: $var"
               missing=1
             fi
           done
-          if [ -z "$AWS_DEPLOY_ROLE_ARN" ] && { [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; }; then
-            echo "Configure AWS_FORMS_DEPLOY_ROLE_ARN or the temporary bootstrap AWS secrets."
-            missing=1
-          fi
           if [ "$missing" -ne 0 ]; then
             exit 1
           fi
 
       - name: Configure AWS credentials with GitHub OIDC
-        if: ${{ vars.AWS_FORMS_DEPLOY_ROLE_ARN != '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.AWS_FORMS_DEPLOY_ROLE_ARN }}
           role-session-name: anchor-forms-${{ github.run_id }}
-          aws-region: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
-
-      - name: Configure bootstrap AWS credentials
-        if: ${{ vars.AWS_FORMS_DEPLOY_ROLE_ARN == '' }}
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
 
       - name: Set up Node.js
@@ -171,6 +157,7 @@ jobs:
         env:
           FORM_SITE_CONFIGS_JSON: ${{ secrets.FORM_SITE_CONFIGS_JSON }}
           HAVEN_FORM_SITE_CONFIG_JSON: ${{ vars.HAVEN_FORM_SITE_CONFIG_JSON }}
+          HAVEN_RECIPIENT_EMAIL: ${{ secrets.HAVEN_RECIPIENT_EMAIL }}
           TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
           TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
           FORM_SITE_CONFIG_OUTPUT: ${{ github.workspace }}/forms/terraform/site_configs.auto.tfvars.json

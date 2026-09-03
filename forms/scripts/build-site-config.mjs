@@ -9,6 +9,7 @@ const extras = Array.isArray(parsedExtra) ? parsedExtra : [parsedExtra];
 const extraIds = new Set(extras.map((site) => site.siteId));
 const sites = base.filter((site) => !extraIds.has(site.siteId)).concat(extras);
 const turnstileEnabled = Boolean(process.env.TURNSTILE_SITE_KEY && process.env.TURNSTILE_SECRET_KEY);
+const havenRecipientEmail = String(process.env.HAVEN_RECIPIENT_EMAIL || "").trim();
 
 const anchorAllowedFields = [
   "name", "email", "phone", "project_stage", "business_suburb", "message", "current_website",
@@ -37,6 +38,7 @@ for (const site of sites) {
   }
   if (site.siteId === "haven-homes-co") {
     Object.assign(site, {
+      recipientEmail: havenRecipientEmail || site.recipientEmail,
       allowedFields: havenAllowedFields,
       turnstileRequired: turnstileEnabled,
       turnstileAction: "contact_submit",
@@ -47,6 +49,7 @@ for (const site of sites) {
   if (site.autoReplyEnabled && !turnstileEnabled) {
     site.autoReplyEnabled = false;
   }
+  if (!site.recipientEmail) throw new Error("Missing recipient email for " + site.siteId + ".");
 }
 
 const allowedOrigins = [...new Set(sites.flatMap((site) => Array.isArray(site.allowedOrigins) ? site.allowedOrigins : []))];

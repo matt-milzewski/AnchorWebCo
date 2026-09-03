@@ -92,19 +92,10 @@ jobs:
         run: npm test
 
       - name: Configure AWS credentials with GitHub OIDC
-        if: ${{ vars.AWS_SITE_DEPLOY_ROLE_ARN != '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.AWS_SITE_DEPLOY_ROLE_ARN }}
           role-session-name: anchor-site-${{ github.run_id }}
-          aws-region: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
-
-      - name: Configure bootstrap AWS credentials
-        if: ${{ vars.AWS_SITE_DEPLOY_ROLE_ARN == '' }}
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
 
       - name: Deploy to S3

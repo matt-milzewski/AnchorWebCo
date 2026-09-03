@@ -71,7 +71,7 @@ Recipient addresses and the Turnstile secret belong in GitHub Actions secrets, n
 - `deploy.yml` publishes Anchor and injects the forms API, dashboard configuration, and public Turnstile key.
 - `bootstrap-haven-homes.yml` writes Haven's non-secret repository variables and site config without copying AWS credentials.
 
-The workflows prefer `AWS_DEPLOY_ROLE_ARN`/`AWS_FORMS_DEPLOY_ROLE_ARN` and retain the original Anchor AWS secrets only as a one-time bootstrap fallback. Production deployment requires `FORM_SITE_CONFIGS_JSON`, `HAVEN_RECIPIENT_EMAIL`, and, to enable the challenge, `TURNSTILE_SITE_KEY` plus `TURNSTILE_SECRET_KEY`.
+Production deployments require the repository-scoped `AWS_DEPLOY_ROLE_ARN`/`AWS_FORMS_DEPLOY_ROLE_ARN`; long-lived AWS repository keys are removed after bootstrap. Deployment also requires `FORM_SITE_CONFIGS_JSON`, encrypted `HAVEN_RECIPIENT_EMAIL`, and, to enable the challenge, `TURNSTILE_SITE_KEY` plus `TURNSTILE_SECRET_KEY`.
 
 ## Local verification
 
