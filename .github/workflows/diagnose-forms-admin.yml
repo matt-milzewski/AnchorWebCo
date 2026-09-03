@@ -1,0 +1,28 @@
+name: Diagnose Forms Dashboard
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials with GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_FORMS_DEPLOY_ROLE_ARN }}
+          role-session-name: anchor-forms-diagnose-${{ github.run_id }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Show reporting errors
+        run: |
+          set -euo pipefail
+          aws logs tail /aws/lambda/anchor-forms-prod-admin \
+            --since 2h \
+            --format short \
+            | grep -E 'forms_admin_failed|ERROR|AccessDenied|ValidationException' \
+            | tail -50
