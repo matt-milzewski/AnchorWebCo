@@ -52,7 +52,7 @@ Resources:
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
-                token.actions.githubusercontent.com:sub: repo:matt-milzewski/haven-homes-co:ref:refs/heads/main
+                token.actions.githubusercontent.com:sub: repo:matt-milzewski@94414080/haven-homes-co@1313723144:ref:refs/heads/main
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/PowerUserAccess
 Outputs:
