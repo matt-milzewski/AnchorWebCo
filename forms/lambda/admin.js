@@ -71,11 +71,12 @@ function safeItem(item) {
   return safe;
 }
 
-async function queryRecent({ siteId, limit = 50, cursor, status, since }) {
-  const names = { "#pk": "allKey", "#at": "submittedAt" };
+function buildRecentQuery({ siteId, limit = 50, cursor, status, since }) {
+  const names = { "#pk": "allKey" };
   const values = { ":pk": "ALL" };
   let keyCondition = "#pk = :pk";
   if (since) {
+    names["#at"] = "submittedAt";
     keyCondition += " AND #at >= :since";
     values[":since"] = since;
   }
@@ -101,6 +102,11 @@ async function queryRecent({ siteId, limit = 50, cursor, status, since }) {
     input.ExpressionAttributeValues[":status"] = status;
   }
   if (filters.length) input.FilterExpression = filters.join(" AND ");
+  return input;
+}
+
+async function queryRecent(options) {
+  const input = buildRecentQuery(options);
   const result = await dynamo.send(new QueryCommand(input));
   return {
     items: (result.Items || []).map(safeItem),
@@ -176,4 +182,4 @@ exports.handler = async function handler(event) {
   }
 };
 
-exports._private = { decodeCursor, encodeCursor, maskEmail, publicConfig, safeItem };
+exports._private = { buildRecentQuery, decodeCursor, encodeCursor, maskEmail, publicConfig, safeItem };

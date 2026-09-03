@@ -18,3 +18,13 @@ test("dashboard cursors fail closed when malformed", () => {
   const value = { siteId: "anchor", submittedAt: "2026-01-01T00:00:00.000Z" };
   assert.deepEqual(_private.decodeCursor(_private.encodeCursor(value)), value);
 });
+
+test("recent query declares only expression aliases it uses", () => {
+  const unfiltered = _private.buildRecentQuery({ limit: 50 });
+  assert.deepEqual(unfiltered.ExpressionAttributeNames, { "#pk": "allKey" });
+  assert.equal(unfiltered.KeyConditionExpression, "#pk = :pk");
+
+  const filtered = _private.buildRecentQuery({ since: "2026-09-01T00:00:00.000Z" });
+  assert.equal(filtered.ExpressionAttributeNames["#at"], "submittedAt");
+  assert.match(filtered.KeyConditionExpression, /#at >= :since/);
+});
