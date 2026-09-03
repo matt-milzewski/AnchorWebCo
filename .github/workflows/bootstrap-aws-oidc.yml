@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   bootstrap:
@@ -21,7 +22,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Configure AWS credentials with GitHub OIDC
+        if: ${{ vars.AWS_FORMS_DEPLOY_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_FORMS_DEPLOY_ROLE_ARN }}
+          role-session-name: anchor-identity-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+
       - name: Configure one-time bootstrap credentials
+        if: ${{ vars.AWS_FORMS_DEPLOY_ROLE_ARN == '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -68,8 +78,24 @@ jobs:
             gh variable set TURNSTILE_SITE_KEY --repo matt-milzewski/haven-homes-co --body "${{ vars.TURNSTILE_SITE_KEY }}"
           fi
 
-      - name: Remove copied Haven AWS keys
+      - name: Move Haven recipient into an encrypted secret
+        env:
+          HAVEN_CONFIG: ${{ vars.HAVEN_FORM_SITE_CONFIG_JSON }}
         run: |
+          set -euo pipefail
+          if [ -n "$HAVEN_CONFIG" ]; then
+            recipient="$(jq -r '.recipientEmail // empty' <<<"$HAVEN_CONFIG")"
+            if [ -n "$recipient" ]; then
+              printf '%s' "$recipient" | gh secret set HAVEN_RECIPIENT_EMAIL --repo matt-milzewski/AnchorWebCo
+              sanitised="$(jq -c 'del(.recipientEmail)' <<<"$HAVEN_CONFIG")"
+              gh variable set HAVEN_FORM_SITE_CONFIG_JSON --repo matt-milzewski/AnchorWebCo --body "$sanitised"
+            fi
+          fi
+
+      - name: Remove long-lived AWS repository keys
+        run: |
+          gh secret delete AWS_ACCESS_KEY_ID --repo matt-milzewski/AnchorWebCo || true
+          gh secret delete AWS_SECRET_ACCESS_KEY --repo matt-milzewski/AnchorWebCo || true
           gh secret delete AWS_ACCESS_KEY_ID --repo matt-milzewski/haven-homes-co || true
           gh secret delete AWS_SECRET_ACCESS_KEY --repo matt-milzewski/haven-homes-co || true
 

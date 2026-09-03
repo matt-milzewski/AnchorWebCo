@@ -96,7 +96,11 @@ async function verifyFormsApi() {
   const payload = await response.json();
   assert.equal(payload.ok, true, "Forms API did not report a healthy configuration");
   assert.equal(payload.siteId, "anchor-web-co", "Forms API returned the wrong site configuration");
-  assert.equal(payload.autoReplyEnabled, true, "Forms API auto-reply is not enabled");
+  assert.equal(
+    payload.autoReplyEnabled,
+    payload.challengeRequired,
+    "Forms API auto-reply must stay disabled until the server challenge is active",
+  );
 }
 
 async function verifyAnalytics(homeHtml) {
