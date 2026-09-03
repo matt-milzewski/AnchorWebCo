@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Repository-scoped GitHub OIDC deployment roles for Anchor Web Co.
+Parameters:
+  GithubOidcProviderArn:
+    Type: String
+Resources:
+  AnchorSiteRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: anchor-web-co-github-site
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GithubOidcProviderArn
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: repo:matt-milzewski/AnchorWebCo:ref:refs/heads/main
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/PowerUserAccess
+  AnchorFormsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: anchor-web-co-github-forms
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GithubOidcProviderArn
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: repo:matt-milzewski/AnchorWebCo:ref:refs/heads/main
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+  HavenSiteRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: haven-homes-co-github-site
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GithubOidcProviderArn
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: repo:matt-milzewski/haven-homes-co:ref:refs/heads/main
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/PowerUserAccess
+Outputs:
+  AnchorSiteRoleArn:
+    Value: !GetAtt AnchorSiteRole.Arn
+  AnchorFormsRoleArn:
+    Value: !GetAtt AnchorFormsRole.Arn
+  HavenSiteRoleArn:
+    Value: !GetAtt HavenSiteRole.Arn

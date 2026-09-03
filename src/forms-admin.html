@@ -1,0 +1,71 @@
+---
+permalink: /forms-admin.html
+eleventyExcludeFromCollections: true
+---
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Forms dashboard | Anchor Web Co.</title>
+  <style>
+    :root{color-scheme:light;--ink:#17211b;--muted:#66736b;--paper:#f4f1e9;--card:#fff;--line:#d9ded9;--green:#285b46;--red:#a63732;--amber:#8a5a00}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}
+    header{background:var(--ink);color:white;padding:22px 0}.wrap{width:min(1180px,calc(100% - 32px));margin:auto}
+    header .wrap,.toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px}h1{font-size:24px;margin:0}h2{font-size:18px;margin:0 0 16px}
+    main{padding:32px 0 64px}.panel,.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 5px 18px rgba(23,33,27,.05)}
+    .panel{padding:22px;margin-bottom:22px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin:18px 0 24px}
+    .card{padding:18px}.metric{font-size:30px;font-weight:750;margin-top:6px}.label,.muted{color:var(--muted);font-size:13px}
+    button,select{font:inherit}button{border:0;border-radius:9px;padding:10px 15px;background:var(--green);color:white;cursor:pointer}button.secondary{background:white;color:var(--ink);border:1px solid var(--line)}
+    button:disabled{opacity:.55;cursor:wait}.filters{display:flex;gap:10px;flex-wrap:wrap}select{padding:9px;border:1px solid var(--line);border-radius:8px;background:white}
+    .table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:850px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}
+    th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}.status{display:inline-block;padding:4px 8px;border-radius:99px;background:#eef2ee;font-size:12px}
+    .status.delivered{background:#dff2e8;color:var(--green)}.status.spam,.status.bounced,.status.complained,.status.delivery_failed{background:#fae3e1;color:var(--red)}
+    .status.delivery_delayed{background:#fff0cc;color:var(--amber)}.hidden{display:none!important}.error{color:var(--red)}.empty{padding:28px;text-align:center;color:var(--muted)}
+    dialog{width:min(720px,calc(100% - 32px));border:0;border-radius:14px;padding:0;box-shadow:0 24px 70px rgba(0,0,0,.28)}dialog::backdrop{background:rgba(0,0,0,.45)}
+    .dialog-body{padding:24px}.field-grid{display:grid;grid-template-columns:150px 1fr;gap:8px 16px}.field-grid dt{color:var(--muted)}.field-grid dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+    @media(max-width:650px){header .wrap,.toolbar{align-items:flex-start;flex-direction:column}.field-grid{grid-template-columns:1fr}.field-grid dd{margin-bottom:10px}}
+  </style>
+</head>
+<body>
+  <header><div class="wrap"><div><div class="muted" style="color:#b9c3bd">Anchor Web Co.</div><h1>Forms dashboard</h1></div><button id="sign-out" class="secondary hidden">Sign out</button></div></header>
+  <main class="wrap">
+    <section id="login-panel" class="panel">
+      <h2>Private reporting</h2>
+      <p>This dashboard contains customer enquiry details. Sign in with your Anchor administrator account and authenticator code.</p>
+      <button id="sign-in">Sign in securely</button>
+      <p id="login-error" class="error" role="alert"></p>
+    </section>
+    <div id="dashboard" class="hidden">
+      <div class="toolbar"><div><h2>Last 30 days</h2><p class="muted" id="updated"></p></div><button id="refresh" class="secondary">Refresh</button></div>
+      <section id="summary-cards" class="cards" aria-label="Submission totals"></section>
+      <section class="panel">
+        <h2>Managed forms</h2>
+        <div id="site-cards" class="cards"></div>
+      </section>
+      <section class="panel">
+        <div class="toolbar">
+          <h2>Recent submissions</h2>
+          <div class="filters">
+            <select id="site-filter" aria-label="Filter by site"><option value="">All sites</option></select>
+            <select id="status-filter" aria-label="Filter by status">
+              <option value="">All statuses</option><option>delivered</option><option>ses_accepted</option>
+              <option>delivery_delayed</option><option>delivery_failed</option><option>bounced</option>
+              <option>complained</option><option>spam</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Received</th><th>Business</th><th>Status</th><th>Contact</th><th>Message</th><th></th></tr></thead><tbody id="submissions"></tbody></table>
+          <div id="empty" class="empty hidden">No submissions match these filters.</div>
+        </div>
+        <button id="load-more" class="secondary hidden" style="margin-top:16px">Load more</button>
+      </section>
+    </div>
+  </main>
+  <dialog id="detail-dialog"><div class="dialog-body"><div class="toolbar"><h2>Submission details</h2><button id="close-detail" class="secondary">Close</button></div><dl id="detail-fields" class="field-grid"></dl></div></dialog>
+  <script>window.ANCHOR_FORMS_API_BASE = window.ANCHOR_FORMS_API_BASE || "";</script>
+  <script src="/js/forms-admin.js" defer></script>
+</body>
+</html>

@@ -7,3 +7,7 @@ analytics/outputs.json
 monitor-output/
 .DS_Store
 .claude/
+forms/terraform/.terraform/
+forms/terraform/site_configs.auto.tfvars.json
+forms/terraform/tfplan
+forms/terraform/zz_backend_override.tf

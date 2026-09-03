@@ -1,6 +1,11 @@
 name: Deploy Forms Infrastructure
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "forms/**"
+      - ".github/workflows/deploy-forms.yml"
   workflow_dispatch:
     inputs:
       terraform_action:
@@ -17,13 +22,14 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
     env:
       TERRAFORM_DIR: forms/terraform
       LAMBDA_DIR: forms/lambda
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_REGION: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
       TF_IN_AUTOMATION: "true"
       TF_INPUT: "false"
-      TF_VAR_aws_region: ${{ secrets.AWS_REGION }}
+      TF_VAR_aws_region: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
 
     steps:
       - name: Checkout repository
@@ -33,26 +39,40 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_DEPLOY_ROLE_ARN: ${{ vars.AWS_FORMS_DEPLOY_ROLE_ARN }}
+          AWS_REGION: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
           FORM_SITE_CONFIGS_JSON: ${{ secrets.FORM_SITE_CONFIGS_JSON }}
         run: |
           missing=0
-          for var in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION FORM_SITE_CONFIGS_JSON; do
+          for var in AWS_REGION FORM_SITE_CONFIGS_JSON; do
             if [ -z "${!var}" ]; then
               echo "Missing required secret: $var"
               missing=1
             fi
           done
+          if [ -z "$AWS_DEPLOY_ROLE_ARN" ] && { [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; }; then
+            echo "Configure AWS_FORMS_DEPLOY_ROLE_ARN or the temporary bootstrap AWS secrets."
+            missing=1
+          fi
           if [ "$missing" -ne 0 ]; then
             exit 1
           fi
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials with GitHub OIDC
+        if: ${{ vars.AWS_FORMS_DEPLOY_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_FORMS_DEPLOY_ROLE_ARN }}
+          role-session-name: anchor-forms-${{ github.run_id }}
+          aws-region: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
+
+      - name: Configure bootstrap AWS credentials
+        if: ${{ vars.AWS_FORMS_DEPLOY_ROLE_ARN == '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -65,7 +85,7 @@ jobs:
 
       - name: Run Lambda checks
         working-directory: ${{ env.LAMBDA_DIR }}
-        run: npm test
+        run: npm run lint && npm test
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
@@ -106,6 +126,10 @@ jobs:
             --bucket "$STATE_BUCKET" \
             --server-side-encryption-configuration '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}'
 
+          aws s3api put-public-access-block \
+            --bucket "$STATE_BUCKET" \
+            --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+
           if aws dynamodb describe-table --table-name "$LOCK_TABLE" >/dev/null 2>&1; then
             echo "Terraform lock table exists: $LOCK_TABLE"
           else
@@ -134,7 +158,7 @@ jobs:
           terraform init -reconfigure \
             -backend-config="bucket=${{ steps.backend.outputs.state_bucket }}" \
             -backend-config="key=${{ steps.backend.outputs.state_key }}" \
-            -backend-config="region=${{ secrets.AWS_REGION }}" \
+            -backend-config="region=${{ vars.AWS_REGION || secrets.AWS_REGION }}" \
             -backend-config="dynamodb_table=${{ steps.backend.outputs.lock_table }}" \
             -backend-config="encrypt=true"
 
@@ -147,20 +171,29 @@ jobs:
         env:
           FORM_SITE_CONFIGS_JSON: ${{ secrets.FORM_SITE_CONFIGS_JSON }}
           HAVEN_FORM_SITE_CONFIG_JSON: ${{ vars.HAVEN_FORM_SITE_CONFIG_JSON }}
-          ANCHOR_ANALYTICS_INGEST_URL: ${{ vars.ANCHOR_ANALYTICS_INGEST_URL }}
+          TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
+          TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
+          FORM_SITE_CONFIG_OUTPUT: ${{ github.workspace }}/forms/terraform/site_configs.auto.tfvars.json
         run: |
-          node -e "const fs=require('fs'); let sites=JSON.parse(process.env.FORM_SITE_CONFIGS_JSON); const extraRaw=(process.env.HAVEN_FORM_SITE_CONFIG_JSON || '').trim(); if (extraRaw) { const parsed=JSON.parse(extraRaw); const extras=Array.isArray(parsed) ? parsed : [parsed]; const ids=new Set(extras.map((site) => site.siteId)); sites=sites.filter((site) => !ids.has(site.siteId)).concat(extras); } const ingest=process.env.ANCHOR_ANALYTICS_INGEST_URL || ''; for (const site of sites) { if (site.siteId === 'anchor-web-co') { site.honeypotFields=['company','_gotcha']; site.autoReplyEnabled=true; site.autoReplySubject='We received your Anchor Web Co enquiry'; site.autoReplyResponseWindow='within two business days'; site.autoReplyPhone='0439 499 944'; site.autoReplyPlannerUrl='https://www.anchorwebco.com.au/website-planner.html'; site.autoReplyPricingUrl='https://www.anchorwebco.com.au/pricing.html'; if (ingest) site.analytics = { ...(site.analytics || {}), clientId: 'anchorwebco', ingestUrl: ingest }; } } const allowed_origins=[...new Set(sites.flatMap((site) => Array.isArray(site.allowedOrigins) ? site.allowedOrigins : []))]; fs.writeFileSync('site_configs.auto.tfvars.json', JSON.stringify({ site_configs: sites, allowed_origins }, null, 2));"
+          node ../scripts/build-site-config.mjs
 
       - name: Terraform plan
         working-directory: ${{ env.TERRAFORM_DIR }}
         run: terraform plan -out=tfplan
 
       - name: Terraform apply
-        if: ${{ github.event.inputs.terraform_action == 'apply' }}
+        if: ${{ github.event_name == 'push' || github.event.inputs.terraform_action == 'apply' }}
         working-directory: ${{ env.TERRAFORM_DIR }}
         run: terraform apply -auto-approve tfplan
 
+      - name: Backfill reporting indexes
+        if: ${{ github.event_name == 'push' || github.event.inputs.terraform_action == 'apply' }}
+        working-directory: ${{ env.LAMBDA_DIR }}
+        env:
+          FORM_SUBMISSIONS_TABLE: anchor_form_submissions
+        run: node scripts/backfill-submissions.js
+
       - name: Show outputs
-        if: ${{ github.event.inputs.terraform_action == 'apply' }}
+        if: ${{ github.event_name == 'push' || github.event.inputs.terraform_action == 'apply' }}
         working-directory: ${{ env.TERRAFORM_DIR }}
         run: terraform output

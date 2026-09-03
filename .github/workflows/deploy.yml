@@ -13,6 +13,9 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     
     steps:
       - name: Checkout code
@@ -60,9 +63,10 @@ jobs:
       - name: Configure forms API
         if: ${{ vars.ANCHOR_FORMS_API_BASE != '' }}
         run: |
-          node -e "const fs=require('fs'); const p='src/_includes/layouts/marketing-page.njk'; let html=fs.readFileSync(p,'utf8'); html=html.replace('window.ANCHOR_FORMS_API_BASE = window.ANCHOR_FORMS_API_BASE || \"\";', 'window.ANCHOR_FORMS_API_BASE = \"' + process.env.ANCHOR_FORMS_API_BASE + '\";'); fs.writeFileSync(p, html);"
+          node -e "const fs=require('fs'); for (const p of ['src/_includes/layouts/marketing-page.njk','src/forms-admin.html']) { let html=fs.readFileSync(p,'utf8'); html=html.replace('window.ANCHOR_FORMS_API_BASE = window.ANCHOR_FORMS_API_BASE || \"\";', 'window.ANCHOR_FORMS_API_BASE = \"' + process.env.ANCHOR_FORMS_API_BASE + '\";'); if (process.env.TURNSTILE_SITE_KEY) html=html.replace('window.ANCHOR_TURNSTILE_SITE_KEY = window.ANCHOR_TURNSTILE_SITE_KEY || \"\";', 'window.ANCHOR_TURNSTILE_SITE_KEY = \"' + process.env.TURNSTILE_SITE_KEY + '\";'); fs.writeFileSync(p, html); }"
         env:
           ANCHOR_FORMS_API_BASE: ${{ vars.ANCHOR_FORMS_API_BASE }}
+          TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
 
       - name: Configure analytics
         run: |
@@ -87,12 +91,21 @@ jobs:
       - name: Verify generated site
         run: npm test
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials with GitHub OIDC
+        if: ${{ vars.AWS_SITE_DEPLOY_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_SITE_DEPLOY_ROLE_ARN }}
+          role-session-name: anchor-site-${{ github.run_id }}
+          aws-region: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
+
+      - name: Configure bootstrap AWS credentials
+        if: ${{ vars.AWS_SITE_DEPLOY_ROLE_ARN == '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
 
       - name: Deploy to S3
         run: |

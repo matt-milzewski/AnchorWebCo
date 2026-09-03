@@ -7,7 +7,7 @@
   "license": "MIT",
   "type": "commonjs",
   "scripts": {
-    "lint": "node --check index.js",
+    "lint": "node --check index.js && node --check admin.js && node --check events.js && node --check scripts/backfill-submissions.js",
     "test": "node --test test/*.test.js"
   },
   "dependencies": {

@@ -118,6 +118,38 @@ if (contactForm) {
         startedAtField.value = String(Date.now());
     }
 
+    const idempotencyField = document.getElementById('form-idempotency-key');
+    const turnstileTokenField = document.getElementById('form-turnstile-token');
+    const turnstileContainer = document.getElementById('form-turnstile');
+    const turnstileSiteKey = String(window.ANCHOR_TURNSTILE_SITE_KEY || '').trim();
+    let turnstileWidgetId;
+
+    function newIdempotencyKey() {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+            return window.crypto.randomUUID();
+        }
+        return 'form_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    }
+
+    if (idempotencyField) idempotencyField.value = newIdempotencyKey();
+
+    if (turnstileSiteKey && turnstileContainer) {
+        const challengeScript = document.createElement('script');
+        challengeScript.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        challengeScript.async = true;
+        challengeScript.defer = true;
+        challengeScript.addEventListener('load', function () {
+            turnstileWidgetId = window.turnstile.render(turnstileContainer, {
+                sitekey: turnstileSiteKey,
+                action: 'contact_submit',
+                callback: function (token) { turnstileTokenField.value = token; },
+                'expired-callback': function () { turnstileTokenField.value = ''; },
+                'error-callback': function () { turnstileTokenField.value = ''; }
+            });
+        });
+        document.head.appendChild(challengeScript);
+    }
+
     const query = new URLSearchParams(window.location.search);
     const requestedPackage = query.get('package') || '';
     const requestedCare = query.get('care') || '';
@@ -188,6 +220,12 @@ if (contactForm) {
             return;
         }
 
+        if (turnstileSiteKey && !turnstileTokenField.value) {
+            reportContactError('challenge', 'challenge-incomplete');
+            showToast('Please complete the anti-spam check before sending.', 'error');
+            return;
+        }
+
         // Show loading state
         const submitButton = contactForm.querySelector('button[type="submit"]');
         const originalText = submitButton.textContent;
@@ -219,8 +257,8 @@ if (contactForm) {
                     body: JSON.stringify(formDataObj)
                 });
 
-                if (response.ok) {
-                    const responseData = await response.json().catch(() => ({}));
+                const responseData = await response.json().catch(() => ({}));
+                if (response.ok && responseData.accepted === true && responseData.submissionId) {
                     window.dispatchEvent(new CustomEvent('anchor:form-success', {
                         detail: {
                             form: 'contact',
@@ -251,13 +289,23 @@ if (contactForm) {
                         redirectToThankYou();
                     }
                 } else {
-                    const data = await response.json().catch(() => ({}));
-                    throw new Error(data.error || 'Failed to send message');
+                    const submissionError = new Error(responseData.error || 'Your enquiry could not be verified. Please try again.');
+                    // Keep the key for pending/5xx delivery states so a retry can
+                    // resume the same durable submission instead of emailing twice.
+                    submissionError.rotateIdempotency = response.status < 500 && !responseData.pending;
+                    throw submissionError;
                 }
             } catch (error) {
                 reportContactError('endpoint', 'submission-failed');
                 showToast(error.message || 'Error sending message. Please call or email instead.', 'error');
                 console.error('Form submission error:', error);
+                if (turnstileTokenField) turnstileTokenField.value = '';
+                if (idempotencyField && error.rotateIdempotency) {
+                    idempotencyField.value = newIdempotencyKey();
+                }
+                if (window.turnstile && turnstileWidgetId !== undefined) {
+                    window.turnstile.reset(turnstileWidgetId);
+                }
                 resetSubmitButton();
             }
         }

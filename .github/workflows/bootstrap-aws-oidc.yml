@@ -1,0 +1,79 @@
+name: Bootstrap repository-scoped AWS access
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - infrastructure/github-oidc-roles.yml
+      - .github/workflows/bootstrap-aws-oidc.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
+      GH_TOKEN: ${{ secrets.CMS_GITHUB_TOKEN }}
+      STACK_NAME: anchor-github-oidc
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure one-time bootstrap credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Ensure GitHub identity provider
+        id: provider
+        run: |
+          set -euo pipefail
+          account_id="$(aws sts get-caller-identity --query Account --output text)"
+          provider_arn="arn:aws:iam::${account_id}:oidc-provider/token.actions.githubusercontent.com"
+          if ! aws iam get-open-id-connect-provider --open-id-connect-provider-arn "$provider_arn" >/dev/null 2>&1; then
+            aws iam create-open-id-connect-provider \
+              --url https://token.actions.githubusercontent.com \
+              --client-id-list sts.amazonaws.com \
+              --thumbprint-list 6938fd4d98bab03faadb97b34396831e3780aea1 >/dev/null
+          fi
+          echo "arn=$provider_arn" >> "$GITHUB_OUTPUT"
+
+      - name: Create repository-scoped roles
+        run: |
+          aws cloudformation deploy \
+            --template-file infrastructure/github-oidc-roles.yml \
+            --stack-name "$STACK_NAME" \
+            --parameter-overrides GithubOidcProviderArn="${{ steps.provider.outputs.arn }}" \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --no-fail-on-empty-changeset
+
+      - name: Configure repository role variables
+        run: |
+          set -euo pipefail
+          read_output() { aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query "Stacks[0].Outputs[?OutputKey=='$1'].OutputValue" --output text; }
+          anchor_site_role="$(read_output AnchorSiteRoleArn)"
+          anchor_forms_role="$(read_output AnchorFormsRoleArn)"
+          haven_site_role="$(read_output HavenSiteRoleArn)"
+          gh variable set AWS_SITE_DEPLOY_ROLE_ARN --repo matt-milzewski/AnchorWebCo --body "$anchor_site_role"
+          gh variable set AWS_FORMS_DEPLOY_ROLE_ARN --repo matt-milzewski/AnchorWebCo --body "$anchor_forms_role"
+          gh variable set HAVEN_AWS_DEPLOY_ROLE_ARN --repo matt-milzewski/AnchorWebCo --body "$haven_site_role"
+          gh variable set AWS_DEPLOY_ROLE_ARN --repo matt-milzewski/haven-homes-co --body "$haven_site_role"
+          gh variable set AWS_REGION --repo matt-milzewski/AnchorWebCo --body "$AWS_REGION"
+          gh variable set AWS_REGION --repo matt-milzewski/haven-homes-co --body "$AWS_REGION"
+          if [ -n "${{ vars.TURNSTILE_SITE_KEY }}" ]; then
+            gh variable set TURNSTILE_SITE_KEY --repo matt-milzewski/haven-homes-co --body "${{ vars.TURNSTILE_SITE_KEY }}"
+          fi
+
+      - name: Remove copied Haven AWS keys
+        run: |
+          gh secret delete AWS_ACCESS_KEY_ID --repo matt-milzewski/haven-homes-co || true
+          gh secret delete AWS_SECRET_ACCESS_KEY --repo matt-milzewski/haven-homes-co || true
+
+      - name: Summary
+        run: |
+          echo "## AWS identity uplift complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "Anchor site, Anchor forms and Haven now use separate branch-scoped GitHub OIDC roles." >> "$GITHUB_STEP_SUMMARY"

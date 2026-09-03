@@ -25,6 +25,8 @@ permalink: /contact.html
                 <form id="contact-form" class="space-y-5" data-analytics-form="contact">
                     <input type="hidden" name="_subject" value="New project enquiry from Anchor Web Co.">
                     <input type="hidden" name="_startedAt" id="form-started-at" value="">
+                    <input type="hidden" name="_idempotencyKey" id="form-idempotency-key" value="">
+                    <input type="hidden" name="_turnstileToken" id="form-turnstile-token" value="">
                     <input type="hidden" name="analytics_form_type" value="contact">
                     <input type="hidden" name="source_page" value="/contact.html">
                     <input type="hidden" name="cta" value="contact-form">
@@ -72,6 +74,7 @@ permalink: /contact.html
                         <input type="url" id="current-website" name="current_website" autocomplete="url" placeholder="https://">
                     </div>
                     <div class="hidden" aria-hidden="true"><label for="company">Company</label><input id="company" type="text" name="company" tabindex="-1" autocomplete="off"></div>
+                    <div id="form-turnstile" aria-label="Anti-spam verification"></div>
                     <button type="submit" class="contact-submit-btn">Send my project brief</button>
                     <p class="form-privacy">You will receive an automatic receipt, then a personal reply from Matt within two business days. Your details are used to respond to this enquiry and are not added to a marketing list. <a href="/privacy.html">Privacy details</a>.</p>
                 </form>

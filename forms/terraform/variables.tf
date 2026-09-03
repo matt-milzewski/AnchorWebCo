@@ -30,26 +30,32 @@ variable "allowed_origins" {
 variable "site_configs" {
   description = "Reusable per-site form routing configuration"
   type = list(object({
-    siteId                  = string
-    name                    = string
-    recipientEmail          = string
-    allowedOrigins          = list(string)
-    requiredFields          = optional(list(string), ["name", "email", "message"])
-    honeypotFields          = optional(list(string), ["company", "_gotcha", "website"])
-    replyToField            = optional(string, "email")
-    subjectPrefix           = optional(string)
-    subject                 = optional(string)
-    fromEmail               = optional(string)
-    spamThreshold           = optional(number, 2)
-    maxLinks                = optional(number, 3)
-    minimumSubmitMs         = optional(number, 3000)
-    autoReplyEnabled        = optional(bool, false)
-    autoReplySubject        = optional(string)
-    autoReplyResponseWindow = optional(string)
-    autoReplyPhone          = optional(string)
-    autoReplyPlannerUrl     = optional(string)
-    autoReplyPricingUrl     = optional(string)
-    autoReplyReplyTo        = optional(string)
+    siteId                          = string
+    name                            = string
+    recipientEmail                  = string
+    allowedOrigins                  = list(string)
+    requiredFields                  = optional(list(string), ["name", "email", "message"])
+    honeypotFields                  = optional(list(string), ["company", "_gotcha", "website"])
+    replyToField                    = optional(string, "email")
+    subjectPrefix                   = optional(string)
+    subject                         = optional(string)
+    fromEmail                       = optional(string)
+    spamThreshold                   = optional(number, 2)
+    maxLinks                        = optional(number, 3)
+    minimumSubmitMs                 = optional(number, 3000)
+    autoReplyEnabled                = optional(bool, false)
+    autoReplySubject                = optional(string)
+    autoReplyResponseWindow         = optional(string)
+    autoReplyPhone                  = optional(string)
+    autoReplyPlannerUrl             = optional(string)
+    autoReplyPricingUrl             = optional(string)
+    autoReplyReplyTo                = optional(string)
+    allowedFields                   = optional(list(string), [])
+    fieldMaxLengths                 = optional(map(number), {})
+    turnstileRequired               = optional(bool, false)
+    turnstileAction                 = optional(string, "contact_submit")
+    turnstileHostnames              = optional(list(string), [])
+    destinationRateLimitMaxRequests = optional(number, 3)
   }))
   sensitive = true
   default   = []
@@ -59,6 +65,19 @@ variable "sites_config_parameter_name" {
   description = "SSM SecureString parameter containing form site routing configuration"
   type        = string
   default     = "/anchor-forms/sites-config"
+}
+
+variable "turnstile_secret_parameter_name" {
+  description = "SSM SecureString parameter containing the Turnstile server secret"
+  type        = string
+  default     = "/anchor-forms/turnstile-secret"
+}
+
+variable "turnstile_secret_key" {
+  description = "Cloudflare Turnstile server verification secret"
+  type        = string
+  sensitive   = true
+  default     = ""
 }
 
 variable "submissions_table_name" {
@@ -97,6 +116,12 @@ variable "per_ip_window_seconds" {
   default     = 3600
 }
 
+variable "per_destination_max_requests" {
+  description = "Maximum auto-replies sent to one hashed destination per window"
+  type        = number
+  default     = 3
+}
+
 variable "max_payload_bytes" {
   description = "Maximum accepted request payload size"
   type        = number
@@ -106,7 +131,43 @@ variable "max_payload_bytes" {
 variable "submission_retention_days" {
   description = "Days before unconverted raw form submissions expire from DynamoDB"
   type        = number
-  default     = 365
+  default     = 180
+}
+
+variable "spam_retention_days" {
+  description = "Days before blocked submissions are removed"
+  type        = number
+  default     = 30
+}
+
+variable "admin_email" {
+  description = "Email for the first dashboard administrator and operational alerts"
+  type        = string
+  default     = "info@anchorwebco.com.au"
+}
+
+variable "admin_allowed_origin" {
+  description = "Only browser origin allowed to call the protected dashboard API"
+  type        = string
+  default     = "https://www.anchorwebco.com.au"
+}
+
+variable "admin_redirect_uri" {
+  description = "Cognito OAuth callback for the dashboard"
+  type        = string
+  default     = "https://www.anchorwebco.com.au/forms-admin.html"
+}
+
+variable "admin_logout_uri" {
+  description = "Cognito sign-out return location"
+  type        = string
+  default     = "https://www.anchorwebco.com.au/forms-admin.html"
+}
+
+variable "monthly_budget_usd" {
+  description = "Monthly forms-stack budget alert threshold"
+  type        = number
+  default     = 5
 }
 
 variable "api_rate_limit" {

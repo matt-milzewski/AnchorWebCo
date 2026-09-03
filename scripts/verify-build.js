@@ -35,7 +35,8 @@ assert.ok(fs.existsSync(outputRoot), "Run npm run build before verifying the out
 const outputFiles = walk(outputRoot);
 const htmlFiles = outputFiles
   .filter((file) => file.endsWith(".html"))
-  .filter((file) => !file.includes(`${path.sep}admin${path.sep}`));
+  .filter((file) => !file.includes(`${path.sep}admin${path.sep}`))
+  .filter((file) => path.basename(file) !== "forms-admin.html");
 
 assert.equal(
   outputFiles.some((file) => /bh[-_]?lock|bhlocksandsecurity/i.test(path.basename(file))),

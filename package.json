@@ -10,7 +10,7 @@
     "serve": "node -e \"require('node:fs').rmSync('_site', { recursive: true, force: true })\" && npx @11ty/eleventy --serve",
     "test": "npm run test:redirects && npm run test:analytics-controls && npm run verify:build && npm run verify:locations && npm run verify:industry",
     "test:redirects": "node scripts/test-cloudfront-function.js",
-    "test:analytics-controls": "node scripts/test-posthog-consent.js",
+    "test:analytics-controls": "node scripts/test-posthog-consent.js && node scripts/test-forms-client-security.js",
     "verify:build": "node scripts/verify-build.js",
     "verify:locations": "node scripts/verify-location-pages.js",
     "verify:industry": "node scripts/verify-industry-cluster.js",

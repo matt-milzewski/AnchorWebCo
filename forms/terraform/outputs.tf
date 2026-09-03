@@ -32,3 +32,23 @@ output "rate_limit_table_name" {
   description = "DynamoDB table storing form rate limits"
   value       = aws_dynamodb_table.rate_limits.name
 }
+
+output "admin_dashboard_url" {
+  description = "Protected forms reporting dashboard"
+  value       = var.admin_redirect_uri
+}
+
+output "admin_user_pool_id" {
+  description = "Cognito user pool protecting the forms dashboard"
+  value       = aws_cognito_user_pool.forms_admin.id
+}
+
+output "admin_client_id" {
+  description = "Public Cognito OAuth client ID used by the forms dashboard"
+  value       = aws_cognito_user_pool_client.forms_admin.id
+}
+
+output "turnstile_enabled" {
+  description = "Whether a production Turnstile secret was supplied"
+  value       = nonsensitive(var.turnstile_secret_key != "")
+}

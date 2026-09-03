@@ -1,11 +1,6 @@
 name: Bootstrap Haven Homes
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/bootstrap-haven-homes.yml
   workflow_dispatch:
     inputs:
       cloudfront_origin:
@@ -21,10 +16,11 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.CMS_GITHUB_TOKEN }}
       TARGET_REPO: matt-milzewski/haven-homes-co
-      AWS_ACCESS_KEY_ID_VALUE: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY_VALUE: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION_VALUE: ${{ secrets.AWS_REGION }}
+      AWS_DEPLOY_ROLE_ARN: ${{ vars.HAVEN_AWS_DEPLOY_ROLE_ARN }}
+      AWS_REGION_VALUE: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
       FORMS_API_BASE: ${{ vars.ANCHOR_FORMS_API_BASE }}
+      TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
+      HAVEN_RECIPIENT_EMAIL: ${{ secrets.HAVEN_RECIPIENT_EMAIL }}
       CLOUDFRONT_ORIGIN: ${{ inputs.cloudfront_origin || 'https://dl4dzzrd6411l.cloudfront.net' }}
       PRIMARY_ORIGIN: https://havenhomesco.com.au
       WWW_ORIGIN: https://www.havenhomesco.com.au
@@ -33,7 +29,7 @@ jobs:
       - name: Validate source configuration
         run: |
           missing=0
-          for var in GH_TOKEN AWS_ACCESS_KEY_ID_VALUE AWS_SECRET_ACCESS_KEY_VALUE AWS_REGION_VALUE FORMS_API_BASE; do
+          for var in GH_TOKEN AWS_DEPLOY_ROLE_ARN AWS_REGION_VALUE FORMS_API_BASE HAVEN_RECIPIENT_EMAIL; do
             if [ -z "${!var}" ]; then
               echo "Missing required Anchor configuration: $var"
               missing=1
@@ -54,20 +50,20 @@ jobs:
               --description "Premium home care and cleaning website for Brisbane's inner west."
           fi
 
-      - name: Configure deployment secrets and variables
+      - name: Configure deployment variables
         run: |
-          gh secret set AWS_ACCESS_KEY_ID \
-            --repo "$TARGET_REPO" \
-            --body "$AWS_ACCESS_KEY_ID_VALUE"
-          gh secret set AWS_SECRET_ACCESS_KEY \
-            --repo "$TARGET_REPO" \
-            --body "$AWS_SECRET_ACCESS_KEY_VALUE"
           gh variable set AWS_REGION \
             --repo "$TARGET_REPO" \
             --body "$AWS_REGION_VALUE"
+          gh variable set AWS_DEPLOY_ROLE_ARN \
+            --repo "$TARGET_REPO" \
+            --body "$AWS_DEPLOY_ROLE_ARN"
           gh variable set ANCHOR_FORMS_API_BASE \
             --repo "$TARGET_REPO" \
             --body "$FORMS_API_BASE"
+          if [ -n "$TURNSTILE_SITE_KEY" ]; then
+            gh variable set TURNSTILE_SITE_KEY --repo "$TARGET_REPO" --body "$TURNSTILE_SITE_KEY"
+          fi
 
       - name: Register Haven with the shared forms service
         run: |
@@ -80,10 +76,11 @@ jobs:
             --arg cloudfront_origin "$CLOUDFRONT_ORIGIN" \
             --arg primary_origin "$PRIMARY_ORIGIN" \
             --arg www_origin "$WWW_ORIGIN" \
+            --arg recipient_email "$HAVEN_RECIPIENT_EMAIL" \
             '{
               siteId: "haven-homes-co",
               name: "Haven Homes Co.",
-              recipientEmail: "cassandrawarat@gmail.com",
+              recipientEmail: $recipient_email,
               allowedOrigins: [$primary_origin, $www_origin, $cloudfront_origin],
               requiredFields: ["name", "address", "phone", "email", "service"],
               honeypotFields: ["company", "_gotcha", "website"],
@@ -92,7 +89,10 @@ jobs:
               subject: "New website quote enquiry",
               spamThreshold: 2,
               maxLinks: 2,
-              minimumSubmitMs: 3000
+              minimumSubmitMs: 3000,
+              allowedFields: ["name", "address", "phone", "email", "service", "message"],
+              turnstileAction: "contact_submit",
+              destinationRateLimitMaxRequests: 2
             }')"
 
           gh variable set HAVEN_FORM_SITE_CONFIG_JSON \
@@ -110,7 +110,7 @@ jobs:
             echo "## Haven Homes bootstrap complete"
             echo
             echo "- Repository: https://github.com/$TARGET_REPO"
-            echo "- AWS deployment secrets copied from Anchor Web Co."
+            echo "- Repository-scoped AWS OIDC deployment role configured."
             echo "- Shared form API variable configured."
             if [ -n "$CLOUDFRONT_ORIGIN" ]; then
               echo "- Haven form configuration registered for $PRIMARY_ORIGIN, $WWW_ORIGIN and $CLOUDFRONT_ORIGIN."
