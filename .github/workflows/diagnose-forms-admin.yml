@@ -26,3 +26,21 @@ jobs:
             --format short \
             | grep -E 'forms_admin_failed|ERROR|AccessDenied|ValidationException' \
             | tail -50
+
+      - name: Smoke-test reporting queries
+        run: |
+          set -euo pipefail
+          for path in /api/forms-admin/summary /api/forms-admin/submissions; do
+            payload="$(jq -cn --arg path "$path" '{
+              requestContext: {http: {method: "GET"}},
+              rawPath: $path,
+              queryStringParameters: {limit: "1"}
+            }')"
+            aws lambda invoke \
+              --function-name anchor-forms-prod-admin \
+              --cli-binary-format raw-in-base64-out \
+              --payload "$payload" \
+              /tmp/forms-admin-response.json >/dev/null
+            jq -e '.statusCode == 200' /tmp/forms-admin-response.json >/dev/null
+            echo "PASS $path"
+          done
