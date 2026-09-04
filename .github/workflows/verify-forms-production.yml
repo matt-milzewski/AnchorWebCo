@@ -46,8 +46,14 @@ jobs:
           jq -e '.ok == true and .siteId == "anchor-web-co"' <<<"$health" >/dev/null
           challenge_required="$(jq -r '.challengeRequired' <<<"$health")"
 
-          cors="$(curl --silent --show-error --include -X OPTIONS -H "Origin: $origin" "$endpoint")"
+          cors="$(curl --silent --show-error --include -X OPTIONS \
+            -H "Origin: $origin" \
+            -H 'Access-Control-Request-Method: POST' \
+            -H 'Access-Control-Request-Headers: content-type' \
+            "$endpoint")"
           grep -qi "access-control-allow-origin: $origin" <<<"$cors"
+          grep -qi 'access-control-allow-methods:.*POST' <<<"$cors"
+          grep -qi 'access-control-allow-headers:.*content-type' <<<"$cors"
 
           invalid_code="$(curl --silent --show-error --output /tmp/invalid.json --write-out '%{http_code}' \
             -X POST -H "Origin: $origin" -H 'User-Agent: AnchorFormsProductionVerifier/1.0' \
