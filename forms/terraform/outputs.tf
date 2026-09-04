@@ -62,3 +62,8 @@ output "monthly_report_function_name" {
   description = "Lambda function that sends the aggregate monthly report"
   value       = aws_lambda_function.reports.function_name
 }
+
+output "alert_notification_function_name" {
+  description = "Lambda function that delivers encrypted operational alerts by email"
+  value       = aws_lambda_function.notifications.function_name
+}

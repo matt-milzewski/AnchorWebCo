@@ -25,6 +25,7 @@ jobs:
       AWS_REGION: ${{ vars.AWS_REGION }}
       API_BASE: https://jp5by1qc4d.execute-api.ap-southeast-2.amazonaws.com
       ALERT_TOPIC_NAME: anchor-forms-prod-alerts
+      NOTIFICATION_FUNCTION: anchor-forms-prod-notifications
       REPORT_FUNCTION: anchor-forms-prod-reports
 
     steps:
@@ -92,11 +93,13 @@ jobs:
           set -euo pipefail
           account_id="$(aws sts get-caller-identity --query Account --output text)"
           topic_arn="arn:aws:sns:${AWS_REGION}:${account_id}:${ALERT_TOPIC_NAME}"
+          notification_arn="$(aws lambda get-function --function-name "$NOTIFICATION_FUNCTION" \
+            --query 'Configuration.FunctionArn' --output text)"
           confirmed="$(aws sns list-subscriptions-by-topic --topic-arn "$topic_arn" \
-            --query "length(Subscriptions[?Protocol=='email' && SubscriptionArn!='PendingConfirmation'])" \
+            --query "length(Subscriptions[?Protocol=='lambda' && Endpoint=='$notification_arn' && SubscriptionArn!='PendingConfirmation'])" \
             --output text)"
           if [ "$confirmed" -lt 1 ]; then
-            echo "No confirmed email subscription exists for the operational alerts topic." >&2
+            echo "The operational alerts topic is not connected to the notification function." >&2
             exit 1
           fi
 
@@ -112,7 +115,7 @@ jobs:
             --query State --output text)"
           test "$rule_state" = "ENABLED"
           echo "topic_arn=$topic_arn" >> "$GITHUB_OUTPUT"
-          echo "PASS confirmed alert email, both delivery alarms, and monthly schedule"
+          echo "PASS notification delivery function, both delivery alarms, and monthly schedule"
 
       - name: Send labelled test notifications
         if: ${{ inputs.send_test_emails }}
@@ -121,6 +124,7 @@ jobs:
           TOPIC_ARN: ${{ steps.alerts.outputs.topic_arn }}
         run: |
           set -euo pipefail
+          started_ms="$(( $(date +%s%3N) - 1000 ))"
           aws sns publish \
             --topic-arn "$TOPIC_ARN" \
             --subject "[TEST] Anchor Forms delivery failure alert" \
@@ -132,7 +136,19 @@ jobs:
             --payload '{"test":true}' \
             /tmp/monthly-report.json >/dev/null
           jq -e '.sent == true and .test == true' /tmp/monthly-report.json >/dev/null
-          echo "PASS sent one labelled delivery-alert test and one labelled monthly-report test"
+
+          accepted=0
+          for attempt in $(seq 1 12); do
+            accepted="$(aws logs filter-log-events \
+              --log-group-name "/aws/lambda/$NOTIFICATION_FUNCTION" \
+              --start-time "$started_ms" \
+              --filter-pattern '"alert_notification_sent"' \
+              --query 'length(events)' --output text)"
+            if [ "$accepted" -ge 2 ]; then break; fi
+            sleep 2
+          done
+          test "$accepted" -ge 2
+          echo "PASS SES accepted one labelled delivery-alert test and one labelled monthly-report test"
 
       - name: Send and verify one live Anchor lead
         if: ${{ inputs.send_live_anchor_lead }}

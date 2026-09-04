@@ -104,7 +104,7 @@ resource "aws_dynamodb_table" "rate_limits" {
 }
 
 resource "aws_iam_role" "lambda_execution" {
-  for_each = toset(["forms", "admin", "events", "reports"])
+  for_each = toset(["forms", "admin", "events", "notifications", "reports"])
   name     = "${local.prefix}-${each.key}-lambda-role"
 
   assume_role_policy = jsonencode({
@@ -221,6 +221,26 @@ data "aws_iam_policy_document" "events_lambda_permissions" {
   }
 }
 
+data "aws_iam_policy_document" "notifications_lambda_permissions" {
+  statement {
+    sid       = "WriteOwnLogs"
+    actions   = ["logs:CreateLogStream", "logs:PutLogEvents"]
+    resources = ["${aws_cloudwatch_log_group.notifications_lambda.arn}:*"]
+  }
+
+  statement {
+    sid       = "SendOperationalAlerts"
+    actions   = ["ses:SendEmail"]
+    resources = ["*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "ses:FromAddress"
+      values   = [var.default_from_email]
+    }
+  }
+}
+
 data "aws_iam_policy_document" "reports_lambda_permissions" {
   statement {
     sid       = "WriteOwnLogs"
@@ -252,10 +272,11 @@ data "aws_iam_policy_document" "reports_lambda_permissions" {
 
 resource "aws_iam_policy" "lambda_permissions" {
   for_each = {
-    forms   = data.aws_iam_policy_document.forms_lambda_permissions.json
-    admin   = data.aws_iam_policy_document.admin_lambda_permissions.json
-    events  = data.aws_iam_policy_document.events_lambda_permissions.json
-    reports = data.aws_iam_policy_document.reports_lambda_permissions.json
+    forms         = data.aws_iam_policy_document.forms_lambda_permissions.json
+    admin         = data.aws_iam_policy_document.admin_lambda_permissions.json
+    events        = data.aws_iam_policy_document.events_lambda_permissions.json
+    notifications = data.aws_iam_policy_document.notifications_lambda_permissions.json
+    reports       = data.aws_iam_policy_document.reports_lambda_permissions.json
   }
   name   = "${local.prefix}-${each.key}-lambda-policy"
   policy = each.value
@@ -293,6 +314,12 @@ resource "aws_cloudwatch_log_group" "admin_lambda" {
 
 resource "aws_cloudwatch_log_group" "events_lambda" {
   name              = "/aws/lambda/${local.prefix}-events"
+  retention_in_days = var.log_retention_days
+  tags              = local.common_tags
+}
+
+resource "aws_cloudwatch_log_group" "notifications_lambda" {
+  name              = "/aws/lambda/${local.prefix}-notifications"
   retention_in_days = var.log_retention_days
   tags              = local.common_tags
 }
@@ -536,6 +563,32 @@ resource "aws_lambda_function" "reports" {
   ]
 }
 
+resource "aws_lambda_function" "notifications" {
+  function_name = "${local.prefix}-notifications"
+  description   = "Delivers encrypted operational alerts through the verified Anchor SES identity"
+  role          = aws_iam_role.lambda_execution["notifications"].arn
+  runtime       = "nodejs20.x"
+  handler       = "notifications.handler"
+
+  filename         = data.archive_file.lambda_zip.output_path
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+  timeout          = var.lambda_timeout_seconds
+  memory_size      = 256
+
+  environment {
+    variables = {
+      FORM_ALERT_FROM_EMAIL      = var.default_from_email
+      FORM_ALERT_RECIPIENT_EMAIL = var.admin_email
+    }
+  }
+
+  tags = local.common_tags
+  depends_on = [
+    aws_cloudwatch_log_group.notifications_lambda,
+    aws_iam_role_policy_attachment.lambda_permissions["notifications"]
+  ]
+}
+
 resource "aws_lambda_permission" "allow_sns" {
   statement_id  = "AllowSesEventsFromSns"
   action        = "lambda:InvokeFunction"
@@ -733,10 +786,20 @@ resource "aws_sns_topic" "alerts" {
   tags              = local.common_tags
 }
 
-resource "aws_sns_topic_subscription" "alerts_email" {
+resource "aws_lambda_permission" "allow_alert_notifications" {
+  statement_id  = "AllowOperationalAlertsFromSns"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.notifications.function_name
+  principal     = "sns.amazonaws.com"
+  source_arn    = aws_sns_topic.alerts.arn
+}
+
+resource "aws_sns_topic_subscription" "alert_notifications" {
   topic_arn = aws_sns_topic.alerts.arn
-  protocol  = "email"
-  endpoint  = var.admin_email
+  protocol  = "lambda"
+  endpoint  = aws_lambda_function.notifications.arn
+
+  depends_on = [aws_lambda_permission.allow_alert_notifications]
 }
 
 resource "aws_cloudwatch_event_rule" "monthly_spam_report" {

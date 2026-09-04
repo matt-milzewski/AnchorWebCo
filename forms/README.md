@@ -20,11 +20,11 @@ Low-cost, multi-site contact-form delivery and monitoring for Anchor Web Co and 
 - SES configuration set and SNS feedback topic
 - Cognito user pool with required authenticator-app MFA for dashboard access
 - SSM SecureString parameters for site routing and the Turnstile secret
-- encrypted SNS alerts, immediate pre- and post-acceptance delivery-failure alarms, a monthly spam report, and an AWS Budget notification
+- encrypted SNS alerts delivered through the verified Anchor SES identity, immediate pre- and post-acceptance delivery-failure alarms, a monthly spam report, and an AWS Budget notification
 
 The service uses on-demand serverless resources. The customer-managed KMS key and monitoring are the main standing costs; the budget defaults to USD 5 per month and can be changed in Terraform variables.
 
-The monthly report runs once per month and contains aggregate counts only. It flags 25 blocked submissions, or a sustained spam rate of at least 50% with a meaningful sample, and includes no contact details or enquiry content. Post-acceptance alerts cover lead bounces, complaints, SES rejects, and rendering failures; spam and auto-reply events do not trigger them.
+The alert topic invokes a dedicated least-privilege notification Lambda, so operational emails do not depend on an SNS confirmation link. The monthly report runs once per month and contains aggregate counts only. It flags 25 blocked submissions, or a sustained spam rate of at least 50% with a meaningful sample, and includes no contact details or enquiry content. Post-acceptance alerts cover lead bounces, complaints, SES rejects, and rendering failures; spam and auto-reply events do not trigger them.
 
 ## Spam and abuse controls
 
