@@ -140,6 +140,18 @@ variable "spam_retention_days" {
   default     = 30
 }
 
+variable "monthly_spam_count_threshold" {
+  description = "Blocked submissions in 30 days that flag the monthly report as high spam"
+  type        = number
+  default     = 25
+}
+
+variable "monthly_spam_rate_threshold" {
+  description = "Spam percentage that flags the monthly report when there is a meaningful sample"
+  type        = number
+  default     = 50
+}
+
 variable "admin_email" {
   description = "Email for the first dashboard administrator and operational alerts"
   type        = string

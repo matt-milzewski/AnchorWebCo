@@ -1,0 +1,191 @@
+name: Verify Forms Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      send_test_emails:
+        description: Send labelled delivery-alert and monthly-report test emails
+        required: true
+        type: boolean
+        default: true
+      send_live_anchor_lead:
+        description: Send one labelled Anchor lead and verify its persisted delivery status
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      API_BASE: https://jp5by1qc4d.execute-api.ap-southeast-2.amazonaws.com
+      ALERT_TOPIC_NAME: anchor-forms-prod-alerts
+      REPORT_FUNCTION: anchor-forms-prod-reports
+
+    steps:
+      - name: Configure AWS credentials with GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_FORMS_DEPLOY_ROLE_ARN }}
+          role-session-name: anchor-forms-verify-${{ github.run_id }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Exercise public Anchor form boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          origin="https://www.anchorwebco.com.au"
+          endpoint="$API_BASE/api/forms/anchor-web-co"
+
+          health="$(curl --fail --silent --show-error -H "Origin: $origin" "$endpoint")"
+          jq -e '.ok == true and .siteId == "anchor-web-co"' <<<"$health" >/dev/null
+          challenge_required="$(jq -r '.challengeRequired' <<<"$health")"
+
+          cors="$(curl --silent --show-error --include -X OPTIONS -H "Origin: $origin" "$endpoint")"
+          grep -qi "access-control-allow-origin: $origin" <<<"$cors"
+
+          invalid_code="$(curl --silent --show-error --output /tmp/invalid.json --write-out '%{http_code}' \
+            -X POST -H "Origin: $origin" -H 'User-Agent: AnchorFormsProductionVerifier/1.0' \
+            -H 'Content-Type: application/json' --data '{}' "$endpoint")"
+          test "$invalid_code" = "400"
+          jq -e '.ok == false and .accepted == false' /tmp/invalid.json >/dev/null
+
+          spam_key="anchor-spam-test-${GITHUB_RUN_ID}"
+          spam_body="$(jq -cn --arg key "$spam_key" --argjson started "$(( $(date +%s%3N) - 10000 ))" '{
+            name: "Anchor production spam test",
+            email: "info@anchorwebco.com.au",
+            project_stage: "testing",
+            message: "Clearly labelled automated spam-path verification; no action required.",
+            company: "honeypot-test",
+            _startedAt: $started,
+            _idempotencyKey: $key
+          }')"
+          for attempt in 1 2; do
+            response="$(curl --fail --silent --show-error -X POST \
+              -H "Origin: $origin" -H 'User-Agent: AnchorFormsProductionVerifier/1.0' \
+              -H 'Content-Type: application/json' --data "$spam_body" "$endpoint")"
+            jq -e '.ok == true and .accepted == false' <<<"$response" >/dev/null
+          done
+
+          protected_code="$(curl --silent --show-error --output /tmp/protected.json --write-out '%{http_code}' \
+            "$API_BASE/api/forms-admin/summary")"
+          test "$protected_code" = "401"
+
+          echo "PASS health, CORS, validation, spam blocking, idempotent spam retry, and dashboard authentication boundary"
+          echo "challenge_required=$challenge_required" >> "$GITHUB_ENV"
+
+      - name: Verify operational alert wiring
+        id: alerts
+        shell: bash
+        run: |
+          set -euo pipefail
+          account_id="$(aws sts get-caller-identity --query Account --output text)"
+          topic_arn="arn:aws:sns:${AWS_REGION}:${account_id}:${ALERT_TOPIC_NAME}"
+          confirmed="$(aws sns list-subscriptions-by-topic --topic-arn "$topic_arn" \
+            --query "length(Subscriptions[?Protocol=='email' && SubscriptionArn!='PendingConfirmation'])" \
+            --output text)"
+          if [ "$confirmed" -lt 1 ]; then
+            echo "No confirmed email subscription exists for the operational alerts topic." >&2
+            exit 1
+          fi
+
+          for alarm in \
+            anchor-forms-prod-delivery-failures \
+            anchor-forms-prod-post-acceptance-delivery-failures; do
+            action="$(aws cloudwatch describe-alarms --alarm-names "$alarm" \
+              --query 'MetricAlarms[0].AlarmActions[0]' --output text)"
+            test "$action" = "$topic_arn"
+          done
+
+          rule_state="$(aws events describe-rule --name anchor-forms-prod-monthly-spam-report \
+            --query State --output text)"
+          test "$rule_state" = "ENABLED"
+          echo "topic_arn=$topic_arn" >> "$GITHUB_OUTPUT"
+          echo "PASS confirmed alert email, both delivery alarms, and monthly schedule"
+
+      - name: Send labelled test notifications
+        if: ${{ inputs.send_test_emails }}
+        shell: bash
+        env:
+          TOPIC_ARN: ${{ steps.alerts.outputs.topic_arn }}
+        run: |
+          set -euo pipefail
+          aws sns publish \
+            --topic-arn "$TOPIC_ARN" \
+            --subject "[TEST] Anchor Forms delivery failure alert" \
+            --message "This is a requested end-to-end test of the Anchor Forms non-spam delivery failure notification channel. No real lead failed."
+
+          aws lambda invoke \
+            --function-name "$REPORT_FUNCTION" \
+            --cli-binary-format raw-in-base64-out \
+            --payload '{"test":true}' \
+            /tmp/monthly-report.json >/dev/null
+          jq -e '.sent == true and .test == true' /tmp/monthly-report.json >/dev/null
+          echo "PASS sent one labelled delivery-alert test and one labelled monthly-report test"
+
+      - name: Send and verify one live Anchor lead
+        if: ${{ inputs.send_live_anchor_lead }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$challenge_required" = "true" ]; then
+            echo "A browser-completed Turnstile token is required; the synthetic lead test cannot bypass it." >&2
+            exit 1
+          fi
+
+          origin="https://www.anchorwebco.com.au"
+          endpoint="$API_BASE/api/forms/anchor-web-co"
+          submission_key="anchor-live-test-${GITHUB_RUN_ID}"
+          body="$(jq -cn --arg key "$submission_key" --argjson started "$(( $(date +%s%3N) - 10000 ))" '{
+            name: "Anchor Web Co production test",
+            email: "info@anchorwebco.com.au",
+            phone: "0439499944",
+            project_stage: "Production verification",
+            business_suburb: "Red Hill",
+            message: "[TEST] End-to-end Anchor contact form verification. No action required.",
+            _subject: "[TEST] Anchor Forms production verification",
+            _startedAt: $started,
+            _idempotencyKey: $key
+          }')"
+
+          first="$(curl --fail --silent --show-error -X POST \
+            -H "Origin: $origin" -H 'User-Agent: AnchorFormsProductionVerifier/1.0' \
+            -H 'Content-Type: application/json' --data "$body" "$endpoint")"
+          jq -e '.ok == true and .accepted == true' <<<"$first" >/dev/null
+          submission_id="$(jq -r '.submissionId' <<<"$first")"
+
+          duplicate="$(curl --fail --silent --show-error -X POST \
+            -H "Origin: $origin" -H 'User-Agent: AnchorFormsProductionVerifier/1.0' \
+            -H 'Content-Type: application/json' --data "$body" "$endpoint")"
+          jq -e --arg id "$submission_id" \
+            '.ok == true and .accepted == true and .duplicate == true and .submissionId == $id' \
+            <<<"$duplicate" >/dev/null
+
+          status=""
+          message_id=""
+          for attempt in $(seq 1 12); do
+            aws dynamodb get-item \
+              --table-name anchor_form_submissions \
+              --key "{\"siteId\":{\"S\":\"anchor-web-co\"},\"submissionId\":{\"S\":\"$submission_id\"}}" \
+              --projection-expression '#s, sesMessageId' \
+              --expression-attribute-names '{"#s":"status"}' \
+              --consistent-read > /tmp/submission.json
+            status="$(jq -r '.Item.status.S // empty' /tmp/submission.json)"
+            message_id="$(jq -r '.Item.sesMessageId.S // empty' /tmp/submission.json)"
+            if [[ "$status" =~ ^(ses_accepted|delivery_delayed|delivered)$ ]] && [ -n "$message_id" ]; then
+              break
+            fi
+            if [[ "$status" =~ ^(delivery_failed|bounced|complained)$ ]]; then
+              echo "Lead entered failure state: $status" >&2
+              exit 1
+            fi
+            sleep 5
+          done
+          [[ "$status" =~ ^(ses_accepted|delivery_delayed|delivered)$ ]]
+          test -n "$message_id"
+          echo "PASS live Anchor lead, duplicate suppression, persistence, and SES status ($status)"

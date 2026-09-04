@@ -52,3 +52,13 @@ output "turnstile_enabled" {
   description = "Whether a production Turnstile secret was supplied"
   value       = nonsensitive(var.turnstile_secret_key != "")
 }
+
+output "alerts_topic_arn" {
+  description = "Encrypted SNS topic used for operational alerts and monthly reports"
+  value       = aws_sns_topic.alerts.arn
+}
+
+output "monthly_report_function_name" {
+  description = "Lambda function that sends the aggregate monthly report"
+  value       = aws_lambda_function.reports.function_name
+}

@@ -104,7 +104,7 @@ resource "aws_dynamodb_table" "rate_limits" {
 }
 
 resource "aws_iam_role" "lambda_execution" {
-  for_each = toset(["forms", "admin", "events"])
+  for_each = toset(["forms", "admin", "events", "reports"])
   name     = "${local.prefix}-${each.key}-lambda-role"
 
   assume_role_policy = jsonencode({
@@ -221,11 +221,41 @@ data "aws_iam_policy_document" "events_lambda_permissions" {
   }
 }
 
+data "aws_iam_policy_document" "reports_lambda_permissions" {
+  statement {
+    sid       = "WriteOwnLogs"
+    actions   = ["logs:CreateLogStream", "logs:PutLogEvents"]
+    resources = ["${aws_cloudwatch_log_group.reports_lambda.arn}:*"]
+  }
+
+  statement {
+    sid     = "ReadAggregateFormSubmissions"
+    actions = ["dynamodb:Query"]
+    resources = [
+      aws_dynamodb_table.submissions.arn,
+      "${aws_dynamodb_table.submissions.arn}/index/all-submitted-at-index"
+    ]
+  }
+
+  statement {
+    sid       = "PublishOperationalReport"
+    actions   = ["sns:Publish"]
+    resources = [aws_sns_topic.alerts.arn]
+  }
+
+  statement {
+    sid       = "UseAlertTopicEncryption"
+    actions   = ["kms:Decrypt", "kms:GenerateDataKey*"]
+    resources = [aws_kms_key.forms_events.arn]
+  }
+}
+
 resource "aws_iam_policy" "lambda_permissions" {
   for_each = {
-    forms  = data.aws_iam_policy_document.forms_lambda_permissions.json
-    admin  = data.aws_iam_policy_document.admin_lambda_permissions.json
-    events = data.aws_iam_policy_document.events_lambda_permissions.json
+    forms   = data.aws_iam_policy_document.forms_lambda_permissions.json
+    admin   = data.aws_iam_policy_document.admin_lambda_permissions.json
+    events  = data.aws_iam_policy_document.events_lambda_permissions.json
+    reports = data.aws_iam_policy_document.reports_lambda_permissions.json
   }
   name   = "${local.prefix}-${each.key}-lambda-policy"
   policy = each.value
@@ -263,6 +293,12 @@ resource "aws_cloudwatch_log_group" "admin_lambda" {
 
 resource "aws_cloudwatch_log_group" "events_lambda" {
   name              = "/aws/lambda/${local.prefix}-events"
+  retention_in_days = var.log_retention_days
+  tags              = local.common_tags
+}
+
+resource "aws_cloudwatch_log_group" "reports_lambda" {
+  name              = "/aws/lambda/${local.prefix}-reports"
   retention_in_days = var.log_retention_days
   tags              = local.common_tags
 }
@@ -471,6 +507,35 @@ resource "aws_lambda_function" "events" {
   depends_on = [aws_cloudwatch_log_group.events_lambda]
 }
 
+resource "aws_lambda_function" "reports" {
+  function_name = "${local.prefix}-reports"
+  description   = "Sends an aggregate monthly form and spam report"
+  role          = aws_iam_role.lambda_execution["reports"].arn
+  runtime       = "nodejs20.x"
+  handler       = "reports.handler"
+
+  filename         = data.archive_file.lambda_zip.output_path
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+  timeout          = var.lambda_timeout_seconds
+  memory_size      = 256
+
+  environment {
+    variables = {
+      FORM_SUBMISSIONS_TABLE            = aws_dynamodb_table.submissions.name
+      FORM_ALERTS_TOPIC_ARN             = aws_sns_topic.alerts.arn
+      FORM_ADMIN_DASHBOARD_URL          = var.admin_redirect_uri
+      FORM_MONTHLY_SPAM_COUNT_THRESHOLD = tostring(var.monthly_spam_count_threshold)
+      FORM_MONTHLY_SPAM_RATE_THRESHOLD  = tostring(var.monthly_spam_rate_threshold)
+    }
+  }
+
+  tags = local.common_tags
+  depends_on = [
+    aws_cloudwatch_log_group.reports_lambda,
+    aws_iam_role_policy_attachment.lambda_permissions["reports"]
+  ]
+}
+
 resource "aws_lambda_permission" "allow_sns" {
   statement_id  = "AllowSesEventsFromSns"
   action        = "lambda:InvokeFunction"
@@ -674,6 +739,29 @@ resource "aws_sns_topic_subscription" "alerts_email" {
   endpoint  = var.admin_email
 }
 
+resource "aws_cloudwatch_event_rule" "monthly_spam_report" {
+  name                = "${local.prefix}-monthly-spam-report"
+  description         = "Send the aggregate forms and spam report every month"
+  schedule_expression = "cron(0 22 1 * ? *)"
+  state               = "ENABLED"
+  tags                = local.common_tags
+}
+
+resource "aws_cloudwatch_event_target" "monthly_spam_report" {
+  rule      = aws_cloudwatch_event_rule.monthly_spam_report.name
+  target_id = "MonthlyFormsReport"
+  arn       = aws_lambda_function.reports.arn
+  input     = jsonencode({ schedule = "monthly" })
+}
+
+resource "aws_lambda_permission" "allow_monthly_spam_report" {
+  statement_id  = "AllowMonthlyFormsReport"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.reports.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.monthly_spam_report.arn
+}
+
 resource "aws_cloudwatch_log_metric_filter" "blocked" {
   name           = "${local.prefix}-blocked"
   pattern        = "{ $.event = \"form_submission_blocked\" }"
@@ -698,6 +786,19 @@ resource "aws_cloudwatch_log_metric_filter" "delivery_failed" {
   }
 }
 
+resource "aws_cloudwatch_log_metric_filter" "post_acceptance_delivery_failed" {
+  for_each       = toset(["bounced", "complained", "delivery_failed"])
+  name           = "${local.prefix}-ses-${replace(each.value, "_", "-")}"
+  pattern        = "{ $.event = \"ses_feedback\" && $.messageType = \"lead\" && $.status = \"${each.value}\" }"
+  log_group_name = aws_cloudwatch_log_group.events_lambda.name
+
+  metric_transformation {
+    name      = "PostAcceptanceDeliveryFailures"
+    namespace = "AnchorForms"
+    value     = "1"
+  }
+}
+
 resource "aws_cloudwatch_metric_alarm" "delivery_failed" {
   alarm_name          = "${local.prefix}-delivery-failures"
   alarm_description   = "Form lead delivery failed"
@@ -714,11 +815,27 @@ resource "aws_cloudwatch_metric_alarm" "delivery_failed" {
   tags                = local.common_tags
 }
 
+resource "aws_cloudwatch_metric_alarm" "post_acceptance_delivery_failed" {
+  alarm_name          = "${local.prefix}-post-acceptance-delivery-failures"
+  alarm_description   = "A non-spam lead bounced, was rejected, rendered incorrectly, or produced a complaint"
+  namespace           = "AnchorForms"
+  metric_name         = "PostAcceptanceDeliveryFailures"
+  statistic           = "Sum"
+  period              = 300
+  evaluation_periods  = 1
+  threshold           = 1
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+  tags                = local.common_tags
+}
+
 resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
   for_each = {
-    forms  = aws_lambda_function.forms.function_name
-    admin  = aws_lambda_function.admin.function_name
-    events = aws_lambda_function.events.function_name
+    forms   = aws_lambda_function.forms.function_name
+    admin   = aws_lambda_function.admin.function_name
+    events  = aws_lambda_function.events.function_name
+    reports = aws_lambda_function.reports.function_name
   }
 
   alarm_name          = "${each.value}-errors"

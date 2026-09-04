@@ -7,12 +7,13 @@
   "license": "MIT",
   "type": "commonjs",
   "scripts": {
-    "lint": "node --check index.js && node --check admin.js && node --check events.js && node --check scripts/backfill-submissions.js",
+    "lint": "node --check index.js && node --check admin.js && node --check events.js && node --check reports.js && node --check scripts/backfill-submissions.js",
     "test": "node --test test/*.test.js"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.918.0",
     "@aws-sdk/client-sesv2": "^3.918.0",
+    "@aws-sdk/client-sns": "3.1072.0",
     "@aws-sdk/client-ssm": "^3.918.0",
     "@aws-sdk/lib-dynamodb": "^3.918.0"
   }

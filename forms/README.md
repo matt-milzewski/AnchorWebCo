@@ -15,14 +15,16 @@ Low-cost, multi-site contact-form delivery and monitoring for Anchor Web Co and 
 ## AWS resources
 
 - API Gateway HTTP API
-- Node.js Lambda functions for intake, dashboard queries, and SES events
+- Node.js Lambda functions for intake, dashboard queries, SES events, and aggregate monthly reporting
 - DynamoDB submissions and rate-limit tables with automatic retention
 - SES configuration set and SNS feedback topic
 - Cognito user pool with required authenticator-app MFA for dashboard access
 - SSM SecureString parameters for site routing and the Turnstile secret
-- encrypted SNS alerts, CloudWatch alarms, and an AWS Budget notification
+- encrypted SNS alerts, immediate pre- and post-acceptance delivery-failure alarms, a monthly spam report, and an AWS Budget notification
 
 The service uses on-demand serverless resources. The customer-managed KMS key and monitoring are the main standing costs; the budget defaults to USD 5 per month and can be changed in Terraform variables.
+
+The monthly report runs once per month and contains aggregate counts only. It flags 25 blocked submissions, or a sustained spam rate of at least 50% with a meaningful sample, and includes no contact details or enquiry content. Post-acceptance alerts cover lead bounces, complaints, SES rejects, and rendering failures; spam and auto-reply events do not trigger them.
 
 ## Spam and abuse controls
 
@@ -85,3 +87,5 @@ cd ../terraform
 terraform fmt -check -recursive
 terraform validate
 ```
+
+`verify-forms-production.yml` exercises the public Anchor form boundaries, confirms that the alert subscription and alarms are wired, and can send two labelled test notifications plus one labelled live Anchor lead. The live lead is immediately retried with the same idempotency key and checked in DynamoDB to prove that only one email was accepted by SES.
