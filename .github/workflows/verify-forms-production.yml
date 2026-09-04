@@ -13,6 +13,11 @@ on:
         required: true
         type: boolean
         default: false
+      verify_anchor_submission_id:
+        description: Existing Anchor submission ID to verify reached the SES delivered state
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -211,3 +216,35 @@ jobs:
           [[ "$status" =~ ^(ses_accepted|delivery_delayed|delivered)$ ]]
           test -n "$message_id"
           echo "PASS live Anchor lead, duplicate suppression, persistence, and SES status ($status)"
+
+      - name: Verify existing Anchor delivery event
+        if: ${{ inputs.verify_anchor_submission_id != '' }}
+        shell: bash
+        env:
+          SUBMISSION_ID: ${{ inputs.verify_anchor_submission_id }}
+        run: |
+          set -euo pipefail
+          [[ "$SUBMISSION_ID" =~ ^[A-Za-z0-9_-]{16,80}$ ]]
+          status=""
+          for attempt in $(seq 1 12); do
+            aws dynamodb get-item \
+              --table-name anchor_form_submissions \
+              --key "{\"siteId\":{\"S\":\"anchor-web-co\"},\"submissionId\":{\"S\":\"$SUBMISSION_ID\"}}" \
+              --projection-expression '#s, sesMessageId, deliveryEventAt' \
+              --expression-attribute-names '{"#s":"status"}' \
+              --consistent-read > /tmp/existing-submission.json
+            status="$(jq -r '.Item.status.S // empty' /tmp/existing-submission.json)"
+            if [ "$status" = "delivered" ]; then
+              jq -e '.Item.sesMessageId.S != null and .Item.deliveryEventAt.S != null' \
+                /tmp/existing-submission.json >/dev/null
+              echo "PASS existing Anchor submission reached the SES delivered state"
+              exit 0
+            fi
+            if [[ "$status" =~ ^(delivery_failed|bounced|complained)$ ]]; then
+              echo "Submission entered failure state: $status" >&2
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "Submission did not reach delivered state; latest status: ${status:-missing}" >&2
+          exit 1
