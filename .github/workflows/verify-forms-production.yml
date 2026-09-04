@@ -143,7 +143,7 @@ jobs:
               --log-group-name "/aws/lambda/$NOTIFICATION_FUNCTION" \
               --start-time "$started_ms" \
               --filter-pattern '"alert_notification_sent"' \
-              --query 'length(events)' --output text)"
+              --query 'length(events)' --output text --no-paginate)"
             if [ "$accepted" -ge 2 ]; then break; fi
             sleep 2
           done
