@@ -10,14 +10,48 @@ const extraIds = new Set(extras.map((site) => site.siteId));
 const sites = base.filter((site) => !extraIds.has(site.siteId)).concat(extras);
 const turnstileEnabled = Boolean(process.env.TURNSTILE_SITE_KEY && process.env.TURNSTILE_SECRET_KEY);
 const havenRecipientEmail = String(process.env.HAVEN_RECIPIENT_EMAIL || "").trim();
+const bannisterRecipientEmail = String(process.env.BANNISTER_RECIPIENT_EMAIL || "").trim();
 
 const anchorAllowedFields = [
   "name", "email", "phone", "project_stage", "business_suburb", "message", "current_website",
   "recommended_package", "recommended_care", "planner_source",
 ];
 const havenAllowedFields = ["name", "phone", "email", "address", "service", "message"];
+const bannisterSite = {
+  siteId: "bannister-communications",
+  name: "Bannister Communications",
+  recipientEmail: bannisterRecipientEmail,
+  allowedOrigins: [
+    "https://bannistercommunications.com",
+    "https://www.bannistercommunications.com",
+  ],
+  requiredFields: ["name", "phone", "email", "message", "consent"],
+  allowedFields: ["name", "phone", "email", "address", "service", "message", "consent"],
+  fieldMaxLengths: {
+    name: 120,
+    phone: 40,
+    email: 254,
+    address: 200,
+    service: 120,
+    message: 5000,
+    consent: 10,
+  },
+  honeypotFields: ["company", "_gotcha"],
+  replyToField: "email",
+  subjectPrefix: "[Bannister Communications]",
+  subject: "New website quote enquiry",
+  spamThreshold: 2,
+  maxLinks: 3,
+  minimumSubmitMs: 3000,
+  autoReplyEnabled: false,
+  turnstileRequired: false,
+  destinationRateLimitMaxRequests: 3,
+};
 
-for (const site of sites) {
+const configuredSites = sites.filter((site) => site.siteId !== bannisterSite.siteId);
+configuredSites.push(bannisterSite);
+
+for (const site of configuredSites) {
   if (site.siteId === "anchor-web-co") {
     Object.assign(site, {
       honeypotFields: ["company", "_gotcha"],
@@ -52,11 +86,11 @@ for (const site of sites) {
   if (!site.recipientEmail) throw new Error("Missing recipient email for " + site.siteId + ".");
 }
 
-const allowedOrigins = [...new Set(sites.flatMap((site) => Array.isArray(site.allowedOrigins) ? site.allowedOrigins : []))];
+const allowedOrigins = [...new Set(configuredSites.flatMap((site) => Array.isArray(site.allowedOrigins) ? site.allowedOrigins : []))];
 const target = process.env.FORM_SITE_CONFIG_OUTPUT || path.resolve("forms/terraform/site_configs.auto.tfvars.json");
 await writeFile(target, JSON.stringify({
-  site_configs: sites,
+  site_configs: configuredSites,
   allowed_origins: allowedOrigins,
   turnstile_secret_key: process.env.TURNSTILE_SECRET_KEY || "",
 }, null, 2));
-console.log("Prepared " + sites.length + " site configurations. Turnstile required: " + turnstileEnabled + ".");
+console.log("Prepared " + configuredSites.length + " site configurations. Turnstile required: " + turnstileEnabled + ".");

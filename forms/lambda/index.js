@@ -574,9 +574,9 @@ exports.handler = async function handler(event) {
     if (method === "OPTIONS") return options(event);
     const route = parseRoute(path);
     if (!route) return json(event, 404, { error: "Not found." });
-    if (method === "GET") return handleHealth(event, route.siteId);
+    if (method === "GET") return await handleHealth(event, route.siteId);
     if (method !== "POST") return json(event, 404, { error: "Not found." });
-    return handleSubmit(event, route.siteId);
+    return await handleSubmit(event, route.siteId);
   } catch (error) {
     log("form_request_failed", { errorName: error.name, statusCode: error.statusCode || 500 });
     return json(event, error.statusCode || 500, {

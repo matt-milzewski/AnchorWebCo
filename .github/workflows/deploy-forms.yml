@@ -41,9 +41,10 @@ jobs:
           AWS_REGION: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
           FORM_SITE_CONFIGS_JSON: ${{ secrets.FORM_SITE_CONFIGS_JSON }}
           HAVEN_RECIPIENT_EMAIL: ${{ secrets.HAVEN_RECIPIENT_EMAIL }}
+          BANNISTER_RECIPIENT_EMAIL: ${{ secrets.BANNISTER_RECIPIENT_EMAIL }}
         run: |
           missing=0
-          for var in AWS_DEPLOY_ROLE_ARN AWS_REGION FORM_SITE_CONFIGS_JSON HAVEN_RECIPIENT_EMAIL; do
+          for var in AWS_DEPLOY_ROLE_ARN AWS_REGION FORM_SITE_CONFIGS_JSON HAVEN_RECIPIENT_EMAIL BANNISTER_RECIPIENT_EMAIL; do
             if [ -z "${!var}" ]; then
               echo "Missing required secret: $var"
               missing=1
@@ -158,6 +159,7 @@ jobs:
           FORM_SITE_CONFIGS_JSON: ${{ secrets.FORM_SITE_CONFIGS_JSON }}
           HAVEN_FORM_SITE_CONFIG_JSON: ${{ vars.HAVEN_FORM_SITE_CONFIG_JSON }}
           HAVEN_RECIPIENT_EMAIL: ${{ secrets.HAVEN_RECIPIENT_EMAIL }}
+          BANNISTER_RECIPIENT_EMAIL: ${{ secrets.BANNISTER_RECIPIENT_EMAIL }}
           TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
           TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
           FORM_SITE_CONFIG_OUTPUT: ${{ github.workspace }}/forms/terraform/site_configs.auto.tfvars.json

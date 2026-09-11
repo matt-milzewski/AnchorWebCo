@@ -228,3 +228,23 @@ test("auto-reply fails closed without a server-verifiable challenge", () => {
   assert.match(handler, /if \(!site\.turnstileRequired\) return \{ sent: false, reason: "challenge-required" \}/);
   assert.match(builder, /autoReplyEnabled: turnstileEnabled/);
 });
+
+test("async route failures remain inside the central error handler", () => {
+  const handler = fs.readFileSync(path.join(__dirname, "..", "index.js"), "utf8");
+  assert.match(handler, /if \(method === "GET"\) return await handleHealth\(event, route\.siteId\)/);
+  assert.match(handler, /return await handleSubmit\(event, route\.siteId\)/);
+});
+
+test("Bannister configuration preserves its public form contract", () => {
+  const builder = fs.readFileSync(
+    path.join(__dirname, "..", "..", "scripts", "build-site-config.mjs"),
+    "utf8",
+  );
+  assert.match(builder, /siteId: "bannister-communications"/);
+  assert.match(builder, /recipientEmail: bannisterRecipientEmail/);
+  assert.match(builder, /"https:\/\/bannistercommunications\.com"/);
+  assert.match(builder, /"https:\/\/www\.bannistercommunications\.com"/);
+  assert.match(builder, /requiredFields: \["name", "phone", "email", "message", "consent"\]/);
+  assert.match(builder, /autoReplyEnabled: false/);
+  assert.match(builder, /turnstileRequired: false/);
+});
