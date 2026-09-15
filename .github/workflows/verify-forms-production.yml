@@ -14,10 +14,15 @@ on:
         type: boolean
         default: false
       verify_anchor_submission_id:
-        description: Existing Anchor submission ID to verify reached the SES delivered state
+        description: Existing submission ID to verify reached the SES delivered state
         required: false
         type: string
         default: ""
+      verify_submission_site_id:
+        description: Site ID belonging to the existing submission
+        required: false
+        type: string
+        default: "anchor-web-co"
 
 permissions:
   contents: read
@@ -217,19 +222,21 @@ jobs:
           test -n "$message_id"
           echo "PASS live Anchor lead, duplicate suppression, persistence, and SES status ($status)"
 
-      - name: Verify existing Anchor delivery event
+      - name: Verify existing delivery event
         if: ${{ inputs.verify_anchor_submission_id != '' }}
         shell: bash
         env:
           SUBMISSION_ID: ${{ inputs.verify_anchor_submission_id }}
+          SITE_ID: ${{ inputs.verify_submission_site_id }}
         run: |
           set -euo pipefail
           [[ "$SUBMISSION_ID" =~ ^[A-Za-z0-9_-]{16,80}$ ]]
+          [[ "$SITE_ID" =~ ^[a-z0-9-]{3,80}$ ]]
           status=""
           for attempt in $(seq 1 12); do
             aws dynamodb get-item \
               --table-name anchor_form_submissions \
-              --key "{\"siteId\":{\"S\":\"anchor-web-co\"},\"submissionId\":{\"S\":\"$SUBMISSION_ID\"}}" \
+              --key "{\"siteId\":{\"S\":\"$SITE_ID\"},\"submissionId\":{\"S\":\"$SUBMISSION_ID\"}}" \
               --projection-expression '#s, sesMessageId, deliveryEventAt' \
               --expression-attribute-names '{"#s":"status"}' \
               --consistent-read > /tmp/existing-submission.json
@@ -237,7 +244,7 @@ jobs:
             if [ "$status" = "delivered" ]; then
               jq -e '.Item.sesMessageId.S != null and .Item.deliveryEventAt.S != null' \
                 /tmp/existing-submission.json >/dev/null
-              echo "PASS existing Anchor submission reached the SES delivered state"
+              echo "PASS existing submission for $SITE_ID reached the SES delivered state"
               exit 0
             fi
             if [[ "$status" =~ ^(delivery_failed|bounced|complained)$ ]]; then
