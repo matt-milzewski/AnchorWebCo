@@ -1,6 +1,16 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const zlib = require("node:zlib");
 const { _private } = require("../admin");
+const { parseSitesConfig } = require("../shared/site-config");
+
+test("dashboard decodes plain and compressed site configuration", () => {
+  const config = { sites: [{ siteId: "coastwide-exterior-cleaning" }] };
+  const plain = JSON.stringify(config);
+  const compressed = `gzip:${zlib.gzipSync(Buffer.from(plain)).toString("base64")}`;
+  assert.deepEqual(parseSitesConfig(plain), config);
+  assert.deepEqual(parseSitesConfig(compressed), config);
+});
 
 test("dashboard never returns abuse fingerprints", () => {
   assert.deepEqual(

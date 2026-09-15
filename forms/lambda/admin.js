@@ -1,6 +1,7 @@
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, GetCommand, QueryCommand } = require("@aws-sdk/lib-dynamodb");
 const { SSMClient, GetParameterCommand } = require("@aws-sdk/client-ssm");
+const { parseSitesConfig } = require("./shared/site-config");
 
 const dynamo = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 const ssm = new SSMClient({});
@@ -46,7 +47,7 @@ async function loadSites() {
     Name: env.sitesConfigParameter,
     WithDecryption: true,
   }));
-  cachedSites = JSON.parse(result.Parameter?.Value || "{}").sites || [];
+  cachedSites = parseSitesConfig(result.Parameter?.Value || "{}").sites || [];
   return cachedSites;
 }
 

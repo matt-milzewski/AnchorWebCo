@@ -1,9 +1,9 @@
 const crypto = require("node:crypto");
-const zlib = require("node:zlib");
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } = require("@aws-sdk/lib-dynamodb");
 const { SESv2Client, SendEmailCommand } = require("@aws-sdk/client-sesv2");
 const { SSMClient, GetParameterCommand } = require("@aws-sdk/client-ssm");
+const { parseSitesConfig } = require("./shared/site-config");
 
 const dynamo = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 const ses = new SESv2Client({});
@@ -95,14 +95,6 @@ async function getSecureParameter(name) {
   if (!name) return "";
   const result = await ssm.send(new GetParameterCommand({ Name: name, WithDecryption: true }));
   return result.Parameter?.Value || "";
-}
-
-function parseSitesConfig(value) {
-  const encoded = String(value || "");
-  const jsonValue = encoded.startsWith("gzip:")
-    ? zlib.gunzipSync(Buffer.from(encoded.slice(5), "base64")).toString("utf8")
-    : encoded;
-  return JSON.parse(jsonValue);
 }
 
 async function loadSitesConfig() {
