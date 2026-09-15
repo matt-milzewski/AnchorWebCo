@@ -1,4 +1,5 @@
 const crypto = require("node:crypto");
+const zlib = require("node:zlib");
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } = require("@aws-sdk/lib-dynamodb");
 const { SESv2Client, SendEmailCommand } = require("@aws-sdk/client-sesv2");
@@ -96,9 +97,17 @@ async function getSecureParameter(name) {
   return result.Parameter?.Value || "";
 }
 
+function parseSitesConfig(value) {
+  const encoded = String(value || "");
+  const jsonValue = encoded.startsWith("gzip:")
+    ? zlib.gunzipSync(Buffer.from(encoded.slice(5), "base64")).toString("utf8")
+    : encoded;
+  return JSON.parse(jsonValue);
+}
+
 async function loadSitesConfig() {
   if (cachedSitesConfig && Date.now() < cachedSitesConfigUntil) return cachedSitesConfig;
-  cachedSitesConfig = JSON.parse(await getSecureParameter(env.sitesConfigParameter));
+  cachedSitesConfig = parseSitesConfig(await getSecureParameter(env.sitesConfigParameter));
   cachedSitesConfigUntil = Date.now() + 30000;
   return cachedSitesConfig;
 }
@@ -589,6 +598,6 @@ exports.handler = async function handler(event) {
 exports._private = {
   assessSubmission, buildAutoReplyEmail, buildEmail, buildHealthPayload,
   classifyExistingSubmission, expectedTurnstileHostnames, hashIdentifier, humanizeKey, normalizeFields,
-  parseRoute, publicFields, requestedSubmissionId, validateFieldLengths,
+  parseRoute, parseSitesConfig, publicFields, requestedSubmissionId, validateFieldLengths,
   validateTurnstileResponse,
 };

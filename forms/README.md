@@ -64,7 +64,7 @@ The deployment builds the encrypted SSM configuration from `FORM_SITE_CONFIGS_JS
 }
 ```
 
-Recipient addresses and the Turnstile secret belong in GitHub Actions secrets, not source control. Client-specific recipient secrets currently include `HAVEN_RECIPIENT_EMAIL`, `BANNISTER_RECIPIENT_EMAIL`, and `COASTWIDE_RECIPIENT_EMAIL`.
+Recipient addresses and the Turnstile secret belong in GitHub Actions secrets, not source control. Client-specific recipient secrets currently include `HAVEN_RECIPIENT_EMAIL`, `BANNISTER_RECIPIENT_EMAIL`, and `COASTWIDE_RECIPIENT_EMAIL`. Terraform gzip-compresses the generated routing configuration inside the existing encrypted Standard-tier SSM parameter, and the Lambda retains backwards compatibility with the former plain JSON value.
 
 ## Deployment
 

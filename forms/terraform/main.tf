@@ -18,9 +18,10 @@ resource "aws_ssm_parameter" "sites_config" {
   name        = var.sites_config_parameter_name
   description = "Anchor Forms site routing configuration"
   type        = "SecureString"
-  value = jsonencode({
+  tier        = "Standard"
+  value = "gzip:${base64gzip(jsonencode({
     sites = var.site_configs
-  })
+  }))}"
   tags = local.common_tags
 }
 

@@ -2,11 +2,20 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const zlib = require("node:zlib");
 const { _private } = require("../index");
 
 test("parseRoute extracts siteId", () => {
   assert.deepEqual(_private.parseRoute("/api/forms/anchor-web-co"), { siteId: "anchor-web-co" });
   assert.equal(_private.parseRoute("/api/forms"), null);
+});
+
+test("site configuration supports plain and compressed encrypted parameter values", () => {
+  const config = { sites: [{ siteId: "example" }] };
+  const plain = JSON.stringify(config);
+  const compressed = `gzip:${zlib.gzipSync(Buffer.from(plain)).toString("base64")}`;
+  assert.deepEqual(_private.parseSitesConfig(plain), config);
+  assert.deepEqual(_private.parseSitesConfig(compressed), config);
 });
 
 test("assessSubmission rejects missing required fields", () => {
