@@ -248,3 +248,17 @@ test("Bannister configuration preserves its public form contract", () => {
   assert.match(builder, /autoReplyEnabled: false/);
   assert.match(builder, /turnstileRequired: false/);
 });
+
+test("Coastwide configuration preserves its public form contract", () => {
+  const builder = fs.readFileSync(
+    path.join(__dirname, "..", "..", "scripts", "build-site-config.mjs"),
+    "utf8",
+  );
+  assert.match(builder, /siteId: "coastwide-exterior-cleaning"/);
+  assert.match(builder, /recipientEmail: coastwideRecipientEmail/);
+  assert.match(builder, /"https:\/\/coastwideexteriors\.com\.au"/);
+  assert.match(builder, /"https:\/\/www\.coastwideexteriors\.com\.au"/);
+  assert.match(builder, /requiredFields: \["name", "phone", "email", "address", "consent"\]/);
+  assert.match(builder, /autoReplyEnabled: false/);
+  assert.match(builder, /turnstileRequired: false/);
+});

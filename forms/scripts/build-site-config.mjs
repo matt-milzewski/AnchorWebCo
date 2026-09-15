@@ -11,6 +11,7 @@ const sites = base.filter((site) => !extraIds.has(site.siteId)).concat(extras);
 const turnstileEnabled = Boolean(process.env.TURNSTILE_SITE_KEY && process.env.TURNSTILE_SECRET_KEY);
 const havenRecipientEmail = String(process.env.HAVEN_RECIPIENT_EMAIL || "").trim();
 const bannisterRecipientEmail = String(process.env.BANNISTER_RECIPIENT_EMAIL || "").trim();
+const coastwideRecipientEmail = String(process.env.COASTWIDE_RECIPIENT_EMAIL || "").trim();
 
 const anchorAllowedFields = [
   "name", "email", "phone", "project_stage", "business_suburb", "message", "current_website",
@@ -48,8 +49,40 @@ const bannisterSite = {
   destinationRateLimitMaxRequests: 3,
 };
 
-const configuredSites = sites.filter((site) => site.siteId !== bannisterSite.siteId);
-configuredSites.push(bannisterSite);
+const coastwideSite = {
+  siteId: "coastwide-exterior-cleaning",
+  name: "Coastwide Exterior Cleaning",
+  recipientEmail: coastwideRecipientEmail,
+  allowedOrigins: [
+    "https://coastwideexteriors.com.au",
+    "https://www.coastwideexteriors.com.au",
+  ],
+  requiredFields: ["name", "phone", "email", "address", "consent"],
+  allowedFields: ["name", "phone", "email", "address", "service", "message", "consent"],
+  fieldMaxLengths: {
+    name: 120,
+    phone: 40,
+    email: 254,
+    address: 200,
+    service: 120,
+    message: 5000,
+    consent: 10,
+  },
+  honeypotFields: ["company", "_gotcha"],
+  replyToField: "email",
+  subjectPrefix: "[Coastwide Exterior Cleaning]",
+  subject: "New website quote enquiry",
+  spamThreshold: 2,
+  maxLinks: 3,
+  minimumSubmitMs: 3000,
+  autoReplyEnabled: false,
+  turnstileRequired: false,
+  destinationRateLimitMaxRequests: 3,
+};
+
+const sourceControlledSiteIds = new Set([bannisterSite.siteId, coastwideSite.siteId]);
+const configuredSites = sites.filter((site) => !sourceControlledSiteIds.has(site.siteId));
+configuredSites.push(bannisterSite, coastwideSite);
 
 for (const site of configuredSites) {
   if (site.siteId === "anchor-web-co") {
