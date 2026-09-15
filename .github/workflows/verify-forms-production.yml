@@ -37,6 +37,7 @@ jobs:
       ALERT_TOPIC_NAME: anchor-forms-prod-alerts
       NOTIFICATION_FUNCTION: anchor-forms-prod-notifications
       REPORT_FUNCTION: anchor-forms-prod-reports
+      ADMIN_FUNCTION: anchor-forms-prod-admin
 
     steps:
       - name: Configure AWS credentials with GitHub OIDC
@@ -126,6 +127,19 @@ jobs:
           test "$rule_state" = "ENABLED"
           echo "topic_arn=$topic_arn" >> "$GITHUB_OUTPUT"
           echo "PASS notification delivery function, both delivery alarms, and monthly schedule"
+
+      - name: Verify dashboard Lambda can read production configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          aws lambda invoke \
+            --function-name "$ADMIN_FUNCTION" \
+            --cli-binary-format raw-in-base64-out \
+            --payload '{"requestContext":{"http":{"method":"GET"}},"rawPath":"/api/forms-admin/summary","queryStringParameters":{}}' \
+            /tmp/forms-admin-summary.json >/dev/null
+          jq -e '.statusCode == 200' /tmp/forms-admin-summary.json >/dev/null
+          jq -e '.body | fromjson | .sites | length == 4' /tmp/forms-admin-summary.json >/dev/null
+          echo "PASS dashboard summary loaded all four production sites"
 
       - name: Send labelled test notifications
         if: ${{ inputs.send_test_emails }}
