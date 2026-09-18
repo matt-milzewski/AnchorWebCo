@@ -141,7 +141,7 @@ jobs:
           status_code="$(jq -r '.statusCode // empty' /tmp/forms-admin-summary.json)"
           site_count="$(jq -r 'if .statusCode == 200 then (.body | fromjson | .sites | length) else 0 end' /tmp/forms-admin-summary.json)"
           echo "dashboard_function_error=${function_error:-none} status_code=${status_code:-missing} site_count=$site_count"
-          required_sites_ok="$(jq -r 'if .statusCode == 200 then (.body | fromjson | [.sites[].siteId] | ((index("anchor-web-co") != null) and (index("haven-homes-co") != null) and (index("bannister-communications") != null) and (index("coastwide-exterior-cleaning") != null))) else false end' /tmp/forms-admin-summary.json)"
+          required_sites_ok="$(jq -r 'if .statusCode == 200 then (.body | fromjson | [.sites[].siteId] | ((index("anchor-web-co") != null) and (index("haven-homes-co") != null) and (index("bannister-communications") != null) and (index("coastwide-exterior-cleaning") != null) and (index("halter") != null))) else false end' /tmp/forms-admin-summary.json)"
           if [ -n "$function_error" ] || [ "$status_code" != "200" ] || [ "$required_sites_ok" != "true" ]; then
             jq -r 'if .body then (.body | fromjson | {error, siteCount: (.sites | length)}) else {error: "Missing Lambda response body"} end' \
               /tmp/forms-admin-summary.json

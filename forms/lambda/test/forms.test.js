@@ -258,6 +258,32 @@ test("Bannister configuration preserves its public form contract", () => {
   assert.match(builder, /turnstileRequired: false/);
 });
 
+test("Halter configuration keeps company out of the honeypot list", () => {
+  const builder = fs.readFileSync(
+    path.join(__dirname, "..", "..", "scripts", "build-site-config.mjs"),
+    "utf8",
+  );
+  assert.match(builder, /siteId: "halter"/);
+  assert.match(builder, /recipientEmail: halterRecipientEmail/);
+  assert.match(builder, /requiredFields: \["name", "email", "message"\]/);
+  // The waitlist collects the visitor's company. A filled honeypot is spam on
+  // its own, so listing "company" here would drop every genuine signup — the
+  // form posts it as `company_name` instead. Guard both halves of that.
+  assert.match(builder, /honeypotFields: \["_gotcha"\]/);
+  assert.ok(
+    /const halterSite = \{[\s\S]*?\n\};/.test(builder),
+    "halterSite block should be present",
+  );
+  const halterBlock = builder.match(/const halterSite = \{[\s\S]*?\n\};/)[0];
+  assert.ok(
+    !/honeypotFields: \[[^\]]*"company"/.test(halterBlock),
+    'Halter must not use "company" as a honeypot field',
+  );
+  assert.match(halterBlock, /"company_name"/);
+  assert.match(halterBlock, /autoReplyEnabled: false/);
+  assert.match(halterBlock, /turnstileRequired: false/);
+});
+
 test("Coastwide configuration preserves its public form contract", () => {
   const builder = fs.readFileSync(
     path.join(__dirname, "..", "..", "scripts", "build-site-config.mjs"),
