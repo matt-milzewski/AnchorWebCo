@@ -12,6 +12,15 @@ const turnstileEnabled = Boolean(process.env.TURNSTILE_SITE_KEY && process.env.T
 const havenRecipientEmail = String(process.env.HAVEN_RECIPIENT_EMAIL || "").trim();
 const bannisterRecipientEmail = String(process.env.BANNISTER_RECIPIENT_EMAIL || "").trim();
 const coastwideRecipientEmail = String(process.env.COASTWIDE_RECIPIENT_EMAIL || "").trim();
+const fleetwarrantRecipientEmail = String(process.env.FLEETWARRANT_RECIPIENT_EMAIL || "").trim();
+// The production domain is fleetwarrant.com, but Cloudflare preview
+// deployments serve from *.workers.dev and an origin that is not on the list
+// is rejected outright. FLEETWARRANT_ALLOWED_ORIGINS (comma-separated)
+// replaces the defaults so a preview can be tested without a code change.
+const fleetwarrantAllowedOrigins = String(process.env.FLEETWARRANT_ALLOWED_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 const anchorAllowedFields = [
   "name", "email", "phone", "project_stage", "business_suburb", "message", "current_website",
@@ -80,9 +89,46 @@ const coastwideSite = {
   destinationRateLimitMaxRequests: 3,
 };
 
-const sourceControlledSiteIds = new Set([bannisterSite.siteId, coastwideSite.siteId]);
+const fleetwarrantSite = {
+  siteId: "fleetwarrant",
+  name: "FleetWarrant",
+  recipientEmail: fleetwarrantRecipientEmail,
+  allowedOrigins: fleetwarrantAllowedOrigins.length
+    ? fleetwarrantAllowedOrigins
+    : ["https://fleetwarrant.com", "https://www.fleetwarrant.com"],
+  requiredFields: ["name", "email", "message"],
+  allowedFields: ["name", "email", "message", "company_name", "role", "agents_in_production"],
+  fieldMaxLengths: {
+    name: 120,
+    email: 254,
+    message: 5000,
+    company_name: 120,
+    role: 80,
+    agents_in_production: 120,
+  },
+  // Deliberately NOT ["company", "_gotcha"] like the other sites: FleetWarrant's
+  // waitlist asks for the visitor's company, and a filled honeypot is spam on
+  // its own with no threshold to clear. Adding "company" here would silently
+  // bin every genuine signup. The form posts the company as `company_name`.
+  honeypotFields: ["_gotcha"],
+  replyToField: "email",
+  subjectPrefix: "[FleetWarrant Waitlist]",
+  subject: "New FleetWarrant waitlist request",
+  spamThreshold: 2,
+  maxLinks: 3,
+  minimumSubmitMs: 3000,
+  autoReplyEnabled: false,
+  turnstileRequired: false,
+  destinationRateLimitMaxRequests: 3,
+};
+
+const sourceControlledSiteIds = new Set([
+  bannisterSite.siteId,
+  coastwideSite.siteId,
+  fleetwarrantSite.siteId,
+]);
 const configuredSites = sites.filter((site) => !sourceControlledSiteIds.has(site.siteId));
-configuredSites.push(bannisterSite, coastwideSite);
+configuredSites.push(bannisterSite, coastwideSite, fleetwarrantSite);
 
 for (const site of configuredSites) {
   if (site.siteId === "anchor-web-co") {
