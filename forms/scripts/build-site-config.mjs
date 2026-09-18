@@ -12,11 +12,12 @@ const turnstileEnabled = Boolean(process.env.TURNSTILE_SITE_KEY && process.env.T
 const havenRecipientEmail = String(process.env.HAVEN_RECIPIENT_EMAIL || "").trim();
 const bannisterRecipientEmail = String(process.env.BANNISTER_RECIPIENT_EMAIL || "").trim();
 const coastwideRecipientEmail = String(process.env.COASTWIDE_RECIPIENT_EMAIL || "").trim();
-const halterRecipientEmail = String(process.env.HALTER_RECIPIENT_EMAIL || "").trim();
-// Halter has not settled on a production domain yet, so its origins can be
-// overridden from a repo variable without a code change. The default is the
-// domain the Halter site itself falls back to.
-const halterAllowedOrigins = String(process.env.HALTER_ALLOWED_ORIGINS || "")
+const fleetwarrantRecipientEmail = String(process.env.FLEETWARRANT_RECIPIENT_EMAIL || "").trim();
+// The production domain is fleetwarrant.com, but Cloudflare preview
+// deployments serve from *.workers.dev and an origin that is not on the list
+// is rejected outright. FLEETWARRANT_ALLOWED_ORIGINS (comma-separated)
+// replaces the defaults so a preview can be tested without a code change.
+const fleetwarrantAllowedOrigins = String(process.env.FLEETWARRANT_ALLOWED_ORIGINS || "")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
@@ -88,13 +89,13 @@ const coastwideSite = {
   destinationRateLimitMaxRequests: 3,
 };
 
-const halterSite = {
-  siteId: "halter",
-  name: "Halter",
-  recipientEmail: halterRecipientEmail,
-  allowedOrigins: halterAllowedOrigins.length
-    ? halterAllowedOrigins
-    : ["https://halter.security", "https://www.halter.security"],
+const fleetwarrantSite = {
+  siteId: "fleetwarrant",
+  name: "FleetWarrant",
+  recipientEmail: fleetwarrantRecipientEmail,
+  allowedOrigins: fleetwarrantAllowedOrigins.length
+    ? fleetwarrantAllowedOrigins
+    : ["https://fleetwarrant.com", "https://www.fleetwarrant.com"],
   requiredFields: ["name", "email", "message"],
   allowedFields: ["name", "email", "message", "company_name", "role", "agents_in_production"],
   fieldMaxLengths: {
@@ -105,14 +106,14 @@ const halterSite = {
     role: 80,
     agents_in_production: 120,
   },
-  // Deliberately NOT ["company", "_gotcha"] like the other sites: Halter's
+  // Deliberately NOT ["company", "_gotcha"] like the other sites: FleetWarrant's
   // waitlist asks for the visitor's company, and a filled honeypot is spam on
   // its own with no threshold to clear. Adding "company" here would silently
   // bin every genuine signup. The form posts the company as `company_name`.
   honeypotFields: ["_gotcha"],
   replyToField: "email",
-  subjectPrefix: "[Halter Waitlist]",
-  subject: "New Halter waitlist request",
+  subjectPrefix: "[FleetWarrant Waitlist]",
+  subject: "New FleetWarrant waitlist request",
   spamThreshold: 2,
   maxLinks: 3,
   minimumSubmitMs: 3000,
@@ -124,10 +125,10 @@ const halterSite = {
 const sourceControlledSiteIds = new Set([
   bannisterSite.siteId,
   coastwideSite.siteId,
-  halterSite.siteId,
+  fleetwarrantSite.siteId,
 ]);
 const configuredSites = sites.filter((site) => !sourceControlledSiteIds.has(site.siteId));
-configuredSites.push(bannisterSite, coastwideSite, halterSite);
+configuredSites.push(bannisterSite, coastwideSite, fleetwarrantSite);
 
 for (const site of configuredSites) {
   if (site.siteId === "anchor-web-co") {

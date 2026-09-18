@@ -64,22 +64,24 @@ The deployment builds the encrypted SSM configuration from `FORM_SITE_CONFIGS_JS
 }
 ```
 
-Recipient addresses and the Turnstile secret belong in GitHub Actions secrets, not source control. Client-specific recipient secrets currently include `HAVEN_RECIPIENT_EMAIL`, `BANNISTER_RECIPIENT_EMAIL`, `COASTWIDE_RECIPIENT_EMAIL`, and `HALTER_RECIPIENT_EMAIL`. Terraform gzip-compresses the generated routing configuration inside the existing encrypted Standard-tier SSM parameter, and the Lambda retains backwards compatibility with the former plain JSON value.
+Recipient addresses and the Turnstile secret belong in GitHub Actions secrets, not source control. Client-specific recipient secrets currently include `HAVEN_RECIPIENT_EMAIL`, `BANNISTER_RECIPIENT_EMAIL`, `COASTWIDE_RECIPIENT_EMAIL`, and `FLEETWARRANT_RECIPIENT_EMAIL`. Terraform gzip-compresses the generated routing configuration inside the existing encrypted Standard-tier SSM parameter, and the Lambda retains backwards compatibility with the former plain JSON value.
 
-### Halter
+### FleetWarrant
 
-Halter's waitlist form is the one site that must not use `company` as a
+FleetWarrant's waitlist form is the one site that must not use `company` as a
 honeypot. Its form asks for the visitor's company, and a filled honeypot is
 classed as spam on its own with no threshold to clear, so the shared
 `["company", "_gotcha"]` list would silently drop every genuine signup. The
 site posts the company as `company_name` and its honeypot list is
 `["_gotcha"]`; a test in `forms/lambda/test/forms.test.js` guards both.
 
-Its production domain is not settled, so `HALTER_ALLOWED_ORIGINS` (a repo
-variable, comma-separated) overrides the default origins without a code
-change. Set it before pointing the live site at the API: an origin that is
-not on the list is rejected outright, and a rejected submission returns
-HTTP 200 with `accepted: false`.
+Its production origins default to `https://fleetwarrant.com` and the `www`
+form. Cloudflare preview deployments serve from `*.workers.dev`, and an
+origin that is not on the list is rejected outright — a rejected submission
+returns HTTP 200 with `accepted: false`, so it looks like success unless you
+read the body. `FLEETWARRANT_ALLOWED_ORIGINS` (a repo variable,
+comma-separated) replaces the defaults so a preview can be tested without a
+code change.
 
 ## Deployment
 

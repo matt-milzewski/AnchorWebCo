@@ -258,30 +258,30 @@ test("Bannister configuration preserves its public form contract", () => {
   assert.match(builder, /turnstileRequired: false/);
 });
 
-test("Halter configuration keeps company out of the honeypot list", () => {
+test("FleetWarrant configuration keeps company out of the honeypot list", () => {
   const builder = fs.readFileSync(
     path.join(__dirname, "..", "..", "scripts", "build-site-config.mjs"),
     "utf8",
   );
-  assert.match(builder, /siteId: "halter"/);
-  assert.match(builder, /recipientEmail: halterRecipientEmail/);
+  assert.match(builder, /siteId: "fleetwarrant"/);
+  assert.match(builder, /recipientEmail: fleetwarrantRecipientEmail/);
   assert.match(builder, /requiredFields: \["name", "email", "message"\]/);
   // The waitlist collects the visitor's company. A filled honeypot is spam on
   // its own, so listing "company" here would drop every genuine signup — the
   // form posts it as `company_name` instead. Guard both halves of that.
   assert.match(builder, /honeypotFields: \["_gotcha"\]/);
   assert.ok(
-    /const halterSite = \{[\s\S]*?\n\};/.test(builder),
-    "halterSite block should be present",
+    /const fleetwarrantSite = \{[\s\S]*?\n\};/.test(builder),
+    "fleetwarrantSite block should be present",
   );
-  const halterBlock = builder.match(/const halterSite = \{[\s\S]*?\n\};/)[0];
+  const fleetwarrantBlock = builder.match(/const fleetwarrantSite = \{[\s\S]*?\n\};/)[0];
   assert.ok(
-    !/honeypotFields: \[[^\]]*"company"/.test(halterBlock),
-    'Halter must not use "company" as a honeypot field',
+    !/honeypotFields: \[[^\]]*"company"/.test(fleetwarrantBlock),
+    'FleetWarrant must not use "company" as a honeypot field',
   );
-  assert.match(halterBlock, /"company_name"/);
-  assert.match(halterBlock, /autoReplyEnabled: false/);
-  assert.match(halterBlock, /turnstileRequired: false/);
+  assert.match(fleetwarrantBlock, /"company_name"/);
+  assert.match(fleetwarrantBlock, /autoReplyEnabled: false/);
+  assert.match(fleetwarrantBlock, /turnstileRequired: false/);
 });
 
 test("Coastwide configuration preserves its public form contract", () => {
