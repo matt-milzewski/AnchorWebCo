@@ -13,6 +13,7 @@ const havenRecipientEmail = String(process.env.HAVEN_RECIPIENT_EMAIL || "").trim
 const bannisterRecipientEmail = String(process.env.BANNISTER_RECIPIENT_EMAIL || "").trim();
 const coastwideRecipientEmail = String(process.env.COASTWIDE_RECIPIENT_EMAIL || "").trim();
 const fleetwarrantRecipientEmail = String(process.env.FLEETWARRANT_RECIPIENT_EMAIL || "").trim();
+const handymanLukeRecipientEmail = String(process.env.HANDYMANLUKE_RECIPIENT_EMAIL || "").trim();
 // The production domain is fleetwarrant.com, but Cloudflare preview
 // deployments serve from *.workers.dev and an origin that is not on the list
 // is rejected outright. FLEETWARRANT_ALLOWED_ORIGINS (comma-separated)
@@ -122,13 +123,45 @@ const fleetwarrantSite = {
   destinationRateLimitMaxRequests: 3,
 };
 
+const handymanLukeSite = {
+  siteId: "handyman-luke",
+  name: "Handyman Luke",
+  recipientEmail: handymanLukeRecipientEmail,
+  // TODO(follow-up): replace with the real CloudFront distribution domain once
+  // infrastructure/template.yml has been deployed for the HandymanLuke repo
+  // (see that repo's README "First-deploy order"). Placeholder only, deploying
+  // this config as-is will simply reject the real site's requests until fixed.
+  allowedOrigins: ["https://REPLACE_WITH_HANDYMAN_LUKE_CLOUDFRONT_DOMAIN.cloudfront.net"],
+  requiredFields: ["name", "email", "phone", "suburb", "service", "message"],
+  allowedFields: ["name", "email", "phone", "suburb", "service", "message"],
+  fieldMaxLengths: {
+    name: 100,
+    email: 254,
+    phone: 20,
+    suburb: 100,
+    service: 60,
+    message: 3000,
+  },
+  honeypotFields: ["company"],
+  replyToField: "email",
+  subjectPrefix: "[Handyman Luke]",
+  subject: "New website enquiry",
+  spamThreshold: 2,
+  maxLinks: 3,
+  minimumSubmitMs: 3000,
+  autoReplyEnabled: false,
+  turnstileRequired: false,
+  destinationRateLimitMaxRequests: 3,
+};
+
 const sourceControlledSiteIds = new Set([
   bannisterSite.siteId,
   coastwideSite.siteId,
   fleetwarrantSite.siteId,
+  handymanLukeSite.siteId,
 ]);
 const configuredSites = sites.filter((site) => !sourceControlledSiteIds.has(site.siteId));
-configuredSites.push(bannisterSite, coastwideSite, fleetwarrantSite);
+configuredSites.push(bannisterSite, coastwideSite, fleetwarrantSite, handymanLukeSite);
 
 for (const site of configuredSites) {
   if (site.siteId === "anchor-web-co") {
