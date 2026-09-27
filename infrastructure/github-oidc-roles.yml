@@ -55,6 +55,62 @@ Resources:
                 token.actions.githubusercontent.com:sub: repo:matt-milzewski@94414080/haven-homes-co@1313723144:ref:refs/heads/main
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/PowerUserAccess
+  FleetWarrantDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: fleetwarrant-github-deploy
+      Description: Assumed by matt-milzewski/fleetwarrant .github/workflows/deploy.yml (manual trigger, main only, staging environment).
+      MaxSessionDuration: 7200
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GithubOidcProviderArn
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                # Either subject format, like Haven's role: newer repos get the ID-qualified one.
+                token.actions.githubusercontent.com:sub:
+                  - repo:matt-milzewski/fleetwarrant:environment:staging
+                  - repo:matt-milzewski@94414080/fleetwarrant@1377631397:environment:staging
+      # Deliberately narrow: FleetWarrant deploys with CDK, so this role only
+      # assumes the CDK bootstrap roles (both regions it deploys to) plus the
+      # two read-only calls its deploy scripts make. No IAM access.
+      Policies:
+        - PolicyName: fleetwarrant-deploy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: AssumeCdkBootstrapRoles
+                Effect: Allow
+                Action: sts:AssumeRole
+                Resource:
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-ap-southeast-2
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-ap-southeast-2
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-ap-southeast-2
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-ap-southeast-2
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-us-east-1
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1
+              - Sid: ResolveWarrantSigningKeyId
+                Effect: Allow
+                Action: kms:DescribeKey
+                Resource: "*"
+                Condition:
+                  ForAnyValue:StringEquals:
+                    kms:ResourceAliases: alias/fleetwarrant-staging/warrant-signing
+              - Sid: ReadGatewayWafOutputs
+                Effect: Allow
+                Action: cloudformation:DescribeStacks
+                Resource: !Sub arn:aws:cloudformation:us-east-1:${AWS::AccountId}:stack/FleetWarrantStagingGatewayWaf/*
+      Tags:
+        - Key: Project
+          Value: FleetWarrant
+        - Key: Environment
+          Value: staging
 Outputs:
   AnchorSiteRoleArn:
     Value: !GetAtt AnchorSiteRole.Arn
@@ -62,3 +118,5 @@ Outputs:
     Value: !GetAtt AnchorFormsRole.Arn
   HavenSiteRoleArn:
     Value: !GetAtt HavenSiteRole.Arn
+  FleetWarrantDeployRoleArn:
+    Value: !GetAtt FleetWarrantDeployRole.Arn

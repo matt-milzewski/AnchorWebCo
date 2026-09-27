@@ -103,3 +103,4 @@ jobs:
         run: |
           echo "## AWS identity uplift complete" >> "$GITHUB_STEP_SUMMARY"
           echo "Anchor site, Anchor forms and Haven now use separate branch-scoped GitHub OIDC roles." >> "$GITHUB_STEP_SUMMARY"
+          echo "FleetWarrant deploys (manual workflow in matt-milzewski/fleetwarrant) use fleetwarrant-github-deploy by its fixed name." >> "$GITHUB_STEP_SUMMARY"
