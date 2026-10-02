@@ -23,7 +23,10 @@ variable "allowed_origins" {
     "https://www.anchorwebco.com.au",
     "https://anchorwebco.com.au",
     "https://mowermanqld.com.au",
-    "https://www.mowermanqld.com.au"
+    "https://www.mowermanqld.com.au",
+    # TODO(follow-up): replace with the real CloudFront distribution domain once
+    # the HandymanLuke site stack (infrastructure/template.yml) has been deployed.
+    "https://REPLACE_WITH_HANDYMAN_LUKE_CLOUDFRONT_DOMAIN.cloudfront.net"
   ]
 }
 
