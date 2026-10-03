@@ -106,6 +106,81 @@ Resources:
                 Effect: Allow
                 Action: cloudformation:DescribeStacks
                 Resource: !Sub arn:aws:cloudformation:us-east-1:${AWS::AccountId}:stack/FleetWarrantStagingGatewayWaf/*
+        # The post-deploy one-off steps, run by fleetwarrant's manual
+        # "Run operator script" workflow (.github/workflows/operator-scripts.yml,
+        # main only, same staging environment) so nothing touching AWS runs
+        # from a laptop. Each statement is scoped to the resources those
+        # scripts name; the `staging` names are legacy identifiers for
+        # FleetWarrant's production environment (fleetwarrant ADR-0008).
+        - PolicyName: fleetwarrant-operator-scripts
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              # backfill_tenant_users
+              - Sid: ReadDashboardUserPool
+                Effect: Allow
+                Action:
+                  - cognito-idp:ListUsers
+                  - cognito-idp:ListUsersInGroup
+                Resource: !Sub arn:aws:cognito-idp:ap-southeast-2:${AWS::AccountId}:userpool/ap-southeast-2_HTYCMLzzY
+              # backfill_tenant_users, set_tenant_email_domains,
+              # backfill_tenant_spend, report_alert_channel_types. The table
+              # uses AWS-managed encryption, so no KMS grant is needed.
+              - Sid: ControlPlaneTable
+                Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+                Resource:
+                  - !Sub arn:aws:dynamodb:ap-southeast-2:${AWS::AccountId}:table/fleetwarrant-staging-control-plane
+                  - !Sub arn:aws:dynamodb:ap-southeast-2:${AWS::AccountId}:table/fleetwarrant-staging-control-plane/index/*
+              # reencrypt_tenant_secrets (the Dashboard Lambda does the work),
+              # index_raw_body_expiry
+              - Sid: InvokeOperatorLambdas
+                Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource:
+                  - !Sub arn:aws:lambda:ap-southeast-2:${AWS::AccountId}:function:fleetwarrant-staging-dashboard
+                  - !Sub arn:aws:lambda:ap-southeast-2:${AWS::AccountId}:function:fleetwarrant-staging-raw-body-expiry
+              # update_tenant_key_policies, index_raw_body_expiry
+              - Sid: ReadOperatorLambdaConfig
+                Effect: Allow
+                Action: lambda:GetFunctionConfiguration
+                Resource:
+                  - !Sub arn:aws:lambda:ap-southeast-2:${AWS::AccountId}:function:fleetwarrant-staging-warrant-issuer
+                  - !Sub arn:aws:lambda:ap-southeast-2:${AWS::AccountId}:function:fleetwarrant-staging-raw-body-expiry
+              # Finding Tenants by their CMK alias
+              - Sid: ListKmsAliases
+                Effect: Allow
+                Action: kms:ListAliases
+                Resource: "*"
+              # update_tenant_key_policies: Tenant CMKs only
+              - Sid: ManageTenantKeyPolicies
+                Effect: Allow
+                Action:
+                  - kms:DescribeKey
+                  - kms:ListResourceTags
+                  - kms:GetKeyPolicy
+                  - kms:PutKeyPolicy
+                Resource: "*"
+                Condition:
+                  ForAnyValue:StringLike:
+                    kms:ResourceAliases: alias/fleetwarrant/tenant/*
+              # export_signing_key_fingerprint
+              - Sid: ReadExportSigningPublicKey
+                Effect: Allow
+                Action: kms:GetPublicKey
+                Resource: "*"
+                Condition:
+                  ForAnyValue:StringEquals:
+                    kms:ResourceAliases: alias/fleetwarrant-staging/export-manifest-signing
+              # check_alarm_subscriptions
+              - Sid: ReadGatewayAlertSubscriptions
+                Effect: Allow
+                Action: sns:ListSubscriptionsByTopic
+                Resource: !Sub arn:aws:sns:ap-southeast-2:${AWS::AccountId}:fleetwarrant-staging-gateway-alerts
       Tags:
         - Key: Project
           Value: FleetWarrant
