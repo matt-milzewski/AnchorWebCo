@@ -181,6 +181,47 @@ Resources:
                 Effect: Allow
                 Action: sns:ListSubscriptionsByTopic
                 Resource: !Sub arn:aws:sns:ap-southeast-2:${AWS::AccountId}:fleetwarrant-staging-gateway-alerts
+        # offboard_tenant (fleetwarrant#426, #406): takes a Tenant off
+        # FleetWarrant from the same "Run operator script" workflow, dry run
+        # unless `apply` is ticked, which also needs the Tenant's exact name.
+        # Adds only what that script needs beyond the statements above.
+        - PolicyName: fleetwarrant-offboarding
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              # Disable, then delete, the offboarded Tenant's Dashboard users.
+              - Sid: RemoveDashboardUsers
+                Effect: Allow
+                Action:
+                  - cognito-idp:AdminGetUser
+                  - cognito-idp:AdminDisableUser
+                  - cognito-idp:AdminDeleteUser
+                Resource: !Sub arn:aws:cognito-idp:ap-southeast-2:${AWS::AccountId}:userpool/ap-southeast-2_HTYCMLzzY
+              # Finds the Tenant's registration credentials (base table only).
+              - Sid: FindRegistrationCredentials
+                Effect: Allow
+                Action: dynamodb:Scan
+                Resource: !Sub arn:aws:dynamodb:ap-southeast-2:${AWS::AccountId}:table/fleetwarrant-staging-control-plane
+              # Deletes an Agent's key-rotation grace pointer when its key is
+              # revoked. Tenant partitions only.
+              - Sid: DeleteKeyGracePointers
+                Effect: Allow
+                Action: dynamodb:DeleteItem
+                Resource: !Sub arn:aws:dynamodb:ap-southeast-2:${AWS::AccountId}:table/fleetwarrant-staging-control-plane
+                Condition:
+                  ForAllValues:StringLike:
+                    dynamodb:LeadingKeys:
+                      - "TENANT#*"
+              # Schedules the Tenant CMK's deletion; the script uses KMS's
+              # longest wait (30 days), during which an administrator can
+              # cancel it. Tenant CMKs only.
+              - Sid: ScheduleTenantKeyDeletion
+                Effect: Allow
+                Action: kms:ScheduleKeyDeletion
+                Resource: "*"
+                Condition:
+                  ForAnyValue:StringLike:
+                    kms:ResourceAliases: alias/fleetwarrant/tenant/*
       Tags:
         - Key: Project
           Value: FleetWarrant
