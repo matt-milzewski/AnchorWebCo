@@ -104,7 +104,7 @@
             + '<p class="body-muted">' + build.pages + '</p>'
             + '<p class="planner-result__note">Annual care is priced as ten months. The ongoing plan starts when the website launches. Final scope and any GST that legally applies are confirmed before acceptance.</p>'
             + '<div class="flex flex-col sm:flex-row gap-4">'
-            + '<a class="btn-primary" href="' + contactUrl + '" data-track="cta-quote" data-track-prop-button-location="planner-result">Send this plan with my brief</a>'
+            + '<a class="btn-primary" href="' + contactUrl + '" data-track="cta-quote" data-track-prop-button-location="planner-result">Ask about this plan</a>'
             + '<a class="btn-secondary" href="/pricing.html#price-calculator">Compare every combination</a>'
             + '</div>';
 
