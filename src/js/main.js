@@ -176,7 +176,7 @@ if (contactForm) {
         const parts = [];
         if (packageLabels[requestedPackage]) parts.push(packageLabels[requestedPackage]);
         if (careLabels[requestedCare]) parts.push(careLabels[requestedCare]);
-        selectedPlanSummary.innerHTML = '<strong>Your saved starting point:</strong> ' + parts.join(' + ') + '. I will confirm the fit before anything is agreed.';
+        selectedPlanSummary.innerHTML = '<strong>You were looking at:</strong> ' + parts.join(' + ') + '. This is just context for Matt, not a commitment. Ask about anything else in your message.';
         selectedPlanSummary.classList.remove('hidden');
     }
 

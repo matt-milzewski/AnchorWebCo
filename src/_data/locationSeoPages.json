@@ -8,10 +8,10 @@
     "heroImage": "/img/brisbane-inner-west/paddington-latrobe-terrace.webp",
     "ctaLocations": ["paddington-hero", "paddington-final"],
     "trackedLinks": [
-      {"href": "/website-planner.html", "event": "cta-quote", "location": "paddington-hero"},
+      {"href": "/contact.html", "event": "cta-quote", "location": "paddington-hero"},
       {"href": "/pricing.html", "event": "cta-see-plans", "location": "paddington-hero"},
-      {"href": "/website-planner.html", "event": "cta-quote", "location": "paddington-final"},
-      {"href": "/contact.html", "event": "cta-quote", "location": "paddington-final-contact"}
+      {"href": "/contact.html", "event": "cta-quote", "location": "paddington-final"},
+      {"href": "/website-planner.html", "event": "cta-quote", "location": "paddington-final-planner"}
     ],
     "requiredInboundPages": [
       "index.html",
@@ -30,9 +30,9 @@
     "heroImage": "/img/brisbane-inner-west/ashgrove-monoplane-shops.webp",
     "ctaLocations": ["ashgrove-hero", "ashgrove-final"],
     "trackedLinks": [
-      {"href": "/website-planner.html", "event": "cta-quote", "location": "ashgrove-hero"},
+      {"href": "/contact.html", "event": "cta-quote", "location": "ashgrove-hero"},
       {"href": "/work.html", "event": "cta-see-work", "location": "ashgrove-hero"},
-      {"href": "/website-planner.html", "event": "cta-quote", "location": "ashgrove-final"}
+      {"href": "/contact.html", "event": "cta-quote", "location": "ashgrove-final"}
     ],
     "requiredInboundPages": [
       "index.html",
