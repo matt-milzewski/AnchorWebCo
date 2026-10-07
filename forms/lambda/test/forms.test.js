@@ -297,3 +297,22 @@ test("Coastwide configuration preserves its public form contract", () => {
   assert.match(builder, /autoReplyEnabled: false/);
   assert.match(builder, /turnstileRequired: false/);
 });
+
+test("Handyman Luke configuration matches the site's contact form", () => {
+  const builder = fs.readFileSync(
+    path.join(__dirname, "..", "..", "scripts", "build-site-config.mjs"),
+    "utf8",
+  );
+  const start = builder.indexOf("const handymanLukeSite = {");
+  assert.ok(start !== -1, "handymanLukeSite block missing");
+  const block = builder.slice(start, builder.indexOf("};", start));
+  assert.match(block, /siteId: "handyman-luke"/);
+  assert.match(block, /recipientEmail: handymanLukeRecipientEmail/);
+  assert.match(block, /"https:\/\/handymanluke\.com\.au"/);
+  assert.match(block, /"https:\/\/www\.handymanluke\.com\.au"/);
+  assert.doesNotMatch(block, /REPLACE_WITH/);
+  assert.match(block, /requiredFields: \["name", "email", "phone", "suburb", "service", "message"\]/);
+  assert.match(block, /honeypotFields: \["company"\]/);
+  assert.match(block, /turnstileRequired: false/);
+  assert.match(builder, /configuredSites\.push\([^)]*handymanLukeSite\)/);
+});
